@@ -31,6 +31,7 @@
 		FA0E573D15594A810039BB00 /* button_upIPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = FA0E572515594A810039BB00 /* button_upIPhone.png */; };
 		FA0E573E15594A810039BB00 /* button_upIPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA0E572615594A810039BB00 /* button_upIPhone@2x.png */; };
 		FA0E573F15594A810039BB00 /* button-logout_downIPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA0E572715594A810039BB00 /* button-logout_downIPhone@2x.png */; };
+		FA0F9CF115F72D1600CD809D /* bug requests.rtf in Resources */ = {isa = PBXBuildFile; fileRef = FA0F9CF015F72D1600CD809D /* bug requests.rtf */; };
 		FA30262515B88F2700A4E62F /* button_registerStart_downIPad.png in Resources */ = {isa = PBXBuildFile; fileRef = FA30261D15B88F1700A4E62F /* button_registerStart_downIPad.png */; };
 		FA30262615B88F2700A4E62F /* button_registerStart_downIPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA30261E15B88F1900A4E62F /* button_registerStart_downIPad@2x.png */; };
 		FA30262715B88F2700A4E62F /* button_registerStart_downIPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = FA30261F15B88F1C00A4E62F /* button_registerStart_downIPhone.png */; };
@@ -189,6 +190,7 @@
 		FA0E572515594A810039BB00 /* button_upIPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_upIPhone.png; sourceTree = "<group>"; };
 		FA0E572615594A810039BB00 /* button_upIPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button_upIPhone@2x.png"; sourceTree = "<group>"; };
 		FA0E572715594A810039BB00 /* button-logout_downIPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-logout_downIPhone@2x.png"; sourceTree = "<group>"; };
+		FA0F9CF015F72D1600CD809D /* bug requests.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "bug requests.rtf"; sourceTree = "<group>"; };
 		FA30261D15B88F1700A4E62F /* button_registerStart_downIPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_registerStart_downIPad.png; sourceTree = "<group>"; };
 		FA30261E15B88F1900A4E62F /* button_registerStart_downIPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button_registerStart_downIPad@2x.png"; sourceTree = "<group>"; };
 		FA30261F15B88F1C00A4E62F /* button_registerStart_downIPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_registerStart_downIPhone.png; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 				FAF0FD0815563B4B001D8757 /* logo-2-2-2.png */,
 				FAF0FD0615563B17001D8757 /* logo-2-2-1.png */,
 				FAF0FD041555C8D5001D8757 /* logo-2-2.png */,
+				FA0F9CF015F72D1600CD809D /* bug requests.rtf */,
 				FAF0FD021555C89B001D8757 /* logo-2-1.png */,
 				FAF0FCFF1555C774001D8757 /* logo-1.png */,
 				FAA2A99C15445D58003C0822 /* tvr */,
@@ -819,6 +822,7 @@
 				FA30263B15B88F3E00A4E62F /* button_register_upIPad@2x.png in Resources */,
 				FA30263C15B88F3E00A4E62F /* button_register_upIPhone.png in Resources */,
 				FA30263D15B88F3E00A4E62F /* button_register_upIPhone@2x.png in Resources */,
+				FA0F9CF115F72D1600CD809D /* bug requests.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
