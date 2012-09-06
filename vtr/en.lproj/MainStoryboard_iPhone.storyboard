@@ -183,10 +183,14 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="367"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="8rY-ma-Oh6">
+                        <searchBar key="tableHeaderView" contentMode="redraw" showsCancelButton="YES" id="8rY-ma-Oh6">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
+                            <scopeButtonTitles>
+                                <string>Title</string>
+                                <string>Title</string>
+                            </scopeButtonTitles>
                             <connections>
                                 <outlet property="delegate" destination="nMM-6u-8oH" id="rOz-5Y-CAz"/>
                             </connections>
@@ -295,7 +299,7 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="Y2l-iT-8HU">
+                        <searchBar key="tableHeaderView" contentMode="redraw" showsCancelButton="YES" id="Y2l-iT-8HU">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
@@ -407,10 +411,13 @@
                                     <outlet property="prefixEdited" destination="786-lC-4LT" id="2cM-qf-JhU"/>
                                     <outlet property="testButton" destination="Y88-qn-31j" id="T5d-Dp-lET"/>
                                     <outlet property="testButtonLabel" destination="DNy-p8-rh1" id="9hM-5X-nkh"/>
-                                    <segue destination="jwo-v6-ZJ9" kind="push" id="Uzl-9c-gCL"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="IJH-U3-vaA" id="Y8x-Ec-0lL"/>
+                            <outlet property="delegate" destination="IJH-U3-vaA" id="Jal-eh-Xux"/>
+                        </connections>
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="Onw-o8-Os1">
@@ -470,12 +477,18 @@
         <scene sceneID="G37-2p-F4E">
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x75-Mg-BFm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <customObject id="2Nx-gQ-QQh" customClass="AppDelegate">
+                    <connections>
+                        <outlet property="routesViewController" destination="IJH-U3-vaA" id="S4B-d5-40N"/>
+                        <outlet property="testingResultsTableViewController" destination="jwo-v6-ZJ9" id="pbh-ut-Ai7"/>
+                    </connections>
+                </customObject>
                 <tableViewController id="jwo-v6-ZJ9" customClass="TestingResultsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="191" sectionHeaderHeight="10" sectionFooterHeight="10" id="syC-LD-WYo">
-                        <rect key="frame" x="0.0" y="64" width="320" height="372"/>
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="TIk-Yu-0qt">
+                        <searchBar key="tableHeaderView" contentMode="redraw" showsCancelButton="YES" id="TIk-Yu-0qt">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
@@ -511,22 +524,36 @@
                                             <color key="tintColor" red="0.0" green="0.67450982332229614" blue="0.97254908084869385" alpha="1" colorSpace="deviceRGB"/>
                                         </segmentedControl>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="DURATION" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="Hav-Bc-V70">
-                                            <rect key="frame" x="98" y="155" width="90" height="29"/>
+                                            <rect key="frame" x="98" y="155" width="78" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="INVITE -> RINGING (PDD)" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="HKQ-6q-Rl6">
-                                            <rect key="frame" x="98" y="81" width="162" height="29"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Carrier" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="9" enabled="NO" id="e2V-gg-RS1">
+                                            <rect key="frame" x="179" y="81" width="113" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="OutPeer" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="9" enabled="NO" id="YLc-0M-4ML">
+                                            <rect key="frame" x="179" y="118" width="113" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="PDD" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="HKQ-6q-Rl6">
+                                            <rect key="frame" x="98" y="81" width="78" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="shadowOffset" width="0.0" height="0.0"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="INVITE -> OK" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="92z-Z7-8uZ">
-                                            <rect key="frame" x="98" y="118" width="90" height="29"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="RING" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="92z-Z7-8uZ">
+                                            <rect key="frame" x="98" y="118" width="78" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -567,8 +594,8 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
-                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="FAS REASON" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" id="jzu-GX-ThZ">
-                                            <rect key="frame" x="202" y="152" width="90" height="35"/>
+                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="protocol" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" id="jzu-GX-ThZ">
+                                            <rect key="frame" x="212" y="155" width="80" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -596,8 +623,10 @@
                                 <connections>
                                     <outlet property="bk" destination="CcU-zR-Ibu" id="9wO-mt-JDJ"/>
                                     <outlet property="callTime" destination="hcM-Lg-vpZ" id="GDS-hz-FrR"/>
+                                    <outlet property="carrierLabel" destination="e2V-gg-RS1" id="4ck-aE-yMC"/>
                                     <outlet property="number" destination="yU0-k2-TP3" id="iCa-JF-XSM"/>
                                     <outlet property="numberA" destination="QI9-pF-Dc2" id="W2r-iK-3ua"/>
+                                    <outlet property="outPeerLabel" destination="YLc-0M-4ML" id="X6z-Nh-Rzx"/>
                                     <outlet property="pddTime" destination="piT-2c-RYG" id="LLv-ZE-Ce8"/>
                                     <outlet property="playButton" destination="5Bi-NB-9tv" id="zBD-ll-DqL"/>
                                     <outlet property="responseTime" destination="XAI-81-ibx" id="8HL-5c-JyT"/>
@@ -695,7 +724,7 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="416"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" barStyle="blackOpaque" placeholder="search and select routes to test" id="rxY-cj-B5H">
+                        <searchBar key="tableHeaderView" contentMode="redraw" barStyle="blackOpaque" placeholder="search and select routes to test" showsCancelButton="YES" id="rxY-cj-B5H">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -740,7 +769,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Add routes" id="E99-HJ-zqM">
-                        <barButtonItem key="rightBarButtonItem" title="Start testing" id="mkl-ki-Rj3">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="uJQ-X9-1p6">
+                            <connections>
+                                <action selector="cancelAdding:" destination="JIU-p5-EX1" id="kxi-6L-ZhR"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Go" id="mkl-ki-Rj3">
                             <connections>
                                 <action selector="addRoutesStart:" destination="JIU-p5-EX1" id="MMR-L2-J2i"/>
                             </connections>
@@ -753,7 +787,98 @@
                     </connections>
                 </tableViewController>
             </objects>
-            <point key="canvasLocation" x="2228" y="208"/>
+            <point key="canvasLocation" x="2176" y="195"/>
+        </scene>
+        <!--Numbers For Test Editor Table View Controller-->
+        <scene sceneID="1YW-0G-ufh">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gka-To-c6y" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewController id="zaG-13-MPE" customClass="NumbersForTestEditorTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Z17-S5-BGe">
+                        <rect key="frame" x="0.0" y="64" width="320" height="372"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="NumbersForTestCell" textLabel="lqg-aB-zGB" detailTextLabel="E91-Tg-vMz" style="IBUITableViewCellStyleValue1" id="43J-dY-9BH">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lqg-aB-zGB">
+                                            <rect key="frame" x="10" y="11" width="63" height="21"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="E91-Tg-vMz">
+                                            <rect key="frame" x="246" y="11" width="44" height="21"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="0.2196078431372549" green="0.32941176470588235" blue="0.52941176470588236" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                    </tableView>
+                    <toolbarItems>
+                        <barButtonItem title="cancel" id="mT1-nd-xTJ">
+                            <connections>
+                                <action selector="cancelEditing:" destination="zaG-13-MPE" id="JMK-ha-3Ga"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="vES-v1-Hfv"/>
+                        <barButtonItem title="Edit" id="HPI-55-7Ab">
+                            <connections>
+                                <action selector="editNumbers:" destination="zaG-13-MPE" id="7Ue-oU-0h7"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <navigationItem key="navigationItem" id="b2n-yJ-RvR">
+                        <nil key="title"/>
+                        <view key="titleView" contentMode="scaleToFill" id="WqE-HI-Xll" customClass="DCRoundSwitch">
+                            <rect key="frame" x="111" y="6" width="98" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        </view>
+                        <barButtonItem key="rightBarButtonItem" title="Begin test" id="ct4-tB-rJg">
+                            <connections>
+                                <action selector="beginTests:" destination="zaG-13-MPE" id="iD8-l4-keT"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="protocolSwitch" destination="WqE-HI-Xll" id="QOc-sH-DSb"/>
+                    </connections>
+                </tableViewController>
+            </objects>
+            <point key="canvasLocation" x="2695" y="-518"/>
+        </scene>
+        <!--Numbers For Test Editor Main-->
+        <scene sceneID="7nn-MG-Oxj">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RP4-nP-O6H" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController storyboardIdentifier="NumbersForTestEditorMain" definesPresentationContext="YES" toolbarHidden="NO" id="X16-iT-Inb" customClass="NumbersForTestEditorMain" sceneMemberID="viewController">
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="BXV-J6-QwJ">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="zv7-qd-z6e">
+                        <rect key="frame" x="0.0" y="436" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
+                    <connections>
+                        <segue destination="zaG-13-MPE" kind="relationship" relationship="rootViewController" id="0h1-xO-mKH"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="2161" y="-518"/>
         </scene>
         <!--Add Numbers View Controller-->
         <scene sceneID="GYR-f5-uDO">
@@ -849,131 +974,6 @@
         <image name="logo.png" width="217" height="93"/>
         <image name="test-button-md.png" width="299" height="297"/>
     </resources>
-    <classes>
-        <class className="AccountViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AccountViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="backgroundButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="companyName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="companyNameLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="emailLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="errorMessage" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="login" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="loginActivity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="loginButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="loginOrRegisterButton" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="logout" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="operation" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="operationActivity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="operationProgress" candidateClass="UIProgressView"/>
-                <relationship kind="outlet" name="passwordLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="registration" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="AddNumbersViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddNumbersViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="numbers" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="returnToRoutes" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="webSearchView" candidateClass="UIWebView"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="codes" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="specific" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesTableViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="addRoutes" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesTableViewControllerMain" superclassName="UINavigationController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesTableViewControllerMain.h"/>
-        </class>
-        <class className="AppDelegate" superclassName="UIResponder">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AppDelegate.h"/>
-            <relationships>
-                <relationship kind="outlet" name="routesViewController" candidateClass="OutPeersTableViewController"/>
-            </relationships>
-        </class>
-        <class className="CarrierCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CarrierCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="destinations" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ipsEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="name" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="nameEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="prefixEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="responsibleFirstAndLastName" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="responsibleLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="CarriersTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CarriersTableViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="edit" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="editButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="searchBar" candidateClass="UISearchBar"/>
-            </relationships>
-        </class>
-        <class className="OutPeersTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/OutPeersTableViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="edit" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="searchBar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="startEditingButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="testButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="testedSelector" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="RoutesCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/RoutesCell.h"/>
-            <relationships>
-                <relationship kind="action" name="test:"/>
-                <relationship kind="outlet" name="activity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="carrier" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ips" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ipsEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="latestTestingResults" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="nameEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="outPeerName" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="prefix" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="prefixEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="testButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="testButtonLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="TestingResultCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/TestingResultCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="bk" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="callTime" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="fasReason" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="number" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="numberA" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="pddTime" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="responseTime" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="TestingResultsTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/TestingResultsTableViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="playCallForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="playRingForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="stopPlayCallForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="stopPlayRingForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="selectDate" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
@@ -981,6 +981,5 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="4LZ-r1-y6a"/>
-        <segue reference="Uzl-9c-gCL"/>
     </inferredMetricsTieBreakers>
 </document>

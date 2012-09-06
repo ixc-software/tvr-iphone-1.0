@@ -11,7 +11,7 @@
 #import "Carrier.h"
 @class RoutesCell;
 
-@interface OutPeersTableViewController : UITableViewController <NSFetchedResultsControllerDelegate,UIActionSheetDelegate>
+@interface OutPeersTableViewController : UITableViewController <NSFetchedResultsControllerDelegate,UIActionSheetDelegate,UISearchBarDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *testButton;
 @property (retain) Carrier *selectedCarrier;

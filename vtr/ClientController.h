@@ -93,5 +93,6 @@
 
 -(BOOL) addOutPeerWithID:(NSManagedObjectID *)outPeerID;
 -(BOOL) removeOutPeerWithID:(NSString *)outPeerExternalID;
+-(void) startGetPhoneNumbersForContrySpecific:(NSArray *)destinations;
 
 @end

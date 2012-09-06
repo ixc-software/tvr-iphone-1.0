@@ -57,7 +57,6 @@
 		FA3EB55F1545512F005803CA /* TestingResultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3EB55E1545512E005803CA /* TestingResultCell.m */; };
 		FA3EB5621545C820005803CA /* TestingResultsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3EB5611545C81E005803CA /* TestingResultsTableViewController.m */; };
 		FA3EB5641545ECFD005803CA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3EB5631545ECFC005803CA /* AVFoundation.framework */; };
-		FA441BC215A1AD0B00E7C571 /* DestinationsListWeBuyTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = FA441BC115A1AD0B00E7C571 /* DestinationsListWeBuyTesting.m */; };
 		FA441BC815A1B47300E7C571 /* Carrier.m in Sources */ = {isa = PBXBuildFile; fileRef = FA441BC715A1B47300E7C571 /* Carrier.m */; };
 		FA441BE015A1EFFC00E7C571 /* AddRoutesTableViewControllerMain.m in Sources */ = {isa = PBXBuildFile; fileRef = FA441BDF15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.m */; };
 		FA441BE815A4B49000E7C571 /* OutPeer.m in Sources */ = {isa = PBXBuildFile; fileRef = FA441BE715A4B49000E7C571 /* OutPeer.m */; };
@@ -153,6 +152,13 @@
 		FAA2AA351544704F003C0822 /* codeList.txt in Resources */ = {isa = PBXBuildFile; fileRef = FAA2AA341544704F003C0822 /* codeList.txt */; };
 		FAA2AA38154470ED003C0822 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA2AA37154470EC003C0822 /* CoreData.framework */; };
 		FAA8699F158509C10074A7CF /* preparedCodesList.ary in Resources */ = {isa = PBXBuildFile; fileRef = FAA8699E158509C10074A7CF /* preparedCodesList.ary */; };
+		FAEFACB215F8B12700AF0C5C /* NumbersForTestEditorMain.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACB115F8B12700AF0C5C /* NumbersForTestEditorMain.m */; };
+		FAEFACB615F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACB515F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m */; };
+		FAEFACC015F8B2DE00AF0C5C /* DCRoundSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACB915F8B2DE00AF0C5C /* DCRoundSwitch.m */; };
+		FAEFACC115F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACBB15F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.m */; };
+		FAEFACC215F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACBD15F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.m */; };
+		FAEFACC315F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACBF15F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.m */; };
+		FAEFACCA15F8DBF100AF0C5C /* DestinationsListWeBuyTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEFACC915F8DBF100AF0C5C /* DestinationsListWeBuyTesting.m */; };
 		FAF0FCEB15550D4B001D8757 /* goButton.png in Resources */ = {isa = PBXBuildFile; fileRef = FAF0FCE915550D4B001D8757 /* goButton.png */; };
 		FAF0FCEC15550D4B001D8757 /* Cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = FAF0FCEA15550D4B001D8757 /* Cancel.png */; };
 		FAF0FCEE15551460001D8757 /* icon_phone.png in Resources */ = {isa = PBXBuildFile; fileRef = FAF0FCED15551460001D8757 /* icon_phone.png */; };
@@ -223,8 +229,6 @@
 		FA3EB5611545C81E005803CA /* TestingResultsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestingResultsTableViewController.m; sourceTree = "<group>"; };
 		FA3EB5631545ECFC005803CA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FA441BBC15A1A80200E7C571 /* snow000004.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = snow000004.xcdatamodel; sourceTree = "<group>"; };
-		FA441BC015A1AD0B00E7C571 /* DestinationsListWeBuyTesting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsListWeBuyTesting.h; sourceTree = "<group>"; };
-		FA441BC115A1AD0B00E7C571 /* DestinationsListWeBuyTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsListWeBuyTesting.m; sourceTree = "<group>"; };
 		FA441BC615A1B47300E7C571 /* Carrier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Carrier.h; sourceTree = "<group>"; };
 		FA441BC715A1B47300E7C571 /* Carrier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Carrier.m; sourceTree = "<group>"; };
 		FA441BDE15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddRoutesTableViewControllerMain.h; sourceTree = "<group>"; };
@@ -283,6 +287,7 @@
 		FA61F6CC15F672CE00FFD6B5 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		FA61F6CD15F672CE00FFD6B5 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		FA94B300154AB97100F2B3F8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA9FEBDB15F8AD570044ACB9 /* snow000005.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = snow000005.xcdatamodel; sourceTree = "<group>"; };
 		FAA2A99215445D58003C0822 /* tvr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tvr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAA2A99615445D58003C0822 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FAA2A99815445D58003C0822 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -365,6 +370,20 @@
 		FAA2AA341544704F003C0822 /* codeList.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = codeList.txt; sourceTree = "<group>"; };
 		FAA2AA37154470EC003C0822 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		FAA8699E158509C10074A7CF /* preparedCodesList.ary */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = preparedCodesList.ary; sourceTree = "<group>"; };
+		FAEFACB015F8B12700AF0C5C /* NumbersForTestEditorMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumbersForTestEditorMain.h; sourceTree = "<group>"; };
+		FAEFACB115F8B12700AF0C5C /* NumbersForTestEditorMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumbersForTestEditorMain.m; sourceTree = "<group>"; };
+		FAEFACB415F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumbersForTestEditorTableViewController.h; sourceTree = "<group>"; };
+		FAEFACB515F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumbersForTestEditorTableViewController.m; sourceTree = "<group>"; };
+		FAEFACB815F8B2DE00AF0C5C /* DCRoundSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCRoundSwitch.h; sourceTree = "<group>"; };
+		FAEFACB915F8B2DE00AF0C5C /* DCRoundSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCRoundSwitch.m; sourceTree = "<group>"; };
+		FAEFACBA15F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCRoundSwitchKnobLayer.h; sourceTree = "<group>"; };
+		FAEFACBB15F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCRoundSwitchKnobLayer.m; sourceTree = "<group>"; };
+		FAEFACBC15F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCRoundSwitchOutlineLayer.h; sourceTree = "<group>"; };
+		FAEFACBD15F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCRoundSwitchOutlineLayer.m; sourceTree = "<group>"; };
+		FAEFACBE15F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCRoundSwitchToggleLayer.h; sourceTree = "<group>"; };
+		FAEFACBF15F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCRoundSwitchToggleLayer.m; sourceTree = "<group>"; };
+		FAEFACC815F8DBF100AF0C5C /* DestinationsListWeBuyTesting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsListWeBuyTesting.h; sourceTree = "<group>"; };
+		FAEFACC915F8DBF100AF0C5C /* DestinationsListWeBuyTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsListWeBuyTesting.m; sourceTree = "<group>"; };
 		FAF0FCE915550D4B001D8757 /* goButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = goButton.png; sourceTree = "<group>"; };
 		FAF0FCEA15550D4B001D8757 /* Cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cancel.png; sourceTree = "<group>"; };
 		FAF0FCED15551460001D8757 /* icon_phone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_phone.png; sourceTree = "<group>"; };
@@ -465,6 +484,7 @@
 				FAA2AA321544703F003C0822 /* ParseCSV.m */,
 				FAA2A9D415446EC6003C0822 /* ClientController.h */,
 				FAA2A9D515446ED1003C0822 /* ClientController.m */,
+				FAEFACB715F8B2DE00AF0C5C /* DCRoundSwitch */,
 				FAA2A9D315446E31003C0822 /* Controllers */,
 				FAA2A99D15445D58003C0822 /* Supporting Files */,
 			);
@@ -500,12 +520,12 @@
 				FAA2AA2815446F68003C0822 /* NormalizedSpecificTransformer.h */,
 				FAA2AA2915446F68003C0822 /* NormalizedSpecificTransformer.m */,
 				FAA2A9C315445E47003C0822 /* snow.xcdatamodeld */,
+				FAEFACC815F8DBF100AF0C5C /* DestinationsListWeBuyTesting.h */,
+				FAEFACC915F8DBF100AF0C5C /* DestinationsListWeBuyTesting.m */,
 				FA441BE615A4B49000E7C571 /* OutPeer.h */,
 				FA441BE715A4B49000E7C571 /* OutPeer.m */,
 				FA441BC615A1B47300E7C571 /* Carrier.h */,
 				FA441BC715A1B47300E7C571 /* Carrier.m */,
-				FA441BC015A1AD0B00E7C571 /* DestinationsListWeBuyTesting.h */,
-				FA441BC115A1AD0B00E7C571 /* DestinationsListWeBuyTesting.m */,
 				FAA2AA1F15446EFD003C0822 /* CountrySpecificCodeList.h */,
 				FAA2AA2015446EFD003C0822 /* CountrySpecificCodeList.m */,
 				FAA2AA1C15446EFD003C0822 /* CompanyAccounts.h */,
@@ -653,23 +673,42 @@
 		FAA2A9D315446E31003C0822 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				FA3EB54E1544A168005803CA /* UITableviewCells */,
 				FAA2A9AE15445D59003C0822 /* AccountViewController.h */,
 				FAA2A9AF15445D59003C0822 /* AccountViewController.m */,
-				FA45002B1552B60A007C236D /* AddNumbersViewController.h */,
-				FA45002C1552B60A007C236D /* AddNumbersViewController.m */,
 				FAA2A9CD154465E7003C0822 /* OutPeersTableViewController.h */,
 				FAA2A9CE154465E7003C0822 /* OutPeersTableViewController.m */,
-				FA441BDE15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.h */,
-				FA441BDF15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.m */,
+				FAEFACB415F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.h */,
+				FAEFACB515F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m */,
 				FAA2A9D01544661A003C0822 /* CarriersTableViewController.h */,
 				FAA2A9D11544661A003C0822 /* CarriersTableViewController.m */,
-				FA3EB547154485A9005803CA /* AddRoutesTableViewController.h */,
-				FA3EB548154485A9005803CA /* AddRoutesTableViewController.m */,
 				FA3EB5601545C81D005803CA /* TestingResultsTableViewController.h */,
 				FA3EB5611545C81E005803CA /* TestingResultsTableViewController.m */,
+				FA3EB547154485A9005803CA /* AddRoutesTableViewController.h */,
+				FA3EB548154485A9005803CA /* AddRoutesTableViewController.m */,
+				FA3EB54E1544A168005803CA /* UITableviewCells */,
+				FA45002B1552B60A007C236D /* AddNumbersViewController.h */,
+				FA45002C1552B60A007C236D /* AddNumbersViewController.m */,
+				FAEFACB015F8B12700AF0C5C /* NumbersForTestEditorMain.h */,
+				FAEFACB115F8B12700AF0C5C /* NumbersForTestEditorMain.m */,
+				FA441BDE15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.h */,
+				FA441BDF15A1EFFB00E7C571 /* AddRoutesTableViewControllerMain.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		FAEFACB715F8B2DE00AF0C5C /* DCRoundSwitch */ = {
+			isa = PBXGroup;
+			children = (
+				FAEFACB815F8B2DE00AF0C5C /* DCRoundSwitch.h */,
+				FAEFACB915F8B2DE00AF0C5C /* DCRoundSwitch.m */,
+				FAEFACBA15F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.h */,
+				FAEFACBB15F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.m */,
+				FAEFACBC15F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.h */,
+				FAEFACBD15F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.m */,
+				FAEFACBE15F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.h */,
+				FAEFACBF15F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.m */,
+			);
+			path = DCRoundSwitch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -875,11 +914,17 @@
 				FA3EB55F1545512F005803CA /* TestingResultCell.m in Sources */,
 				FA3EB5621545C820005803CA /* TestingResultsTableViewController.m in Sources */,
 				FA45002D1552B60A007C236D /* AddNumbersViewController.m in Sources */,
-				FA441BC215A1AD0B00E7C571 /* DestinationsListWeBuyTesting.m in Sources */,
 				FA441BC815A1B47300E7C571 /* Carrier.m in Sources */,
 				FA441BE015A1EFFC00E7C571 /* AddRoutesTableViewControllerMain.m in Sources */,
 				FA441BE815A4B49000E7C571 /* OutPeer.m in Sources */,
 				FA61F6CE15F672CE00FFD6B5 /* JSONKit.m in Sources */,
+				FAEFACB215F8B12700AF0C5C /* NumbersForTestEditorMain.m in Sources */,
+				FAEFACB615F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m in Sources */,
+				FAEFACC015F8B2DE00AF0C5C /* DCRoundSwitch.m in Sources */,
+				FAEFACC115F8B2DE00AF0C5C /* DCRoundSwitchKnobLayer.m in Sources */,
+				FAEFACC215F8B2DE00AF0C5C /* DCRoundSwitchOutlineLayer.m in Sources */,
+				FAEFACC315F8B2DE00AF0C5C /* DCRoundSwitchToggleLayer.m in Sources */,
+				FAEFACCA15F8DBF100AF0C5C /* DestinationsListWeBuyTesting.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1023,6 +1068,7 @@
 		FAA2A9C315445E47003C0822 /* snow.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				FA9FEBDB15F8AD570044ACB9 /* snow000005.xcdatamodel */,
 				FA441BBC15A1A80200E7C571 /* snow000004.xcdatamodel */,
 				FAA2A9C415445E47003C0822 /* snow.xcdatamodel */,
 				FAA2A9C515445E47003C0822 /* snow000000.xcdatamodel */,
@@ -1030,7 +1076,7 @@
 				FAA2A9C715445E47003C0822 /* snow000002.xcdatamodel */,
 				FAA2A9C815445E47003C0822 /* snow000003.xcdatamodel */,
 			);
-			currentVersion = FA441BBC15A1A80200E7C571 /* snow000004.xcdatamodel */;
+			currentVersion = FA9FEBDB15F8AD570044ACB9 /* snow000005.xcdatamodel */;
 			path = snow.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

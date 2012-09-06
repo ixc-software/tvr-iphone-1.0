@@ -17,7 +17,7 @@
 @property ( nonatomic) IBOutlet UISegmentedControl *responseTime;
 @property ( nonatomic) IBOutlet UISegmentedControl *pddTime;
 @property ( nonatomic) IBOutlet UISegmentedControl *callTime;
-@property ( nonatomic) IBOutlet UILabel *fasReason;
+@property ( nonatomic) IBOutlet UILabel *protocolLabel;
 @property (unsafe_unretained, nonatomic) TestingResultsTableViewController *delegate;
 @property ( nonatomic) NSIndexPath *indexPath ;
 @property (assign, nonatomic) BOOL isPlayingCall;
@@ -25,5 +25,7 @@
 
 @property ( nonatomic) IBOutlet UIImageView *bk;
 
+@property (weak, nonatomic) IBOutlet UILabel *carrierLabel;
+@property (weak, nonatomic) IBOutlet UILabel *outPeerLabel;
 
 @end

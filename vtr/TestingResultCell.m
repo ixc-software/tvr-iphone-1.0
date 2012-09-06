@@ -16,9 +16,10 @@
 @synthesize responseTime;
 @synthesize pddTime;
 @synthesize callTime;
-@synthesize fasReason;
 @synthesize delegate,indexPath,isPlayingCall,isPlayingRing;
 @synthesize bk;
+@synthesize carrierLabel;
+@synthesize outPeerLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

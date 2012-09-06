@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 #import "OutPeersTableViewController.h"
+#import "TestingResultsTableViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -17,6 +18,8 @@
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (weak, nonatomic) IBOutlet OutPeersTableViewController *routesViewController;
+@property (weak, nonatomic) IBOutlet TestingResultsTableViewController *testingResultsTableViewController;
+
 @property (nonatomic, retain) NSData *deviceToken;
 @property (retain) NSMutableString *firstServer;
 @property (retain) NSMutableString *secondServer;
@@ -25,6 +28,8 @@
 
 @property (retain) NSMutableString *appleID;
 @property (retain) NSMutableString *messageFull;
+
+@property (strong) NSArray *countrySpecificIDsForTest;
 
 @property (readwrite) BOOL isMessageConfirmed;
 @property (readwrite) BOOL downloadCompleted;

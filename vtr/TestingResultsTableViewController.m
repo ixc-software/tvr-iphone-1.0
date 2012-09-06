@@ -13,6 +13,7 @@
 
 #import "DestinationsListWeBuyResults.h"
 #import "DestinationsListWeBuyTesting.h"
+#import "OutPeer.h"
 
 @interface TestingResultsTableViewController ()
 @property (nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -63,6 +64,11 @@
     // e.g. self.myOutlet = nil;
 }
 
+-(void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.outPeer = nil;
+}
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
@@ -155,27 +161,35 @@
     [cell.callTime removeAllSegments];
     [cell.callTime insertSegmentWithTitle:[NSString stringWithFormat:@"%@ sec",[NSNumber numberWithInt:okReleaseInterval]] atIndex:0 animated:NO];
     
-    if (okReleaseInterval > 0) {
-        
-        if (result.isFAS.boolValue) {
-            //cell.number.textColor = [UIColor redColor];
-            cell.fasReason.hidden = NO;
-            cell.fasReason.text = result.fasReason;
-//            [cell.markFasButton setImage:[UIImage imageNamed:@"unmarkAsFas.png"] forState:UIControlStateNormal];
-//            [cell.markFasButton addTarget:cell action:@selector(unmarkAsFas:) forControlEvents:UIControlEventTouchUpInside];
-            
-        } else {
-            //cell.number.textColor = [UIColor greenColor];
-            cell.fasReason.hidden = YES;
-//            cell.isFas = NO;
-//            [cell.markFasButton setImage:[UIImage imageNamed:@"markAsFas.png"] forState:UIControlStateNormal];
-//            [cell.markFasButton addTarget:cell action:@selector(markAsFas:) forControlEvents:UIControlEventTouchUpInside];
-        }
-    }  else {
-        cell.fasReason.hidden = YES;
-//        cell.markFasButton.hidden = YES;
-//        cell.playButton.hidden = YES;
-    }
+    NSString *protocol = result.destinationsListWeBuyTesting.protocol;
+    
+    if (protocol) cell.protocolLabel.text = protocol;
+    else cell.protocolLabel.text = @"";
+    
+    cell.outPeerLabel.text = result.destinationsListWeBuyTesting.outPeer.outpeerName;
+    cell.carrierLabel.text = result.destinationsListWeBuyTesting.outPeer.carrier.name;
+    
+//    if (okReleaseInterval > 0) {
+//        
+//        if (result.isFAS.boolValue) {
+//            //cell.number.textColor = [UIColor redColor];
+//            cell.fasReason.hidden = NO;
+//            cell.fasReason.text = result.fasReason;
+////            [cell.markFasButton setImage:[UIImage imageNamed:@"unmarkAsFas.png"] forState:UIControlStateNormal];
+////            [cell.markFasButton addTarget:cell action:@selector(unmarkAsFas:) forControlEvents:UIControlEventTouchUpInside];
+//            
+//        } else {
+//            //cell.number.textColor = [UIColor greenColor];
+//            cell.fasReason.hidden = YES;
+////            cell.isFas = NO;
+////            [cell.markFasButton setImage:[UIImage imageNamed:@"markAsFas.png"] forState:UIControlStateNormal];
+////            [cell.markFasButton addTarget:cell action:@selector(markAsFas:) forControlEvents:UIControlEventTouchUpInside];
+//        }
+//    }  else {
+//        cell.fasReason.hidden = YES;
+////        cell.markFasButton.hidden = YES;
+////        cell.playButton.hidden = YES;
+//    }
     
     cell.playButton.enabled = NO;
     cell.playButton.hidden = YES;
@@ -510,5 +524,10 @@
     [self.tableView endUpdates];
 }
 
+#pragma mark - UISearchBarDelegate
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+}
 
 @end

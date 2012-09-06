@@ -515,14 +515,14 @@ static unsigned char base64EncodeLookup[65] =
     
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (tableView.isEditing)  return nil;
-
-    DestinationsListWeBuy *managedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-    if (managedObject.destinationsListWeBuyTesting.count > 0) return indexPath;
-    else return nil;
-}
+//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if (tableView.isEditing)  return nil;
+//
+//    OutPeer *managedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+//    if (managedObject.destinationsListWeBuyTesting.count > 0) return indexPath;
+//    else return nil;
+//}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -545,10 +545,18 @@ static unsigned char base64EncodeLookup[65] =
 //        [selectedObjectsIDs removeObject:object.objectID];
 //    }
 //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self destinationChooseForIndexPath:indexPath];
 }
 
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath;
+{
+    OutPeer *managedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    delegate.testingResultsTableViewController.outPeer = managedObject;
+    [self.tabBarController setSelectedIndex:3];
+    
+}
 #pragma mark Delegate methods of NSFetchedResultsController
 
 
@@ -815,6 +823,7 @@ static unsigned char base64EncodeLookup[65] =
             NSString *deviceToken64 = [self encodeTobase64InputData:delegate.deviceToken];
             clientController.deviceToken64 = deviceToken64;
         }
+        clientController.sender = self;
         [clientController startTestingForOutPeerID:outpeerID  forDestinations:destinations forNumbers:numbers];
         numbers = nil;
     });
@@ -1100,6 +1109,12 @@ static unsigned char base64EncodeLookup[65] =
         [activity stopAnimating];
     }
 
+}
+
+#pragma mark - UISearchBarDelegate
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBarLocal
+{
+    [searchBarLocal resignFirstResponder];
 }
 
 @end

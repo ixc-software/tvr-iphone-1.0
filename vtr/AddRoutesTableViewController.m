@@ -17,7 +17,7 @@
 
 #import "DestinationsListWeBuy.h"
 #import "ClientController.h"
-
+#import "NumbersForTestEditorMain.h"
 
 @interface AddRoutesTableViewController ()
 @property (nonatomic) IBOutlet UISearchBar *bar;
@@ -436,13 +436,51 @@
     [self.bar resignFirstResponder];   
 }
 
+#pragma mark - own actions
+
 - (IBAction)addRoutesStart:(id)sender {
-    self.routesTableViewController.destinationsForTest = selectedObjectsIDs;
     self.routesTableViewController.outpeerIDForTest = outPeerID;
     
-    [self.routesTableViewController testStartForDestinations:selectedObjectsIDs forOutPeerID:self.outPeerID];
-    [self dismissModalViewControllerAnimated:YES];
+    NSArray *selectedObjesID = self.selectedObjectsIDs;
     
+    if (selectedObjesID) self.routesTableViewController.destinationsForTest = selectedObjesID.copy;
+
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    
+    delegate.countrySpecificIDsForTest = selectedObjectsIDs.copy;
+    
+    NSString *storyBoardName = nil;
+    //NSString *addRoutesTableViewControllerName = nil;
+    
+    if ([delegate isPad]) {
+        storyBoardName = @"MainStoryboard_iPad";
+        //addRoutesTableViewControllerName = @"MainStoryboard_iPad";
+        
+    }
+    else {
+        storyBoardName = @"MainStoryboard_iPhone";
+    }
+    NumbersForTestEditorMain *viewController = [[UIStoryboard storyboardWithName:storyBoardName bundle:NULL] instantiateViewControllerWithIdentifier:@"NumbersForTestEditorMain"];
+    viewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+
+    [self presentModalViewController:viewController animated:YES];
+
+//    [self.routesTableViewController testStartForDestinations:selectedObjectsIDs forOutPeerID:self.outPeerID];
+    //[self dismissModalViewControllerAnimated:YES];
+    
+}
+- (IBAction)cancelAdding:(id)sender {
+    self.routesTableViewController.destinationsForTest = nil;
+    self.routesTableViewController.outpeerIDForTest = nil;
+
+    [self dismissModalViewControllerAnimated:YES];
+
+}
+
+#pragma mark - UISearchBarDelegate
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
 }
 
 

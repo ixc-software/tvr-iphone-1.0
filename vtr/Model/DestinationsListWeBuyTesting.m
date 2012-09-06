@@ -2,7 +2,7 @@
 //  DestinationsListWeBuyTesting.m
 //  tvr
 //
-//  Created by Oleksii Vynogradov on 7/2/12.
+//  Created by Oleksii Vynogradov on 9/6/12.
 //  Copyright (c) 2012 IXC-USA Corp. All rights reserved.
 //
 
@@ -21,9 +21,11 @@
 @dynamic iD;
 @dynamic modificationDate;
 @dynamic peerId;
+@dynamic protocol;
 @dynamic destinationsListWeBuy;
 @dynamic destinationsListWeBuyResults;
 @dynamic outPeer;
+
 - (void)awakeFromInsert {
     NSDate *now = [NSDate date];
     
@@ -50,5 +52,6 @@
         }
     }
 }
+
 
 @end

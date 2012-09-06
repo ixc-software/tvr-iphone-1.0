@@ -1184,8 +1184,8 @@ static const short _base64DecodingTable[256] = {
     [request setValue:@"hash" forKey:@"hash"];
     UIDevice *myDevice = [UIDevice currentDevice];
     NSString *deviceUDID = [myDevice uniqueIdentifier];
-    if (deviceUDID) [request setValue:deviceUDID forKey:@"iphoneUDID"];
-    else [request setValue:@"UDIDNotFound" forKey:@"iphoneUDID"];
+    if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
+    else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
     
     NSString *deviceMAC = [self getMacAddress];
     if (deviceUDID) [request setValue:deviceMAC forKey:@"deviceMAC"];
@@ -1206,7 +1206,7 @@ static const short _base64DecodingTable[256] = {
         NSData *bodyData = [jsonStringForReturn dataUsingEncoding:NSUTF8StringEncoding];
         NSData *dataForBody = [[NSData alloc] initWithData:bodyData];
         //NSLog(@"CLIENT CONTROLLER: string lenght is:%@ bytes",[NSNumber numberWithUnsignedInteger:[dataForBody length]]);
-        NSLog(@"CLIENT CONTROLLER: >>>>>> send:%@ ",request);
+        NSLog(@"CLIENT CONTROLLER: >>>>>> func:%@ send:%@  ",function,jsonStringForReturn);
         
         NSString *functionString = [NSString stringWithFormat:@"/%@",function];
         
@@ -3896,14 +3896,65 @@ static const short _base64DecodingTable[256] = {
     return YES;
 }
 
--(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forDestinations:(NSArray *)destinations forNumbers:(NSArray *)numbers;
+-(void) startGetPhoneNumbersForContrySpecific:(NSArray *)destinations;
 {
-    
-    
     [destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
         CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
-        NSSet *codes = destinationFromList.codesList;
-        CodesList *anyCode = codes.anyObject;
+        NSArray *codes = destinationFromList.codesList.allObjects;
+        NSMutableDictionary *codesList  = [NSMutableDictionary dictionary];
+        
+        [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, NSUInteger idx, BOOL *stop) {
+            [codesList setValue:anyCode.code forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
+        }];
+//        [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, BOOL *stop) {
+//            
+//            [codesList addObject:anyCode.code]; //anyCode.code.stringValue
+//        }];
+        
+        //CodesList *anyCode = codes.anyObject;
+            
+        mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
+        
+        NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
+        CompanyStuff *admin = [self authorization];
+        [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
+        [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
+        
+        
+        //[prepeareForJSONRequest setValue:codes forKey:@"codes"];
+        [prepeareForJSONRequest setValue:codesList forKey:@"codes"];
+        NSLog(@"CLIENT CONTROLLER getPhoneNumbers StartTesting Sent:%@",prepeareForJSONRequest);
+        
+        NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/getTestNumbers" withJSONRequest:prepeareForJSONRequest];
+        NSLog(@"CLIENT CONTROLLER getPhoneNumbers StartTesting Received:%@",receivedObject);
+        NSString *error = [receivedObject valueForKey:@"error"];
+        
+        if (error || !receivedObject) {
+            NSString *finalMessage = [NSString stringWithFormat:@"get numbers:no numbers found:%@",destinationFromList.country];
+            NSLog(@"error:%@",finalMessage);
+            //[self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
+            return;
+        } else {
+           [receivedObject enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+               NSLog(@"object->%@ key->%@",obj,key);
+           }];
+            
+        }
+    }];
+}
+     
+-(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forDestinations:(NSArray *)destinations forNumbers:(NSArray *)numbers;
+{
+    [destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
+        CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
+        NSArray *codes = destinationFromList.codesList.allObjects;
+        NSMutableDictionary *codesList  = [NSMutableDictionary dictionary];
+        
+        [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, NSUInteger idx, BOOL *stop) {
+            [codesList setValue:anyCode.code forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
+        }];
+        
+        //CodesList *anyCode = codes.anyObject;
         
         OutPeer *outPeer = (OutPeer *)[self.moc objectWithID:outPeerID];
         NSString *peerID = outPeer.outpeerID;
@@ -3917,7 +3968,7 @@ static const short _base64DecodingTable[256] = {
         
         
         //[prepeareForJSONRequest setValue:codes forKey:@"codes"];
-        [prepeareForJSONRequest setValue:anyCode.code forKey:@"code"];
+        [prepeareForJSONRequest setValue:codesList forKey:@"code"];
         [prepeareForJSONRequest setValue:peerID forKey:@"outpeerID"];
         if (numbers) {
             NSMutableDictionary *finalNumbers = [NSMutableDictionary dictionary];

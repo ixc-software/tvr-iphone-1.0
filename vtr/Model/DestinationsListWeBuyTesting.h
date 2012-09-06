@@ -2,7 +2,7 @@
 //  DestinationsListWeBuyTesting.h
 //  tvr
 //
-//  Created by Oleksii Vynogradov on 7/2/12.
+//  Created by Oleksii Vynogradov on 9/6/12.
 //  Copyright (c) 2012 IXC-USA Corp. All rights reserved.
 //
 
@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSNumber * iD;
 @property (nonatomic, retain) NSDate * modificationDate;
 @property (nonatomic, retain) NSNumber * peerId;
+@property (nonatomic, retain) NSString * protocol;
 @property (nonatomic, retain) DestinationsListWeBuy *destinationsListWeBuy;
 @property (nonatomic, retain) NSSet *destinationsListWeBuyResults;
 @property (nonatomic, retain) OutPeer *outPeer;

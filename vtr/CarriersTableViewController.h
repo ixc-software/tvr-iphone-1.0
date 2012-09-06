@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 
 
-@interface CarriersTableViewController : UITableViewController <NSFetchedResultsControllerDelegate,UIActionSheetDelegate>
+@interface CarriersTableViewController : UITableViewController <NSFetchedResultsControllerDelegate,UIActionSheetDelegate,UISearchBarDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
 

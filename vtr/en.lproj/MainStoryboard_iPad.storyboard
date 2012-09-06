@@ -407,10 +407,13 @@
                                     <outlet property="prefixEdited" destination="bzs-C2-KbZ" id="pYt-5Y-ODj"/>
                                     <outlet property="testButton" destination="55y-Sk-2B0" id="oep-bz-HrP"/>
                                     <outlet property="testButtonLabel" destination="sSd-LK-x8q" id="bcF-Ce-nR1"/>
-                                    <segue destination="UQq-ys-3fY" kind="push" id="ihg-Qv-5vG"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="lGF-iW-T0g" id="uos-sZ-jBV"/>
+                            <outlet property="delegate" destination="lGF-iW-T0g" id="1yF-W5-j9v"/>
+                        </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="aqu-cp-gPT">
                         <nil key="title"/>
@@ -458,6 +461,12 @@
         <scene sceneID="zG6-wK-JCT">
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DOp-uj-46d" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <customObject id="QDL-2Q-dtg" customClass="AppDelegate">
+                    <connections>
+                        <outlet property="routesViewController" destination="lGF-iW-T0g" id="tgU-fm-3Sm"/>
+                        <outlet property="testingResultsTableViewController" destination="UQq-ys-3fY" id="6Sa-7C-FO0"/>
+                    </connections>
+                </customObject>
                 <tableViewController id="UQq-ys-3fY" customClass="TestingResultsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="191" sectionHeaderHeight="10" sectionFooterHeight="10" id="tYf-1q-Xhj">
                         <rect key="frame" x="0.0" y="64" width="768" height="911"/>
@@ -808,134 +817,6 @@
         <image name="logo.png" width="217" height="93"/>
         <image name="test-button-md.png" width="299" height="297"/>
     </resources>
-    <classes>
-        <class className="AccountViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AccountViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="backgroundButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="companyName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="companyNameLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="emailLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="errorMessage" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="login" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="loginActivity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="loginButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="loginOrRegisterButton" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="logout" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="operation" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="operationActivity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="operationProgress" candidateClass="UIProgressView"/>
-                <relationship kind="outlet" name="passwordLabel" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="registration" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="AddNumbersViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddNumbersViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="numbers" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="returnToRoutes" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="webSearchView" candidateClass="UIWebView"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="codes" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="specific" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesTableViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="addRoutes" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-            </relationships>
-        </class>
-        <class className="AddRoutesTableViewControllerMain" superclassName="UINavigationController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddRoutesTableViewControllerMain.h"/>
-        </class>
-        <class className="AppDelegate" superclassName="UIResponder">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/AppDelegate.h"/>
-            <relationships>
-                <relationship kind="outlet" name="routesViewController" candidateClass="OutPeersTableViewController"/>
-            </relationships>
-        </class>
-        <class className="CarrierCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CarrierCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="destinations" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ipsEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="name" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="nameEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="prefixEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="responsibleFirstAndLastName" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="responsibleLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="CarriersTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CarriersTableViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="edit" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="editButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="searchBar" candidateClass="UISearchBar"/>
-            </relationships>
-        </class>
-        <class className="OutPeersTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/OutPeersTableViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="startEditing:"/>
-                <relationship kind="action" name="testSelected:"/>
-                <relationship kind="action" name="testedNotTestedSelection:"/>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="edit" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="searchBar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="startEditingButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="testButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="testedSelector" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="RoutesCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/RoutesCell.h"/>
-            <relationships>
-                <relationship kind="action" name="test:"/>
-                <relationship kind="outlet" name="activity" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="carrier" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ips" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="ipsEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="latestTestingResults" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="nameEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="outPeerName" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="prefix" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="prefixEdited" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="testButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="testButtonLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="TestingResultCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/TestingResultCell.h"/>
-            <relationships>
-                <relationship kind="outlet" name="bk" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="callTime" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="fasReason" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="number" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="numberA" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="pddTime" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="responseTime" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-        <class className="TestingResultsTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/TestingResultsTableViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="playCallForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="playRingForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="stopPlayCallForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="action" name="stopPlayRingForIndexPath:" candidateClass="NSIndexPath"/>
-                <relationship kind="outlet" name="bar" candidateClass="UISearchBar"/>
-                <relationship kind="outlet" name="selectDate" candidateClass="UISegmentedControl"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
@@ -943,6 +824,5 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="VHB-mh-uWn"/>
-        <segue reference="ihg-Qv-5vG"/>
     </inferredMetricsTieBreakers>
 </document>

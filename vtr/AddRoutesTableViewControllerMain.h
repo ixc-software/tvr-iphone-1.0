@@ -12,7 +12,7 @@
 
 @class OutPeersTableViewController;
 
-@interface AddRoutesTableViewControllerMain : UINavigationController
+@interface AddRoutesTableViewControllerMain : UINavigationController <UISearchBarDelegate>
 
 
 

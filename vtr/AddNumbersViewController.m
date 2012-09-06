@@ -93,4 +93,9 @@
 }
 
 
+#pragma mark - UISearchBarDelegate
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBarLocal
+{
+    [searchBarLocal resignFirstResponder];
+}
 @end
