@@ -10,4 +10,6 @@
 
 @interface NumbersForTestEditorTableViewController : UITableViewController
 
+-(void)refreshNumbers:(NSArray *)receivedNumbers withCodes:(NSString *)codes;
+
 @end

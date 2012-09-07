@@ -3901,10 +3901,13 @@ static const short _base64DecodingTable[256] = {
     [destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
         CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
         NSArray *codes = destinationFromList.codesList.allObjects;
+        
+        NSMutableArray *normalCodes = [NSMutableArray array];
         NSMutableDictionary *codesList  = [NSMutableDictionary dictionary];
         
         [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, NSUInteger idx, BOOL *stop) {
             [codesList setValue:anyCode.code forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
+            [normalCodes addObject:anyCode.code];
         }];
 //        [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, BOOL *stop) {
 //            
@@ -3927,20 +3930,15 @@ static const short _base64DecodingTable[256] = {
         
         NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/getTestNumbers" withJSONRequest:prepeareForJSONRequest];
         NSLog(@"CLIENT CONTROLLER getPhoneNumbers StartTesting Received:%@",receivedObject);
-        NSString *error = [receivedObject valueForKey:@"error"];
+        //NSString *error = [receivedObject valueForKey:@"error"];
+        NSArray *allNumbers = (NSArray *)receivedObject.copy;
         
-        if (error || !receivedObject) {
-            NSString *finalMessage = [NSString stringWithFormat:@"get numbers:no numbers found:%@",destinationFromList.country];
-            NSLog(@"error:%@",finalMessage);
-            //[self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
-            return;
-        } else {
-           [receivedObject enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-               NSLog(@"object->%@ key->%@",obj,key);
-           }];
-            
+        if (sender && [sender respondsToSelector:@selector(refreshNumbers:withCodes:)]) {
+            [sender performSelector:@selector(refreshNumbers:withCodes:) withObject:allNumbers withObject:destinationFromList.codes.copy];
         }
-    }];
+
+        
+     }];
 }
      
 -(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forDestinations:(NSArray *)destinations forNumbers:(NSArray *)numbers;
