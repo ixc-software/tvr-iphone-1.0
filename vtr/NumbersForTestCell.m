@@ -12,6 +12,8 @@
 @synthesize numberEditor;
 @synthesize numberLabel;
 @synthesize descriptionLabel;
+@synthesize saveButton;
+@synthesize saveSegment;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

@@ -7,9 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
+
+@class AddRoutesTableViewController;
 
 @interface NumbersForTestEditorTableViewController : UITableViewController
 
 -(void)refreshNumbers:(NSArray *)receivedNumbers withCodes:(NSString *)codes;
+@property (retain) NSManagedObjectID *outPeerID;
+@property (weak, nonatomic) AddRoutesTableViewController *addRoutesTableViewController;
+
 
 @end

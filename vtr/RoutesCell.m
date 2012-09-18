@@ -39,6 +39,7 @@
         [activity startAnimating];
         testButton.enabled = NO;
         [self.testButton setImage:[UIImage imageNamed:@"test-button-pressed.png"] forState:UIControlStateNormal];
+        NSLog(@">>>>>>>>> tests started2");
 
     }
 }

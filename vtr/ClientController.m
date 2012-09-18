@@ -3898,8 +3898,19 @@ static const short _base64DecodingTable[256] = {
 
 -(void) startGetPhoneNumbersForContrySpecific:(NSArray *)destinations;
 {
+    __block NSUInteger allObjectsMutableCountDestinations = destinations.count;
+    
+        
+
     [destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
+        NSNumber *percentDone = [NSNumber numberWithDouble:[[NSNumber numberWithUnsignedInteger:idx] doubleValue] / [[NSNumber numberWithUnsignedInteger:allObjectsMutableCountDestinations] doubleValue]];
+        [self updateUIwithMessage:[NSString stringWithFormat:@"startGetPhoneNumbersForContrySpecific:progress"] andProgressPercent:percentDone withObjectID:nil];
+
+        NSLog(@"destinationID:%@",destinationID);
+
         CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
+        NSLog(@"destinationFromList:%@",destinationFromList.country);
+
         NSArray *codes = destinationFromList.codesList.allObjects;
         
         NSMutableArray *normalCodes = [NSMutableArray array];
@@ -3937,19 +3948,23 @@ static const short _base64DecodingTable[256] = {
             [sender performSelector:@selector(refreshNumbers:withCodes:) withObject:allNumbers withObject:destinationFromList.codes.copy];
         }
 
+
         
      }];
+    [self updateUIwithMessage:@"startGetPhoneNumbersForContrySpecific:finish" withObjectID:nil withLatestMessage:NO error:NO];
+
 }
      
--(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forDestinations:(NSArray *)destinations forNumbers:(NSArray *)numbers;
+-(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forCodes:(NSArray *)codes forNumbers:(NSArray *)numbers withProtocolSIP:(BOOL)isSIP;
 {
-    [destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
-        CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
-        NSArray *codes = destinationFromList.codesList.allObjects;
+    //[destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
+        //CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
+        //NSArray *codes = destinationFromList.codesList.allObjects;
         NSMutableDictionary *codesList  = [NSMutableDictionary dictionary];
         
-        [codes enumerateObjectsUsingBlock:^(CodesList *anyCode, NSUInteger idx, BOOL *stop) {
-            [codesList setValue:anyCode.code forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
+        [codes enumerateObjectsUsingBlock:^(NSString *codeInside, NSUInteger idx, BOOL *stop) {
+            NSString *finalCode = [codeInside stringByReplacingOccurrencesOfString:@" " withString:@""];
+            [codesList setValue:finalCode forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
         }];
         
         //CodesList *anyCode = codes.anyObject;
@@ -3986,7 +4001,7 @@ static const short _base64DecodingTable[256] = {
         NSString *error = [receivedObject valueForKey:@"error"];
 
         if (error || !receivedObject) {
-            NSString *finalMessage = [NSString stringWithFormat:@"processing tests:no numbers found:%@",destinationFromList.country];
+            NSString *finalMessage = [NSString stringWithFormat:@"processing tests:no numbers found for codes:%@",codes];
             
             [self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
             return;
@@ -4109,7 +4124,7 @@ static const short _base64DecodingTable[256] = {
             
         }
 
-    }];
+    //}];
 //    DestinationsListWeBuy *destinationForTests = (DestinationsListWeBuy *)[self.moc objectWithID:destinationID];
 //    if (destinationForTests) {
 

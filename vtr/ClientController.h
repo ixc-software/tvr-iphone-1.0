@@ -86,7 +86,7 @@
 -(BOOL) isCurrentUserAuthorized;
 
 -(BOOL) getCarriersList;
--(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forDestinations:(NSArray *)destinations forNumbers:(NSArray *)numbers;
+-(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forCodes:(NSArray *)codes forNumbers:(NSArray *)numbers withProtocolSIP:(BOOL)isSIP;
 
 -(BOOL) addCarrierWithID:(NSManagedObjectID *)carrierID;
 -(BOOL) removeCarrierWithID:(NSString *)carrierExternalID;

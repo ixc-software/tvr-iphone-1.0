@@ -15,6 +15,6 @@
 
 @property (retain) NSManagedObjectID *outPeerID;
 @property (weak, nonatomic) OutPeersTableViewController *routesTableViewController;
-
+@property (readwrite) BOOL isTestsStarted;
 
 @end

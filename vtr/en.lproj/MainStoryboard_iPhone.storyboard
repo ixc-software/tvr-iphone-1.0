@@ -19,7 +19,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="411"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="yki-0e-NkN">
+                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="yki-0e-NkN">
                                 <rect key="frame" x="19" y="83" width="281" height="105.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -196,11 +196,11 @@
                             </connections>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CarrierCell" rowHeight="100" id="ZEJ-ck-xeS" customClass="CarrierCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="detailDisclosureButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CarrierCell" rowHeight="100" id="ZEJ-ck-xeS" customClass="CarrierCell">
                                 <rect key="frame" x="0.0" y="80" width="320" height="102"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="10" y="1" width="280" height="99"/>
+                                    <rect key="frame" x="10" y="1" width="267" height="99"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="carrierName llp llc hey good carriers" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" id="XUQ-xA-vzp">
@@ -211,7 +211,7 @@
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Destinations:" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" enabled="NO" id="zcv-ep-9Ca">
-                                            <rect key="frame" x="101" y="75" width="179" height="19"/>
+                                            <rect key="frame" x="96" y="75" width="170" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -450,7 +450,7 @@
                 </tableViewController>
                 <customObject id="RDd-tv-MUZ" customClass="AppDelegate">
                     <connections>
-                        <outlet property="routesViewController" destination="IJH-U3-vaA" id="b1Q-XX-RuI"/>
+                        <outlet property="routesViewController" destination="IJH-U3-vaA" id="wQE-YU-JjF"/>
                     </connections>
                 </customObject>
             </objects>
@@ -479,7 +479,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x75-Mg-BFm" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <customObject id="2Nx-gQ-QQh" customClass="AppDelegate">
                     <connections>
-                        <outlet property="routesViewController" destination="IJH-U3-vaA" id="S4B-d5-40N"/>
                         <outlet property="testingResultsTableViewController" destination="jwo-v6-ZJ9" id="pbh-ut-Ai7"/>
                     </connections>
                 </customObject>
@@ -514,7 +513,7 @@
                                             <rect key="frame" x="15" y="41" width="7" height="20"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="XAI-81-ibx">
+                                        <segmentedControl opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="XAI-81-ibx">
                                             <rect key="frame" x="11" y="81" width="79" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
@@ -560,7 +559,7 @@
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="shadowOffset" width="0.0" height="0.0"/>
                                         </label>
-                                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="piT-2c-RYG">
+                                        <segmentedControl opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="piT-2c-RYG">
                                             <rect key="frame" x="11" y="118" width="79" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
@@ -578,7 +577,7 @@
                                             <color key="shadowColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <size key="shadowOffset" width="1" height="1"/>
                                         </label>
-                                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="hcM-Lg-vpZ">
+                                        <segmentedControl opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="hcM-Lg-vpZ">
                                             <rect key="frame" x="11" y="155" width="79" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
@@ -691,6 +690,11 @@
                         <segue destination="w1l-vA-LyH" kind="relationship" relationship="viewControllers" id="V8R-Cl-TB9"/>
                     </connections>
                 </tabBarController>
+                <customObject id="2rX-kr-sv1" customClass="AppDelegate">
+                    <connections>
+                        <outlet property="tapBarController" destination="4" id="aJt-ui-a2r"/>
+                    </connections>
+                </customObject>
             </objects>
             <point key="canvasLocation" x="-18" y="444"/>
         </scene>
@@ -807,10 +811,10 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="enter phone number" minimumFontSize="17" id="dmx-hV-GDh">
-                                            <rect key="frame" x="20" y="6" width="240" height="31"/>
+                                            <rect key="frame" x="20" y="6" width="173" height="31"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <textInputTraits key="textInputTraits"/>
+                                            <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                             <connections>
                                                 <outlet property="delegate" destination="zaG-13-MPE" id="BSJ-NM-K2w"/>
                                             </connections>
@@ -829,6 +833,17 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
+                                        <segmentedControl hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="nam-rF-5tl">
+                                            <rect key="frame" x="201" y="7" width="55" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="First"/>
+                                                <segment title="Second"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="saveEditingNumber:" destination="zaG-13-MPE" eventType="valueChanged" id="RNX-Dr-p7g"/>
+                                            </connections>
+                                        </segmentedControl>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
@@ -836,6 +851,7 @@
                                     <outlet property="descriptionLabel" destination="t3E-c5-mO5" id="vFo-nI-AL0"/>
                                     <outlet property="numberEditor" destination="dmx-hV-GDh" id="Vbp-uZ-GsM"/>
                                     <outlet property="numberLabel" destination="k5O-F8-0nJ" id="Ebp-ap-PCb"/>
+                                    <outlet property="saveSegment" destination="nam-rF-5tl" id="ez8-ne-oVK"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -851,6 +867,7 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="vES-v1-Hfv"/>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="ikm-P9-fYO"/>
                         <barButtonItem title="Edit" id="HPI-55-7Ab">
                             <connections>
                                 <action selector="editNumbers:" destination="zaG-13-MPE" id="7Ue-oU-0h7"/>
@@ -859,11 +876,10 @@
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="b2n-yJ-RvR">
                         <nil key="title"/>
-                        <view key="titleView" contentMode="scaleToFill" id="WqE-HI-Xll" customClass="DCRoundSwitch">
-                            <rect key="frame" x="111" y="8" width="98" height="29"/>
+                        <progressView key="titleView" hidden="YES" opaque="NO" contentMode="scaleToFill" progressViewStyle="bar" id="b6Y-C4-hl0">
+                            <rect key="frame" x="96" y="17" width="128" height="11"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        </view>
+                        </progressView>
                         <barButtonItem key="rightBarButtonItem" title="Begin test" id="ct4-tB-rJg">
                             <connections>
                                 <action selector="beginTests:" destination="zaG-13-MPE" id="iD8-l4-keT"/>
@@ -872,9 +888,15 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="protocolSwitch" destination="WqE-HI-Xll" id="QOc-sH-DSb"/>
+                        <outlet property="beginTestsButton" destination="ct4-tB-rJg" id="xA7-L9-vEy"/>
+                        <outlet property="progress" destination="b6Y-C4-hl0" id="Ut5-f9-yUD"/>
                     </connections>
                 </tableViewController>
+                <customObject id="vts-tY-Q3y" customClass="NumbersForTestEditorMain">
+                    <connections>
+                        <outlet property="numbersForTestEditorTableViewController" destination="zaG-13-MPE" id="OpV-4b-EKe"/>
+                    </connections>
+                </customObject>
             </objects>
             <point key="canvasLocation" x="2695" y="-518"/>
         </scene>
@@ -883,8 +905,10 @@
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RP4-nP-O6H" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="NumbersForTestEditorMain" definesPresentationContext="YES" toolbarHidden="NO" id="X16-iT-Inb" customClass="NumbersForTestEditorMain" sceneMemberID="viewController">
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="BXV-J6-QwJ">
+                        <rect key="frame" x="0.0" y="-74" width="0.0" height="74"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="zv7-qd-z6e">
@@ -1042,6 +1066,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/AppDelegate.h"/>
             <relationships>
                 <relationship kind="outlet" name="routesViewController" candidateClass="OutPeersTableViewController"/>
+                <relationship kind="outlet" name="tapBarController" candidateClass="UITabBarController"/>
                 <relationship kind="outlet" name="testingResultsTableViewController" candidateClass="TestingResultsTableViewController"/>
             </relationships>
         </class>
@@ -1071,19 +1096,25 @@
         <class className="NumbersForTestCell" superclassName="UITableViewCell">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NumbersForTestCell.h"/>
             <relationships>
+                <relationship kind="outlet" name="descriptionLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="numberEditor" candidateClass="UITextField"/>
                 <relationship kind="outlet" name="numberLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="saveButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="saveSegment" candidateClass="UISegmentedControl"/>
             </relationships>
         </class>
         <class className="NumbersForTestEditorMain" superclassName="UINavigationController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NumbersForTestEditorMain.h"/>
+            <relationships>
+                <relationship kind="outlet" name="numbersForTestEditorTableViewController" candidateClass="NumbersForTestEditorTableViewController"/>
+            </relationships>
         </class>
         <class className="NumbersForTestEditorTableViewController" superclassName="UITableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NumbersForTestEditorTableViewController.h"/>
             <relationships>
-                <relationship kind="action" name="beginTests:"/>
-                <relationship kind="action" name="cancelEditing:"/>
-                <relationship kind="action" name="editNumbers:"/>
+                <relationship kind="outlet" name="beginTestsButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="error" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="progress" candidateClass="UIProgressView"/>
                 <relationship kind="outlet" name="protocolSwitch" candidateClass="DCRoundSwitch"/>
             </relationships>
         </class>

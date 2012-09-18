@@ -12,5 +12,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *numberEditor;
 @property (weak, nonatomic) IBOutlet UILabel *numberLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property (weak, nonatomic) IBOutlet UIButton *saveButton;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *saveSegment;
 
 @end

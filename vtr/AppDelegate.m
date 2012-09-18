@@ -21,6 +21,7 @@
 
 
 @implementation AppDelegate
+@synthesize tapBarController;
 
 @synthesize window = _window;
 @synthesize managedObjectContext = __managedObjectContext;
@@ -907,5 +908,129 @@ static unsigned char base64EncodeLookup[65] =
     
     return isPad;
 }
+
+#pragma mark - external reload methods
+
+-(void)updateUIWithData:(NSArray *)data;
+{
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        NSLog(@"ROUTES: check tapBarController->%@",self.tapBarController);
+
+        
+        for (UIViewController *v in self.tapBarController.viewControllers)
+        {
+            UIViewController *vc = v;
+            NSLog(@"ROUTES: check vc->%@",vc);
+
+            if ([v isKindOfClass:[UINavigationController class]])
+            {
+                vc = [(UINavigationController *)v visibleViewController];
+            }
+            
+            if ([vc isKindOfClass:[OutPeersTableViewController class]])
+            {
+                OutPeersTableViewController *myViewController = (OutPeersTableViewController *)vc;
+                //[vc doSomething];
+                NSLog(@"ROUTES: data:%@ self.routesViewController->%@",data,myViewController);
+                
+            }
+        }
+    });
+    
+    //sleep(5);
+//    NSLog(@"ROUTES: data:%@ self.routesViewController->%@",data,self.routesViewController);
+    NSString *status = [data objectAtIndex:0];
+    //NSNumber *progress = [data objectAtIndex:1];
+    //NSNumber *isItLatestMessage = [data objectAtIndex:2];
+    NSManagedObjectID *objectID = nil;
+    NSNumber *isError = [data objectAtIndex:3];
+    if ([isError boolValue]) {
+        BOOL isStatusNoNumbersFound = ([status rangeOfString:@"processing tests:no numbers found"].location != NSNotFound);
+        if (isStatusNoNumbersFound) {
+            if ([data count] > 4) objectID = [data objectAtIndex:4];
+            if (objectID) {
+                NSManagedObject *finalObject = [self.managedObjectContext objectWithID:objectID];
+                NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+                
+                NSLog(@"indexPath->%@",self.routesViewController);
+//                NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
+//                
+//                dispatch_async(dispatch_get_main_queue(), ^(void) {
+//                    [self.tableView beginUpdates];
+//                    
+//                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+//                    [self.testedDestinationsID filterUsingPredicate:predicate];
+//                    NSLog(@"testedDestinationsID object removed");
+//                    
+//                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//                    [self.tableView endUpdates];
+//                });
+                
+            } else NSLog(@"=============> no objectID found");
+            
+        }
+        return;
+    }
+    BOOL isStatusStartTesting = ([status rangeOfString:@"processing tests:start testing"].location != NSNotFound);
+    if (isStatusStartTesting) {
+        if ([data count] > 4) objectID = [data objectAtIndex:4];
+        if (objectID) {
+            
+            NSManagedObject *finalObject = [self.managedObjectContext objectWithID:objectID];
+            NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+            
+            NSLog(@"indexPath->%@",self.routesViewController);
+            
+//            if (indexPath) {
+//                dispatch_async(dispatch_get_main_queue(), ^(void) {
+//                    
+//                    [self.tableView beginUpdates];
+//                    
+//                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//                    [self.tableView endUpdates];
+//                    
+//                    
+//                });
+//                
+//            }
+        }
+    }
+    
+    
+    BOOL isStatusUpdateGraph = ([status rangeOfString:@"processing tests:finish testing"].location != NSNotFound);
+    if (isStatusUpdateGraph) {
+        if ([data count] > 4) objectID = [data objectAtIndex:4];
+        if (objectID) {
+            AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            
+            NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
+            NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+            
+            NSLog(@"indexPath->%@",self.routesViewController);
+            
+//            if (indexPath) {
+//                dispatch_async(dispatch_get_main_queue(), ^(void) {
+//                    
+//                    [self.tableView beginUpdates];
+//                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+//                    [self.testedDestinationsID filterUsingPredicate:predicate];
+//                    NSLog(@"testedDestinationsID object removed from finish");
+//                    
+//                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//                    [self.tableView endUpdates];
+//                    
+//                });
+//                
+//            }
+        }
+    }
+    
+    BOOL isOutPeerAdded = ([status rangeOfString:@"addOutPeerWithID:OutPeer added"].location != NSNotFound);
+    if (isOutPeerAdded) {
+       // [activity stopAnimating];
+    }
+    
+}
+
 
 @end

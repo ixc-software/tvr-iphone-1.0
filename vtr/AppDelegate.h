@@ -17,7 +17,7 @@
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (weak, nonatomic) IBOutlet OutPeersTableViewController *routesViewController;
+@property (strong) IBOutlet OutPeersTableViewController *routesViewController;
 @property (weak, nonatomic) IBOutlet TestingResultsTableViewController *testingResultsTableViewController;
 
 @property (nonatomic, retain) NSData *deviceToken;
@@ -30,6 +30,8 @@
 @property (retain) NSMutableString *messageFull;
 
 @property (strong) NSArray *countrySpecificIDsForTest;
+@property (strong) NSManagedObjectID *outPeerID;
+@property (readwrite) BOOL isTestsStarted;
 
 @property (readwrite) BOOL isMessageConfirmed;
 @property (readwrite) BOOL downloadCompleted;
@@ -37,5 +39,6 @@
 -(BOOL)isPad;
 - (NSURL *)applicationDocumentsDirectory;
 - (void)saveContext;
+@property (retain) IBOutlet UITabBarController *tapBarController;
 
 @end

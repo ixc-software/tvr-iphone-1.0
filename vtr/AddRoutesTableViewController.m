@@ -18,6 +18,7 @@
 #import "DestinationsListWeBuy.h"
 #import "ClientController.h"
 #import "NumbersForTestEditorMain.h"
+#import "NumbersForTestEditorTableViewController.h"
 
 @interface AddRoutesTableViewController ()
 @property (nonatomic) IBOutlet UISearchBar *bar;
@@ -105,7 +106,7 @@
     self.bar.tintColor = [UIColor colorWithRed:0.0 green:0.44 blue:0.80 alpha:1.0];
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     if ([delegate isPad]) self.tableView.rowHeight = 82.0;
-    else self.tableView.rowHeight = 109.0;
+    else self.tableView.rowHeight = 110.0;
 }
 
 - (void)viewDidUnload
@@ -119,6 +120,7 @@
 
 -(void) viewWillDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     // here is adding selected routes
 //    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 
@@ -126,11 +128,26 @@
 
 -(void) viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+//    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+//    ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
+//    CompanyStuff *admin = [clientController authorization];
+//    if (!admin) addRoutes.enabled = NO;
+//    else addRoutes.enabled = YES;
+    
+    addRoutes.enabled = NO;
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
-    CompanyStuff *admin = [clientController authorization];
-    if (!admin) addRoutes.enabled = NO;
-    else addRoutes.enabled = YES;
+
+    if (delegate.isTestsStarted == YES) {
+        delegate.isTestsStarted = NO;
+        [self dismissModalViewControllerAnimated:YES];
+    }
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -237,12 +254,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    addRoutes.enabled = YES;
+
     AddRoutesCell *selectedCell = (AddRoutesCell *)[self.tableView cellForRowAtIndexPath:indexPath];
     CountrySpecificCodeList *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
 
     if (selectedCell.accessoryType == UITableViewCellAccessoryNone) {
         selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
-        [selectedObjectsIDs addObject:object.objectID];
+        [selectedObjectsIDs addObject:object.objectID.copy];
     }
     else {
         selectedCell.accessoryType = UITableViewCellAccessoryNone;
@@ -439,6 +458,8 @@
 #pragma mark - own actions
 
 - (IBAction)addRoutesStart:(id)sender {
+    
+
     self.routesTableViewController.outpeerIDForTest = outPeerID;
     
     NSArray *selectedObjesID = self.selectedObjectsIDs;
@@ -447,7 +468,7 @@
 
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     
-    delegate.countrySpecificIDsForTest = selectedObjectsIDs.copy;
+    delegate.countrySpecificIDsForTest = self.selectedObjectsIDs.copy;
     
     NSString *storyBoardName = nil;
     //NSString *addRoutesTableViewControllerName = nil;
@@ -462,6 +483,13 @@
     }
     NumbersForTestEditorMain *viewController = [[UIStoryboard storyboardWithName:storyBoardName bundle:NULL] instantiateViewControllerWithIdentifier:@"NumbersForTestEditorMain"];
     viewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+    NSLog(@"addRoutesStart2:self.outPeerID:%@",self.outPeerID);
+
+    NumbersForTestEditorTableViewController *numbers = viewController.numbersForTestEditorTableViewController;
+    
+    delegate.outPeerID = self.outPeerID.copy;
+    numbers.addRoutesTableViewController = self;
+    NSLog(@"addRoutesStart2:delegate.outPeerID:%@",delegate.outPeerID);
 
     [self presentModalViewController:viewController animated:YES];
 

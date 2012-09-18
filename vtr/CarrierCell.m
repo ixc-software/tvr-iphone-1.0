@@ -7,6 +7,7 @@
 //
 
 #import "CarrierCell.h"
+#import "AppDelegate.h"
 
 @implementation CarrierCell
 @synthesize name,responsibleFirstAndLastName,destinations,ipsEdited,prefixEdited,nameEdited,responsibleLabel;
@@ -25,6 +26,15 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
+}
+
+- (void)setFrame:(CGRect)frame {
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    if (delegate.isPad) {
+        frame.origin.x -= 10;
+        frame.size.width += 2 * 10;
+    }
+    [super setFrame:frame];
 }
 
 @end

@@ -319,7 +319,8 @@ static unsigned char base64EncodeLookup[65] =
         cell.testButton.hidden = YES;
         cell.testButtonLabel.hidden = YES;
         cell.activity.hidden = YES;
-
+        cell.prefix.hidden = YES;
+        
         cell.ipsEdited.hidden = NO;
         cell.prefixEdited.hidden = NO;
         cell.nameEdited.hidden = NO;
@@ -331,7 +332,8 @@ static unsigned char base64EncodeLookup[65] =
         cell.latestTestingResults.hidden = NO;
         cell.testButton.hidden = NO;
         cell.testButtonLabel.hidden = NO;
-        
+        cell.prefix.hidden = NO;
+
         cell.ipsEdited.hidden = YES;
         cell.prefixEdited.hidden = YES;
         cell.nameEdited.hidden = YES;
@@ -391,7 +393,7 @@ static unsigned char base64EncodeLookup[65] =
             
         }
         
-        cell.testButtonLabel.text = [NSString stringWithFormat:@"OutPeerID:%@",managedObject.outpeerID];
+        //cell.testButtonLabel.text = [NSString stringWithFormat:@"OutPeerID:%@",managedObject.outpeerID];
 
         //cell.accessoryType = UITableViewCellAccessoryNone;
         cell.delegate = self;
@@ -824,7 +826,7 @@ static unsigned char base64EncodeLookup[65] =
             clientController.deviceToken64 = deviceToken64;
         }
         clientController.sender = self;
-        [clientController startTestingForOutPeerID:outpeerID  forDestinations:destinations forNumbers:numbers];
+        //[clientController startTestingForOutPeerID:outpeerID  forDestinations:destinations forNumbers:numbers];
         numbers = nil;
     });
     
@@ -989,6 +991,9 @@ static unsigned char base64EncodeLookup[65] =
 
 -(void)updateUIWithData:(NSArray *)data;
 {
+    
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+
     //sleep(5);
     NSLog(@"ROUTES: data:%@",data);
     NSString *status = [data objectAtIndex:0];
@@ -1001,8 +1006,19 @@ static unsigned char base64EncodeLookup[65] =
         if (isStatusNoNumbersFound) {
             if ([data count] > 4) objectID = [data objectAtIndex:4];
             if (objectID) {
+                NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
+                NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
+
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    [self.tableView beginUpdates];
+
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+                    [self.testedDestinationsID filterUsingPredicate:predicate];
+                    NSLog(@"testedDestinationsID object removed");
                     
+                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.tableView endUpdates];
+                    /*
                     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
                     
                     NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
@@ -1046,10 +1062,11 @@ static unsigned char base64EncodeLookup[65] =
                         [self presentModalViewController:addNumbers animated:YES];
                         
                         
-                    }
+                    }*/
                 });
                 
-            }
+            } else NSLog(@"=============> no objectID found");
+            
         }
         return;
     }
@@ -1057,7 +1074,6 @@ static unsigned char base64EncodeLookup[65] =
     if (isStatusStartTesting) {
         if ([data count] > 4) objectID = [data objectAtIndex:4];
         if (objectID) {
-            AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
             
             NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
             NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
@@ -1065,8 +1081,6 @@ static unsigned char base64EncodeLookup[65] =
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                         
                         [self.tableView beginUpdates];
-                        //[self.testedDestinationsID removeObject:objectID];
-                        //NSLog(@"testedDestinationsID object removed");
                         
                         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                         [self.tableView endUpdates];

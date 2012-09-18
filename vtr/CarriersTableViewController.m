@@ -143,6 +143,14 @@
     else edit.enabled = YES;
     sectionsTitles = [[NSArray alloc] initWithArray:[self indexForSectionIndexTitlesForEntity:@"Carrier"]];
     [self.tableView reloadData];
+    
+//    CGFloat tableBorderLeft = 20;
+//    CGFloat tableBorderRight = 20;
+//    
+//    CGRect tableRect = self.view.frame;
+//    tableRect.origin.x += tableBorderLeft; // make the table begin a few pixels right from its origin
+//    tableRect.size.width -= tableBorderLeft + tableBorderRight; // reduce the width of the table
+//    self.tableView.frame = tableRect;
 }
 
 
