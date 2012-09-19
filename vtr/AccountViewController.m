@@ -190,6 +190,8 @@
 #pragma mark Animation block
 -(void) showErrorMessage:(NSString *)message
 {
+    NSLog(@"error:%@",message);
+    
     [errorMessage removeAllSegments];
     [errorMessage insertSegmentWithTitle:message atIndex:0 animated:NO];
     
@@ -314,6 +316,38 @@
     
 }
 
+-(void)finalizeAllViewsForUnSuccessLoginOrRegistration;
+{
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    
+    [UIView beginAnimations:@"flipbutton" context:NULL];
+    [UIView setAnimationDuration:0.4];
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:loginButton cache:YES];
+    
+    if (delegate.isPad) {
+        if (self.loginOrRegisterButton.selectedSegmentIndex == 0) {
+            [loginButton setImage:[UIImage imageNamed:@"button_login_upIPad.png"] forState:UIControlStateNormal];
+            [loginButton setImage:[UIImage imageNamed:@"button_login_downIPad.png"] forState:UIControlStateSelected];
+        } else {
+            [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPad.png"] forState:UIControlStateNormal];
+            [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPad.png"] forState:UIControlStateSelected];
+        }
+    } else {
+        if (self.loginOrRegisterButton.selectedSegmentIndex == 0) {
+            [loginButton setImage:[UIImage imageNamed:@"button_login_upIPhone.png"] forState:UIControlStateNormal];
+            [loginButton setImage:[UIImage imageNamed:@"button_login_downIPhone.png"] forState:UIControlStateSelected];
+        } else {
+            [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPhone.png"] forState:UIControlStateNormal];
+            [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPhone.png"] forState:UIControlStateSelected];
+        }
+    }
+    
+    [UIView commitAnimations];
+    loginActivity.alpha = 0.0;
+    [loginActivity stopAnimating];
+
+}
+
 -(void) finalizeAllViewsForSuccessLogin;
 {
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -361,7 +395,7 @@
     [passwordLabel resignFirstResponder];
     [companyNameLabel resignFirstResponder];
     admin.isCompanyAdmin = [NSNumber numberWithBool:YES];
-    NSLog(@"isCompanyAdmin:1");
+    //NSLog(@"isCompanyAdmin:1");
     [clientController finalSave:clientController.moc];
     loginOrRegisterButton.hidden = YES;
 
@@ -426,7 +460,7 @@
                 
                 [clientController getCarriersList];
             } else {
-                [self showErrorMessage:@"not authorized"];
+                //[self showErrorMessage:@"not authorized"];
             }
         } else {
             // registration
@@ -546,9 +580,12 @@
         if (delegate.isPad) {
             [loginButton setImage:[UIImage imageNamed:@"button_login_upIPad.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_login_downIPad.png"] forState:UIControlStateSelected];
+            loginActivity.frame = CGRectMake(293, 437, loginActivity.frame.size.width, loginActivity.frame.size.height);
         } else {
             [loginButton setImage:[UIImage imageNamed:@"button_login_upIPhone.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_login_downIPhone.png"] forState:UIControlStateSelected];
+            loginActivity.frame = CGRectMake(117, 208, loginActivity.frame.size.width, loginActivity.frame.size.height);
+
         }
 
 //        [UIView animateWithDuration:1 
@@ -572,9 +609,13 @@
         if (delegate.isPad) {
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPad.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPad.png"] forState:UIControlStateSelected];
+            loginActivity.frame = CGRectMake(276, 437, loginActivity.frame.size.width, loginActivity.frame.size.height);
+
         } else {
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPhone.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPhone.png"] forState:UIControlStateSelected];
+            loginActivity.frame = CGRectMake(114, 208, loginActivity.frame.size.width, loginActivity.frame.size.height);
+
         }
 
 //        [UIView animateWithDuration:1 
@@ -618,7 +659,7 @@
 -(void)updateUIWithData:(NSArray *)data;
 {
     //sleep(5);
-    //NSLog(@"AUTHORIZATION: data:%@",data);
+    NSLog(@"AUTHORIZATION: data:%@",data);
     NSString *status = [data objectAtIndex:0];
     //NSNumber *progress = [data objectAtIndex:1];
     NSNumber *isItLatestMessage = [data objectAtIndex:2];
@@ -626,15 +667,16 @@
     NSNumber *isError = [data objectAtIndex:3];
     if ([isError boolValue]) {             
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            [self showErrorMessage:status];
+//            [self showErrorMessage:status];
 //            [login setEnabled:YES forSegmentAtIndex:0];
 //            [registration setEnabled:YES forSegmentAtIndex:0];
-            operationActivity.hidden = YES;
-            [operationActivity stopAnimating];
+//            operationActivity.hidden = YES;
+//            [operationActivity stopAnimating];
             
             [self showErrorMessage:status];
+            [self finalizeAllViewsForUnSuccessLoginOrRegistration];
         });
-        return;
+        //return;
     }
 //    BOOL isAuthPassed = ([status rangeOfString:@"auth passed"].location != NSNotFound);
 //    if (isAuthPassed) {

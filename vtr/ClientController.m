@@ -3505,7 +3505,7 @@ static const short _base64DecodingTable[256] = {
         
     } else {
         if (error && error.length > 0) { 
-            [self updateUIwithMessage:@"auth not passed" withObjectID:admin.objectID withLatestMessage:YES error:NO];
+            [self updateUIwithMessage:[NSString stringWithFormat:@"Authorization failed: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
 
             return NO;
         }
@@ -3546,7 +3546,7 @@ static const short _base64DecodingTable[256] = {
         
     } else {
         if (error && error.length > 0) { 
-            [self updateUIwithMessage:@"can't create user " withObjectID:admin.objectID withLatestMessage:YES error:NO];
+            [self updateUIwithMessage:[NSString stringWithFormat:@"can't create user: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
             
             return NO;
         }
@@ -3571,8 +3571,7 @@ static const short _base64DecodingTable[256] = {
         
     } else {
         if (error && error.length > 0) { 
-            [self updateUIwithMessage:@"can't assign user" withObjectID:admin.objectID withLatestMessage:YES error:NO];
-            
+            [self updateUIwithMessage:[NSString stringWithFormat:@"can't assign user: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
             return NO;
         }
     }

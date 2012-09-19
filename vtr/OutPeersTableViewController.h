@@ -26,6 +26,7 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *startEditingButton;
 
 @property (retain) RoutesCell *firstCell;
+@property (nonatomic) NSMutableArray *testedDestinationsID;
 
 
 -(void)destinationChooseForIndexPath:(NSIndexPath *)indexPath;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2549" systemVersion="12B19" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="4">
     <dependencies>
-        <deployment version="1280" defaultVersion="1296" identifier="iOS"/>
+        <deployment version="1280" identifier="iOS"/>
         <development version="4200" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1498"/>
     </dependencies>
@@ -41,13 +41,22 @@
                                 <size key="shadowOffset" width="1" height="1"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GIS-lP-1pf">
-                                <rect key="frame" x="29" y="288" width="266" height="90"/>
+                                <rect key="frame" x="19" y="327" width="281" height="64"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <string key="text">This application give possibility to make voip routes tests. You have to register on www.testvoiproutes.com and after login here</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <size key="shadowOffset" width="1" height="1"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" text="Version 1.0" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="10" id="clu-Ch-b4E">
+                                <rect key="frame" x="19" y="301" width="281" height="23"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <color key="shadowColor" red="0.1176470667" green="0.44705885649999999" blue="0.80392163989999998" alpha="1" colorSpace="deviceRGB"/>
                                 <size key="shadowOffset" width="1" height="1"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="logo.png" id="G7y-Lv-QZP">
@@ -122,10 +131,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="rbg-4B-3aS">
-                                <rect key="frame" x="115" y="200.5" width="106" height="33.5"/>
+                                <rect key="frame" x="107" y="202" width="106" height="33.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" size="button"/>
-                                <state key="normal" image="button_login_downIPhone.png">
+                                <state key="normal" image="button_login_upIPhone.png">
                                     <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -133,8 +142,8 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="OEZ-ac-tQK">
-                                <rect key="frame" x="59" y="251" width="207" height="30"/>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" id="OEZ-ac-tQK">
+                                <rect key="frame" x="57" y="250" width="207" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Login"/>
@@ -150,8 +159,8 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </activityIndicatorView>
-                            <activityIndicatorView opaque="NO" alpha="0.0" contentMode="scaleToFill" style="white" id="bCe-Wt-iHO">
-                                <rect key="frame" x="124" y="206" width="20" height="20"/>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" style="white" id="bCe-Wt-iHO">
+                                <rect key="frame" x="117" y="208" width="20" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
                         </subviews>
@@ -390,7 +399,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </activityIndicatorView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Test" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" enabled="NO" id="DNy-p8-rh1">
-                                            <rect key="frame" x="20" y="15" width="90" height="15"/>
+                                            <rect key="frame" x="9" y="15" width="65" height="15"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -1010,7 +1019,7 @@
         <image name="bk_320x480.png" width="320" height="367"/>
         <image name="bk_small1.png" width="334" height="82"/>
         <image name="btn_play.png" width="55" height="55"/>
-        <image name="button_login_downIPhone.png" width="107" height="36"/>
+        <image name="button_login_upIPhone.png" width="107" height="36"/>
         <image name="goButton.png" width="610" height="612"/>
         <image name="icon_phone.png" width="5" height="14"/>
         <image name="logo.png" width="217" height="93"/>

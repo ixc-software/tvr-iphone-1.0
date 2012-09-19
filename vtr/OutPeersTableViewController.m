@@ -23,7 +23,6 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *edit;
 @property (nonatomic) NSMutableString *previousSearchString;
 @property (nonatomic) NSMutableArray *selectedObjectsIDs;
-@property (nonatomic) NSMutableArray *testedDestinationsID;
 @property (nonatomic) UIActivityIndicatorView *activity;
 
 @end
@@ -222,6 +221,9 @@ static unsigned char base64EncodeLookup[65] =
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    delegate.routesViewController = self;
+    
     previousSearchString = [[NSMutableString alloc] initWithString:@""];
     selectedObjectsIDs = [[NSMutableArray alloc] initWithCapacity:0];
     self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bk_320x480.png"]];

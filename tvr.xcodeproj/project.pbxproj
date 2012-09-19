@@ -1018,15 +1018,15 @@
 		FAA2A9BF15445D59003C0822 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Oleksii Vynogradov";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Oleksii Vynogradov";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1034,15 +1034,15 @@
 		FAA2A9C015445D59003C0822 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Oleksii Vynogradov";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Oleksii Vynogradov";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
