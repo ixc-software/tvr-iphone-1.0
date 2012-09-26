@@ -109,6 +109,7 @@
 		FA49EA2815512EB100CE6A8A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FA49EA2715512EB100CE6A8A /* Localizable.strings */; };
 		FA49EA2A15512FA500CE6A8A /* webcob.p12 in Resources */ = {isa = PBXBuildFile; fileRef = FA49EA2915512FA500CE6A8A /* webcob.p12 */; };
 		FA49EA2C1551321100CE6A8A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA49EA2B1551321100CE6A8A /* Security.framework */; };
+		FA4E8A2A161053BC00F10340 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA4E8A29161053BC00F10340 /* Default-568h@2x.png */; };
 		FA61F6CE15F672CE00FFD6B5 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = FA61F6CD15F672CE00FFD6B5 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FA94B301154AB97100F2B3F8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA94B300154AB97100F2B3F8 /* QuartzCore.framework */; };
 		FAA2A99715445D58003C0822 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA2A99615445D58003C0822 /* UIKit.framework */; };
@@ -287,6 +288,7 @@
 		FA49EA2715512EB100CE6A8A /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		FA49EA2915512FA500CE6A8A /* webcob.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webcob.p12; sourceTree = "<group>"; };
 		FA49EA2B1551321100CE6A8A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		FA4E8A29161053BC00F10340 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FA61F6CC15F672CE00FFD6B5 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		FA61F6CD15F672CE00FFD6B5 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		FA94B300154AB97100F2B3F8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -439,6 +441,7 @@
 		FAA2A98715445D58003C0822 = {
 			isa = PBXGroup;
 			children = (
+				FA4E8A29161053BC00F10340 /* Default-568h@2x.png */,
 				FAF0FD0815563B4B001D8757 /* logo-2-2-2.png */,
 				FAF0FD0615563B17001D8757 /* logo-2-2-1.png */,
 				FAF0FD041555C8D5001D8757 /* logo-2-2.png */,
@@ -867,6 +870,7 @@
 				FA30263C15B88F3E00A4E62F /* button_register_upIPhone.png in Resources */,
 				FA30263D15B88F3E00A4E62F /* button_register_upIPhone@2x.png in Resources */,
 				FA0F9CF115F72D1600CD809D /* bug requests.rtf in Resources */,
+				FA4E8A2A161053BC00F10340 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1018,15 +1022,15 @@
 		FAA2A9BF15445D59003C0822 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Oleksii Vynogradov";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Oleksii Vynogradov";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
+				PROVISIONING_PROFILE = "E96A6D44-24D2-4FFD-ABD0-5A0801377920";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "176848D1-AA4B-4D1F-8341-8A4755A3E8B5";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1034,15 +1038,15 @@
 		FAA2A9C015445D59003C0822 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Oleksii Vynogradov";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Oleksii Vynogradov";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "34B38064-5897-4DEE-AB08-B193D2EF4E9E";
+				PROVISIONING_PROFILE = "E96A6D44-24D2-4FFD-ABD0-5A0801377920";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "176848D1-AA4B-4D1F-8341-8A4755A3E8B5";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

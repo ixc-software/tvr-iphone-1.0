@@ -100,6 +100,9 @@
                 operationActivity.alpha = 0.0;
                 
                 [operationActivity stopAnimating];
+                [[super.tabBarController.viewControllers objectAtIndex:1] tabBarItem].enabled = YES;
+                [[super.tabBarController.viewControllers objectAtIndex:2] tabBarItem].enabled = YES;
+                [[super.tabBarController.viewControllers objectAtIndex:3] tabBarItem].enabled = YES;
 
                 //NSLog(@"email:%@ isCompanyAdmin:%@",admin.email,admin.isCompanyAdmin);
                 
@@ -351,6 +354,9 @@
 -(void) finalizeAllViewsForSuccessLogin;
 {
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    [[super.tabBarController.viewControllers objectAtIndex:1] tabBarItem].enabled = YES;
+    [[super.tabBarController.viewControllers objectAtIndex:2] tabBarItem].enabled = YES;
+    [[super.tabBarController.viewControllers objectAtIndex:3] tabBarItem].enabled = YES;
 
     [UIView beginAnimations:@"flipbutton" context:NULL];
     [UIView setAnimationDuration:0.4];
@@ -803,8 +809,8 @@
     
     if ([status isEqualToString:@"Login success"]) {
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            
-//            [UIView animateWithDuration:3 
+
+//            [UIView animateWithDuration:3
 //                                  delay:4 
 //                                options:UIViewAnimationOptionBeginFromCurrentState
 //                             animations:^{

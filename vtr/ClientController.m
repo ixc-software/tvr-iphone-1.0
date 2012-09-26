@@ -1182,10 +1182,23 @@ static const short _base64DecodingTable[256] = {
 //    CompanyStuff *admin = [self authorization];
 
     [request setValue:@"hash" forKey:@"hash"];
+//    UIDevice *myDevice = [UIDevice currentDevice];
+//    NSString *deviceUDID = [myDevice uniqueIdentifier];
+//    if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
+//    else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
+
     UIDevice *myDevice = [UIDevice currentDevice];
-    NSString *deviceUDID = [myDevice uniqueIdentifier];
+    NSString *deviceUDID = nil;
+    if ([myDevice respondsToSelector:@selector(uniqueIdentifier)]) {
+        deviceUDID = [myDevice uniqueIdentifier];
+    } else {
+        if ([myDevice respondsToSelector:@selector(identifierForVendor)]) {
+            deviceUDID = [[myDevice identifierForVendor] UUIDString];
+        }
+    }
     if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
     else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
+
     
     NSString *deviceMAC = [self getMacAddress];
     if (deviceUDID) [request setValue:deviceMAC forKey:@"deviceMAC"];

@@ -34,6 +34,7 @@
 {
     if (delegate && [delegate respondsToSelector:@selector(destinationChooseForIndexPath:)]) {
         NSLog(@">>>>>>>>> tests started");
+        if (delegate.tableView.isEditing) return;
         [delegate destinationChooseForIndexPath:self.indexPath];
         activity.alpha = 1.0;
         [activity startAnimating];

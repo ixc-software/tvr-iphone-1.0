@@ -341,8 +341,13 @@ static unsigned char base64EncodeLookup[65] =
         cell.nameEdited.hidden = YES;
         OutPeer *managedObject = nil;
         
-        if (tableView.isEditing) managedObject = [[self fetchedResultsController] objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1]];
+        if (tableView.isEditing) {
+            cell.testButton.enabled = NO;
+            managedObject = [[self fetchedResultsController] objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1]];
+        }
         else {
+            cell.testButton.enabled = YES;
+
             managedObject = [[self fetchedResultsController] objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
         }
         cell.outPeerName.text = managedObject.outpeerName;
@@ -838,6 +843,8 @@ static unsigned char base64EncodeLookup[65] =
 
 -(void)destinationChooseForIndexPath:(NSIndexPath *)indexPath;
 {
+    if (self.tableView.isEditing) return;
+    
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 
     NSString *storyBoardName = nil;

@@ -500,7 +500,7 @@
 - (IBAction)cancelAdding:(id)sender {
     self.routesTableViewController.destinationsForTest = nil;
     self.routesTableViewController.outpeerIDForTest = nil;
-
+    [self.routesTableViewController.testedDestinationsID removeAllObjects];
     [self dismissModalViewControllerAnimated:YES];
 
 }
