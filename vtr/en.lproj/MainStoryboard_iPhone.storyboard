@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2840" systemVersion="12B19" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="4">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2844" systemVersion="12C60" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="4">
     <dependencies>
         <deployment version="1280" identifier="iOS"/>
         <development version="4200" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1926"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
     </dependencies>
     <scenes>
         <!--Account View Controller - First-->
@@ -11,7 +11,7 @@
             <objects>
                 <viewController title="First" id="2" customClass="AccountViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="16">
-                        <rect key="frame" x="0.0" y="20" width="320" height="411"/>
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="bk_320x480.png" id="WmB-vE-wdr">
@@ -19,7 +19,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="yki-0e-NkN">
-                                <rect key="frame" x="19" y="83" width="281" height="105.5"/>
+                                <rect key="frame" x="19" y="83" width="281" height="105"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal">
@@ -30,8 +30,8 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Test  Voip  Routes" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Z8L-cY-G8s">
-                                <rect key="frame" x="22" y="55" width="148" height="20"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Test  Voip  Routes" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Z8L-cY-G8s">
+                                <rect key="frame" x="20" y="55" width="213" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -39,18 +39,17 @@
                                 <color key="shadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <size key="shadowOffset" width="1" height="1"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GIS-lP-1pf">
-                                <rect key="frame" x="19" y="327" width="281" height="64"/>
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="left" text="Your plan is: Free" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GIS-lP-1pf">
+                                <rect key="frame" x="17" y="301" width="196" height="66"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <string key="text">This application give possibility to make voip routes tests. You have to register on www.testvoiproutes.com and after login here</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <size key="shadowOffset" width="1" height="1"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" contentMode="left" text="Version 1.0" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="10" id="clu-Ch-b4E">
-                                <rect key="frame" x="19" y="301" width="281" height="23"/>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" text="Version 1.1" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="10" id="clu-Ch-b4E">
+                                <rect key="frame" x="194" y="0.0" width="106" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -59,10 +58,10 @@
                                 <size key="shadowOffset" width="1" height="1"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="logo.png" id="G7y-Lv-QZP">
-                                <rect key="frame" x="19" y="6" width="149" height="49"/>
+                                <rect key="frame" x="20" y="0.0" width="149" height="49"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <segmentedControl opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="S9V-0H-oDp">
+                            <segmentedControl hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="S9V-0H-oDp">
                                 <rect key="frame" x="19" y="375" width="279" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -72,19 +71,19 @@
                                 <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </segmentedControl>
                             <progressView opaque="NO" alpha="0.0" contentMode="scaleToFill" progressViewStyle="bar" progress="0.5" id="FHk-vA-QyT">
-                                <rect key="frame" x="194" y="37" width="104" height="11"/>
+                                <rect key="frame" x="194" y="65" width="104" height="11"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="progressTintColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="trackTintColor" red="0.0" green="0.50196081399917603" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </progressView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="left" text="Operation" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" enabled="NO" id="Vz3-dB-bee">
-                                <rect key="frame" x="194" y="8" width="104" height="21"/>
+                                <rect key="frame" x="194" y="36" width="104" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="ArialRoundedMTBold" family="Arial Rounded MT Bold" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="use 'share@share.sa' for demo" clearsOnBeginEditing="YES" minimumFontSize="17" clearButtonMode="whileEditing" id="a7J-B2-9dF">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="required" clearsOnBeginEditing="YES" minimumFontSize="17" clearButtonMode="whileEditing" id="a7J-B2-9dF">
                                 <rect key="frame" x="113" y="97" width="178" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -94,7 +93,7 @@
                                     <outlet property="delegate" destination="2" id="cNp-jc-JCg"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="use 'share' for demo" clearsOnBeginEditing="YES" minimumFontSize="15" clearButtonMode="whileEditing" id="8te-Vw-Gxt">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="required" clearsOnBeginEditing="YES" minimumFontSize="15" clearButtonMode="whileEditing" id="8te-Vw-Gxt">
                                 <rect key="frame" x="115" y="142" width="176" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -130,7 +129,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="rbg-4B-3aS">
-                                <rect key="frame" x="107" y="202" width="106" height="33.5"/>
+                                <rect key="frame" x="107" y="202" width="106" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" size="button"/>
                                 <state key="normal" image="button_login_upIPhone.png">
@@ -161,11 +160,43 @@
                                 <rect key="frame" x="117" y="208" width="20" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="1V7-sH-ToZ">
+                                <rect key="frame" x="220" y="301" width="78" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Refill">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="changePlan:" destination="2" eventType="touchUpInside" id="5yR-Se-nwm"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ejP-jR-6w1">
+                                <rect key="frame" x="220" y="336" width="78" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="History">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="cPp-mP-M7J" kind="push" id="8XU-dS-uSL"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Account" image="253-person.png" id="7"/>
+                    <navigationItem key="navigationItem" id="idq-Ez-i7p"/>
                     <connections>
+                        <outlet property="changePlanButton" destination="1V7-sH-ToZ" id="rdI-XB-cVz"/>
                         <outlet property="companyName" destination="quH-cz-nr4" id="kLW-R0-he0"/>
                         <outlet property="emailLabel" destination="a7J-B2-9dF" id="8SA-e1-Khi"/>
                         <outlet property="errorMessage" destination="S9V-0H-oDp" id="CPn-7N-dRA"/>
@@ -176,11 +207,13 @@
                         <outlet property="operationActivity" destination="0dZ-So-A5G" id="lTt-Kr-HgR"/>
                         <outlet property="operationProgress" destination="FHk-vA-QyT" id="naf-Tv-awA"/>
                         <outlet property="passwordLabel" destination="8te-Vw-Gxt" id="KdO-vt-orw"/>
+                        <outlet property="paymentHistoryButton" destination="ejP-jR-6w1" id="0zZ-CZ-0gz"/>
+                        <outlet property="planDescription" destination="GIS-lP-1pf" id="YVa-8Y-n0R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="10" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="653" y="-138"/>
+            <point key="canvasLocation" x="1168" y="-141"/>
         </scene>
         <!--Carriers Table View Controller - Carriers-->
         <scene sceneID="KCp-Fl-1qq">
@@ -694,10 +727,10 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue destination="2" kind="relationship" relationship="viewControllers" id="26"/>
-                        <segue destination="hdF-Jc-CiJ" kind="relationship" relationship="viewControllers" id="7wm-cR-VB7"/>
-                        <segue destination="rdL-vV-KFn" kind="relationship" relationship="viewControllers" id="zEg-EB-mRZ"/>
-                        <segue destination="w1l-vA-LyH" kind="relationship" relationship="viewControllers" id="V8R-Cl-TB9"/>
+                        <segue destination="zBv-Vh-luY" kind="relationship" relationship="viewControllers" id="aqa-GR-l98"/>
+                        <segue destination="hdF-Jc-CiJ" kind="relationship" relationship="viewControllers" id="hcT-ug-jQG"/>
+                        <segue destination="rdL-vV-KFn" kind="relationship" relationship="viewControllers" id="gFP-vT-70v"/>
+                        <segue destination="w1l-vA-LyH" kind="relationship" relationship="viewControllers" id="0hY-vo-tgV"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="14" sceneMemberID="firstResponder"/>
@@ -708,6 +741,82 @@
                 </customObject>
             </objects>
             <point key="canvasLocation" x="-18" y="444"/>
+        </scene>
+        <!--Balance History View Controller - Balance history-->
+        <scene sceneID="1a3-Yw-aas">
+            <objects>
+                <tableViewController id="cPp-mP-M7J" customClass="BalanceHistoryViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="83" sectionHeaderHeight="10" sectionFooterHeight="10" id="p3Q-8F-rYl">
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BanceHistoryCell" rowHeight="83" id="EKJ-L3-mL1" customClass="BanceHistoryCell">
+                                <rect key="frame" x="0.0" y="46" width="320" height="85"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="10" y="1" width="300" height="82"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="13.01.1976" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="rbA-00-a0O">
+                                            <rect key="frame" x="90" y="5" width="110" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="refill advanced plus fax plan" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TpY-ri-Z8s">
+                                            <rect key="frame" x="90" y="34" width="110" height="43"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <color key="textColor" name="controlShadowColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="$149.99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pzR-eP-dwa">
+                                            <rect key="frame" x="208" y="23" width="92" height="36"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="paidImage.png" id="SVb-JI-V5v">
+                                            <rect key="frame" x="0.0" y="0.0" width="82" height="77"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <connections>
+                                    <outlet property="date" destination="rbA-00-a0O" id="eeM-Gv-YaA"/>
+                                    <outlet property="operationLabel" destination="TpY-ri-Z8s" id="zlu-Xo-Zrw"/>
+                                    <outlet property="paidImage" destination="SVb-JI-V5v" id="np0-a4-y4c"/>
+                                    <outlet property="paymentAmount" destination="pzR-eP-dwa" id="jUm-1f-xrL"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Balance history" id="2K4-fI-QAb"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RNA-EO-dTm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1687" y="-386"/>
+        </scene>
+        <!--Navigation Controller - Account-->
+        <scene sceneID="wOT-w2-0NV">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="zBv-Vh-luY" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Account" id="Boo-X0-6yI"/>
+                    <navigationItem key="navigationItem" id="g6u-Ep-E1k"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1vF-fG-SxD">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="2" kind="relationship" relationship="rootViewController" id="JqL-ux-a4T"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Plt-6P-KpL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="658" y="-141"/>
         </scene>
         <!--Add Routes Table View Controller Main-->
         <scene sceneID="n3G-2T-3i7">
@@ -1025,6 +1134,7 @@
         <image name="goButton.png" width="610" height="612"/>
         <image name="icon_phone.png" width="5" height="14"/>
         <image name="logo.png" width="217" height="93"/>
+        <image name="paidImage.png" width="1365" height="1297"/>
         <image name="test-button-md.png" width="299" height="297"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
@@ -1033,6 +1143,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="57K-6i-0G4"/>
+        <segue reference="4LZ-r1-y6a"/>
     </inferredMetricsTieBreakers>
 </document>

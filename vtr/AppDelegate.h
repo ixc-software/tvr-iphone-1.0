@@ -10,8 +10,9 @@
 #import <CoreData/CoreData.h>
 #import "OutPeersTableViewController.h"
 #import "TestingResultsTableViewController.h"
+#import <StoreKit/StoreKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,SKProductsRequestDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
@@ -36,9 +37,19 @@
 @property (readwrite) BOOL isMessageConfirmed;
 @property (readwrite) BOOL downloadCompleted;
 @property (retain, nonatomic) NSMutableData *receivedData;
+
+@property (nonatomic, retain) SKProduct *productAdvanced;
+@property (nonatomic, retain) SKProduct *productAdvancedPlusFax;
+
+@property (retain, nonatomic) NSString *deviceUDID;
+
 -(BOOL)isPad;
 - (NSURL *)applicationDocumentsDirectory;
 - (void)saveContext;
+
+
+
+
 @property (retain) IBOutlet UITabBarController *tapBarController;
 
 @end

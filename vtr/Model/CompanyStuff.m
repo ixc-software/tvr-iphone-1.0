@@ -1,9 +1,9 @@
 //
 //  CompanyStuff.m
-//  vtr
+//  tvr
 //
-//  Created by Oleksii Vynogradov on 4/22/12.
-//  Copyright (c) 2012 IXC-USA Corp. All rights reserved.
+//  Created by Oleksii Vynogradov on 1/4/13.
+//  Copyright (c) 2013 IXC-USA Corp. All rights reserved.
 //
 
 #import "CompanyStuff.h"
@@ -31,9 +31,12 @@
 @dynamic photo;
 @dynamic toIP;
 @dynamic transactionReceipt;
+@dynamic userID;
 @dynamic carrier;
 @dynamic currentCompany;
 @dynamic invoicesAndPayments;
+@dynamic grossBookRecord;
+
 - (void)awakeFromInsert {
     NSDate *now = [NSDate date];
     
@@ -60,5 +63,6 @@
         }
     }
 }
+
 
 @end

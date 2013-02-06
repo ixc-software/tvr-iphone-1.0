@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RRVerificationController.h"
 
-@interface AccountViewController : UIViewController  <UITextFieldDelegate,UIActionSheetDelegate>
+@interface AccountViewController : UIViewController  <UITextFieldDelegate,UIActionSheetDelegate,RRVerificationControllerDelegate,SKPaymentTransactionObserver>
 @property (weak, nonatomic) IBOutlet UISegmentedControl *login;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *registration;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *errorMessage;
@@ -24,5 +25,5 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *operationActivity;
 @property (weak, nonatomic) IBOutlet UITextField *companyName;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *loginOrRegisterButton;
-
+@property (retain) NSString *operationForBuy;
 @end

@@ -28,6 +28,7 @@
 #import "DestinationsListWeBuyTesting.h"
 #import "DestinationsListWeBuyResults.h"
 #import "OutPeer.h"
+#import "GrossBookRecord.h"
 
 #import "OperationNecessaryToApprove.h"
 #import "Events.h"
@@ -46,6 +47,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#import <CommonCrypto/CommonDigest.h>
+
 
 static char encodingTable[64] = {
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
@@ -61,7 +64,7 @@ static char encodingTable[64] = {
 
 @implementation ClientController
 
-@synthesize moc,mainServer,sender,downloadSize,mainMoc,deviceToken64;
+@synthesize moc,sender,downloadSize,mainMoc,deviceToken64;
 
 - (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator withSender:(id)senderForThisClass withMainMoc:(NSManagedObjectContext *)itMainMoc;
 {
@@ -73,27 +76,27 @@ static char encodingTable[64] = {
 
         sender = senderForThisClass;
  
-#if defined(SNOW_SERVER)
-
-        mainServer = [[NSURL alloc] initWithString:@"https://mac.ixcglobal.com:8081"];
-#else
-        
-#if defined (SNOW_CLIENT_APPSTORE)
-        mainServer = [[NSURL alloc] initWithString:@"http://mac1.ixcglobal.com:8081"];
-        //mainServer = [[NSURL alloc] initWithString:@"http://127.0.0.1:8081"];
-
-#else
-        
-        //        mainServer = [[NSURL alloc] initWithString:@"https://mac.ixcglobal.com:8081"];
-        
-         //       mainServer = [[NSURL alloc] initWithString:@"https://127.0.0.1:8081"];
-        //mainServer = [[NSURL alloc] initWithString:@"http://192.168.0.58:8081"];
-               // mainServer = [[NSURL alloc] initWithString:@"http://mac1.ixcglobal.com:8081"];
-
-        
-#endif
-     
-#endif
+//#if defined(SNOW_SERVER)
+//
+//        mainServer = [[NSURL alloc] initWithString:@"https://mac.ixcglobal.com:8081"];
+//#else
+//        
+//#if defined (SNOW_CLIENT_APPSTORE)
+//        mainServer = [[NSURL alloc] initWithString:@"http://mac1.ixcglobal.com:8081"];
+//        //mainServer = [[NSURL alloc] initWithString:@"http://127.0.0.1:8081"];
+//
+//#else
+//        
+//        //        mainServer = [[NSURL alloc] initWithString:@"https://mac.ixcglobal.com:8081"];
+//        
+//         //       mainServer = [[NSURL alloc] initWithString:@"https://127.0.0.1:8081"];
+//        //mainServer = [[NSURL alloc] initWithString:@"http://192.168.0.58:8081"];
+//               // mainServer = [[NSURL alloc] initWithString:@"http://mac1.ixcglobal.com:8081"];
+//
+//        
+//#endif
+//     
+//#endif
 //
         
         
@@ -823,78 +826,418 @@ static const short _base64DecodingTable[256] = {
     MainSystem *mainSystem = [result lastObject];
     return mainSystem;
 }
-#pragma mark TODO - change server to send codes list too;
 
--(void) updateInternalCountryCodesList;
+-(NSString*)md5HexDigest:(NSString*)input {
+    const char* str = [input UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(str, (CC_LONG)strlen(str), result);
+    
+    NSMutableString *ret = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH*2];
+    for(int i = 0; i<CC_MD5_DIGEST_LENGTH; i++) {
+        [ret appendFormat:@"%02x",result[i]];
+    }
+    return ret;
+}
+
+
+-(NSString *) hashForEmail:(NSString *)email withDateString:(NSString *)dateString;
 {
-#if defined(SNOW_SERVER)
-    
-//    [self createCountrySpecificCodesInCoreDataForMainSystem:mainSystem];
-//    [self finalSave:moc];
-    
-#else
+    if (email && dateString) {
+        // MIICmTCCAYECAQAwVDEoMCYGCSqGSIb3DQEJARY
+        NSString *fixedString = [NSString stringWithFormat:@"%c%s%c%@", 'M', "IICmTCCAYECA", 'Q', @"AwVDEoMCYGCSqGSIb3DQEJARY"];
+        
+        NSString *lastDigit = [dateString substringWithRange:NSMakeRange(dateString.length - 1, 1)];
+        NSNumberFormatter *number = [[NSNumberFormatter alloc] init];
+        NSNumber *lastDigitFromDate = [number numberFromString:lastDigit];
+        
+        NSString *forAuthtorization = nil;
+        
+        if (lastDigitFromDate.integerValue == 0) {
+            // zero
+            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",email,fixedString,dateString];
+            
+        } else if  (lastDigitFromDate.integerValue % 2) {
+            //odd
+            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",email,dateString,fixedString];
+        } else {
+            //even
+            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",dateString,email,fixedString];
+        }
+        NSString *hashForReturn = [self md5HexDigest:forAuthtorization];
+        NSLog(@"AUTHORIZATION:for auth:%@ hash:%@",forAuthtorization,hashForReturn);
+        
+        return hashForReturn;
+    }
+    return nil;
+}
 
-    CompanyStuff *authorizedUser = [self authorization];
-    NSArray *allGUIDsMainSystem = [self getAllObjectsListWithEntityForList:@"MainSystem" withMainObjectGUID:nil withMainObjectEntity:nil withAdmin:authorizedUser withDateFrom:nil withDateTo:nil];
-    NSArray *allObjectsForGUIDS = [self getAllObjectsWithGUIDs:allGUIDsMainSystem withEntity:@"MainSystem" withAdmin:authorizedUser];
-    [self updateGraphForObjects:allObjectsForGUIDS withEntity:@"MainSystem" withAdmin:authorizedUser withRootObject:nil isEveryTenPercentSave:NO isNecessaryToLocalRegister:NO];
-    [self finalSave:moc];
-
-    NSError *error = nil;
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:[NSEntityDescription entityForName:@"MainSystem" inManagedObjectContext:self.moc]];
-    [fetchRequest setPredicate:nil];
-    NSArray *result = [self.moc executeFetchRequest:fetchRequest error:&error];
-    MainSystem *mainSystem = result.lastObject;
-    NSArray *allGUIDsCodesSpecific = [self getAllObjectsListWithEntityForList:@"CountrySpecificCodeList" withMainObjectGUID:mainSystem.GUID withMainObjectEntity:@"MainSystem" withAdmin:authorizedUser withDateFrom:nil withDateTo:nil];
-    NSArray *allObjectsCodesSpecificForGUIDS = [self getAllObjectsWithGUIDs:allGUIDsCodesSpecific withEntity:@"CountrySpecificCodeList" withAdmin:authorizedUser];
+- (NSString *)base64EncodedStringWithData:(NSData *)data
+{
+    //ensure wrapWidth is a multiple of 4
+    NSUInteger wrapWidth = 0;//(wrapWidth / 4) * 4;
     
-    //NSArray *updatedCodesSpecificIDs = 
-    if (allGUIDsCodesSpecific && allObjectsCodesSpecificForGUIDS) [self updateGraphForObjects:allObjectsCodesSpecificForGUIDS withEntity:@"CountrySpecificCodeList" withAdmin:authorizedUser withRootObject:mainSystem isEveryTenPercentSave:YES isNecessaryToLocalRegister:NO];
-//    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-    [self finalSave:moc];
-//    NSUInteger countForCodes = allGUIDsCodesSpecific.count;
-//
-//    [allGUIDsCodesSpecific enumerateObjectsUsingBlock:^(NSString *guid, NSUInteger idx, BOOL *stop) {
-//        NSNumber *percentDone = [NSNumber numberWithDouble:[[NSNumber numberWithUnsignedInteger:idx] doubleValue] / [[NSNumber numberWithUnsignedInteger:countForCodes] doubleValue]];
-//        [self updateUIwithMessage:@"Parse internal codes list.." andProgressPercent:percentDone withObjectID:nil];
-//
-//        NSError *error = nil;
-//        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-//        NSEntityDescription *entity = [NSEntityDescription entityForName:@"CountrySpecificCodeList" inManagedObjectContext:self.moc];
-//        [fetchRequest setEntity:entity];
-//        [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"GUID == %@",guid]];
-//        NSArray *result = [self.moc executeFetchRequest:fetchRequest error:&error];
-//        if (result.count > 0) {
-//            CountrySpecificCodeList *lastObject = result.lastObject;
-//            [lastObject.codesList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-//                [self.moc deleteObject:obj];
-//            }];
-//
-//            NSString *codes = lastObject.codes;
-//            NSArray *codesList = [codes componentsSeparatedByString:@","];
-//            [codesList enumerateObjectsUsingBlock:^(NSString *code, NSUInteger idx, BOOL *stop) {
-//                NSNumber *codeNumber = [formatter numberFromString:code];
-//                //NSLog(@"CLIENT CONTROLLER: first setup code created:%@ for country:%@",codeNumber,lastObject.country);
-//                
-//                CodesList *new = (CodesList *)[NSEntityDescription insertNewObjectForEntityForName:@"CodesList" inManagedObjectContext:self.moc];
-//                new.countrySpecificCodesList = lastObject;
-//                new.code = codeNumber;
-//            }];
-//            [self finalSave:self.moc];
-//
-//        } else NSLog(@"CLIENT CONTROLLER: first setup, warning, CountrySpecificCodeList not founded to create CodeList");
-//        //if ((idx % countForCodes * 0.1 == 0)) [self finalSave:self.moc];//,NSLog(@">>>>>>>updateGraphForObjects SAVED");
-//
-//    }];
-//    [formatter release];
-    //NSLog(@">>>>>> updated codes specific IDs:%@",updatedCodesSpecificIDs);
-    //[self finalSave:self.moc];
-
+    const char lookup[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    
+    long long inputLength = [data length];
+    const unsigned char *inputBytes = [data bytes];
+    
+    long long maxOutputLength = (inputLength / 3 + 1) * 4;
+    maxOutputLength += wrapWidth? (maxOutputLength / wrapWidth) * 2: 0;
+    unsigned char *outputBytes = (unsigned char *)malloc(maxOutputLength);
+    
+    long long i;
+    long long outputLength = 0;
+    for (i = 0; i < inputLength - 2; i += 3)
+    {
+        outputBytes[outputLength++] = lookup[(inputBytes[i] & 0xFC) >> 2];
+        outputBytes[outputLength++] = lookup[((inputBytes[i] & 0x03) << 4) | ((inputBytes[i + 1] & 0xF0) >> 4)];
+        outputBytes[outputLength++] = lookup[((inputBytes[i + 1] & 0x0F) << 2) | ((inputBytes[i + 2] & 0xC0) >> 6)];
+        outputBytes[outputLength++] = lookup[inputBytes[i + 2] & 0x3F];
+        
+        //add line break
+        if (wrapWidth && (outputLength + 2) % (wrapWidth + 2) == 0)
+        {
+            outputBytes[outputLength++] = '\r';
+            outputBytes[outputLength++] = '\n';
+        }
+    }
+    
+    //handle left-over data
+    if (i == inputLength - 2)
+    {
+        // = terminator
+        outputBytes[outputLength++] = lookup[(inputBytes[i] & 0xFC) >> 2];
+        outputBytes[outputLength++] = lookup[((inputBytes[i] & 0x03) << 4) | ((inputBytes[i + 1] & 0xF0) >> 4)];
+        outputBytes[outputLength++] = lookup[(inputBytes[i + 1] & 0x0F) << 2];
+        outputBytes[outputLength++] =   '=';
+    }
+    else if (i == inputLength - 1)
+    {
+        // == terminator
+        outputBytes[outputLength++] = lookup[(inputBytes[i] & 0xFC) >> 2];
+        outputBytes[outputLength++] = lookup[(inputBytes[i] & 0x03) << 4];
+        outputBytes[outputLength++] = '=';
+        outputBytes[outputLength++] = '=';
+    }
+    
+    //truncate data to match actual output length
+    outputBytes = realloc(outputBytes, outputLength);
+    NSString *result = [[NSString alloc] initWithBytesNoCopy:outputBytes length:outputLength encoding:NSASCIIStringEncoding freeWhenDone:YES];
+    
+#if !__has_feature(objc_arc)
+    [result autorelease];
 #endif
     
-
+    return (outputLength >= 4)? result: nil;
 }
+
+- (NSString *)getModel {
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *model = malloc(size);
+    sysctlbyname("hw.machine", model, &size, NULL, 0);
+    NSString *sDeviceModel = [NSString stringWithCString:model encoding:NSUTF8StringEncoding];
+    free(model);
+    if ([sDeviceModel isEqual:@"i386"])      return @"Simulator";  //iPhone Simulator
+    if ([sDeviceModel isEqual:@"iPhone1,1"]) return @"iPhone1G";   //iPhone 1G
+    if ([sDeviceModel isEqual:@"iPhone1,2"]) return @"iPhone3G";   //iPhone 3G
+    if ([sDeviceModel isEqual:@"iPhone2,1"]) return @"iPhone3GS";  //iPhone 3GS
+    if ([sDeviceModel isEqual:@"iPhone3,1"]) return @"iPhone3GS";  //iPhone 4 - AT&T
+    if ([sDeviceModel isEqual:@"iPhone3,2"]) return @"iPhone3GS";  //iPhone 4 - Other carrier
+    if ([sDeviceModel isEqual:@"iPhone3,3"]) return @"iPhone4";    //iPhone 4 - Other carrier
+    if ([sDeviceModel isEqual:@"iPhone4,1"]) return @"iPhone4S";   //iPhone 4S
+    if ([sDeviceModel isEqual:@"iPhone5,1"]) return @"iPhone5";   //iPhone 4S
+    if ([sDeviceModel isEqual:@"iPhone5,2"]) return @"iPhone5";   //iPhone 4S
+    if ([sDeviceModel isEqual:@"iPod1,1"])   return @"iPod1stGen"; //iPod Touch 1G
+    if ([sDeviceModel isEqual:@"iPod2,1"])   return @"iPod2ndGen"; //iPod Touch 2G
+    if ([sDeviceModel isEqual:@"iPod3,1"])   return @"iPod3rdGen"; //iPod Touch 3G
+    if ([sDeviceModel isEqual:@"iPod4,1"])   return @"iPod4thGen"; //iPod Touch 4G
+    if ([sDeviceModel isEqual:@"iPad1,1"])   return @"iPadWiFi";   //iPad Wifi
+    if ([sDeviceModel isEqual:@"iPad1,2"])   return @"iPad3G";     //iPad 3G
+    if ([sDeviceModel isEqual:@"iPad2,1"])   return @"iPad2";      //iPad 2 (WiFi)
+    if ([sDeviceModel isEqual:@"iPad2,2"])   return @"iPad2";      //iPad 2 (GSM)
+    if ([sDeviceModel isEqual:@"iPad2,3"])   return @"iPad2";      //iPad 2 (CDMA)
+    if ([sDeviceModel isEqual:@"iPad3,1"])   return @"iPad3";      //iPad 2 (CDMA)
+    if ([sDeviceModel isEqual:@"iPad3,2"])   return @"iPad3";      //iPad 2 (CDMA)
+    if ([sDeviceModel isEqual:@"iPad3,3"])   return @"iPad3";      //iPad 2 (CDMA)
+    
+    NSString *aux = [[sDeviceModel componentsSeparatedByString:@","] objectAtIndex:0];
+    
+    //If a newer version exist
+    if ([aux rangeOfString:@"iPhone"].location!=NSNotFound) {
+        int version = [[aux stringByReplacingOccurrencesOfString:@"iPhone" withString:@""] intValue];
+        if (version == 3) return @"iPhone4";
+        if (version >= 4) return @"iPhone4s";
+        
+    }
+    if ([aux rangeOfString:@"iPod"].location!=NSNotFound) {
+        int version = [[aux stringByReplacingOccurrencesOfString:@"iPod" withString:@""] intValue];
+        if (version >=4) return @"iPod4thGen";
+    }
+    if ([aux rangeOfString:@"iPad"].location!=NSNotFound) {
+        int version = [[aux stringByReplacingOccurrencesOfString:@"iPad" withString:@""] intValue];
+        if (version ==1) return @"iPad3G";
+        if (version >=2) return @"iPad2";
+    }
+    //If none was found, send the original string
+    return sDeviceModel;
+}
+
+- (NSString *)getIPAddress
+{
+    NSString *address = @"error";
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    
+    // retrieve the current interfaces - returns 0 on success
+    success = getifaddrs(&interfaces);
+    if (success == 0)
+    {
+        // Loop through linked list of interfaces
+        temp_addr = interfaces;
+        while(temp_addr != NULL)
+        {
+            if(temp_addr->ifa_addr->sa_family == AF_INET)
+            {
+                //NSLog(@"temp_addr->ifa_name->%@",[NSString stringWithUTF8String:temp_addr->ifa_name]);
+                
+                // Check if interface is en0 which is the wifi connection on the iPhone
+                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"] || [[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"pdp_ip0"] || [[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en1"])
+                {
+                    // Get NSString from C String
+                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    
+    // Free memory
+    freeifaddrs(interfaces);
+    //    char             baseHostName[256], fullHostName[256];
+    //    struct hostent  *host;
+    //    struct in_addr **hList;
+    //
+    //    gethostname (baseHostName, 255);
+    //    if (!strstr(baseHostName, ".local"))
+    //        sprintf (fullHostName, "%s.local", baseHostName);
+    //    else
+    //        strcpy (fullHostName, baseHostName);
+    //
+    //    host = gethostbyname (fullHostName);
+    //
+    //    if (!host)
+    //        return (@"");
+    //
+    //    hList = (struct in_addr **)host->h_addr_list;
+    //    address = [NSString stringWithCString:inet_ntoa(*hList[0]) encoding:NSUTF8StringEncoding];
+    //
+    //    NSLog(@"address is:%@",address);
+    
+    return address;
+}
+
+
+static unsigned char base64EncodeLookup[65] =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+
+-(NSString *) encodeTobase64InputData:(NSData *)data;
+{
+    
+    const void *buffer = [data bytes];
+    size_t length = [data length];
+    bool separateLines =  false;
+    //    size_t outputLength = 0;
+    
+    const unsigned char *inputBuffer = (const unsigned char *)buffer;
+    
+#define BINARY_UNIT_SIZE 3
+#define BASE64_UNIT_SIZE 4
+    
+#define MAX_NUM_PADDING_CHARS 2
+#define OUTPUT_LINE_LENGTH 64
+#define INPUT_LINE_LENGTH ((OUTPUT_LINE_LENGTH / BASE64_UNIT_SIZE) * BINARY_UNIT_SIZE)
+#define CR_LF_SIZE 2
+    
+    //
+    // Byte accurate calculation of final buffer size
+    //
+    size_t outputBufferSize =
+    ((length / BINARY_UNIT_SIZE)
+     + ((length % BINARY_UNIT_SIZE) ? 1 : 0))
+    * BASE64_UNIT_SIZE;
+    if (separateLines)
+    {
+        outputBufferSize +=
+        (outputBufferSize / OUTPUT_LINE_LENGTH) * CR_LF_SIZE;
+    }
+    
+    //
+    // Include space for a terminating zero
+    //
+    outputBufferSize += 1;
+    
+    //
+    // Allocate the output buffer
+    //
+    char *outputBuffer = (char *)malloc(outputBufferSize);
+    if (!outputBuffer)
+    {
+        return NULL;
+    }
+    
+    size_t i = 0;
+    size_t j = 0;
+    const size_t lineLength = separateLines ? INPUT_LINE_LENGTH : length;
+    size_t lineEnd = lineLength;
+    
+    while (true)
+    {
+        if (lineEnd > length)
+        {
+            lineEnd = length;
+        }
+        
+        for (; i + BINARY_UNIT_SIZE - 1 < lineEnd; i += BINARY_UNIT_SIZE)
+        {
+            //
+            // Inner loop: turn 48 bytes into 64 base64 characters
+            //
+            outputBuffer[j++] = base64EncodeLookup[(inputBuffer[i] & 0xFC) >> 2];
+            outputBuffer[j++] = base64EncodeLookup[((inputBuffer[i] & 0x03) << 4)
+                                                   | ((inputBuffer[i + 1] & 0xF0) >> 4)];
+            outputBuffer[j++] = base64EncodeLookup[((inputBuffer[i + 1] & 0x0F) << 2)
+                                                   | ((inputBuffer[i + 2] & 0xC0) >> 6)];
+            outputBuffer[j++] = base64EncodeLookup[inputBuffer[i + 2] & 0x3F];
+        }
+        
+        if (lineEnd == length)
+        {
+            break;
+        }
+        
+        //
+        // Add the newline
+        //
+        outputBuffer[j++] = '\r';
+        outputBuffer[j++] = '\n';
+        lineEnd += lineLength;
+    }
+    
+    if (i + 1 < length)
+    {
+        //
+        // Handle the single '=' case
+        //
+        outputBuffer[j++] = base64EncodeLookup[(inputBuffer[i] & 0xFC) >> 2];
+        outputBuffer[j++] = base64EncodeLookup[((inputBuffer[i] & 0x03) << 4)
+                                               | ((inputBuffer[i + 1] & 0xF0) >> 4)];
+        outputBuffer[j++] = base64EncodeLookup[(inputBuffer[i + 1] & 0x0F) << 2];
+        outputBuffer[j++] =	'=';
+    }
+    else if (i < length)
+    {
+        //
+        // Handle the double '=' case
+        //
+        outputBuffer[j++] = base64EncodeLookup[(inputBuffer[i] & 0xFC) >> 2];
+        outputBuffer[j++] = base64EncodeLookup[(inputBuffer[i] & 0x03) << 4];
+        outputBuffer[j++] = '=';
+        outputBuffer[j++] = '=';
+    }
+    outputBuffer[j] = 0;
+    
+    //
+    // Set the output length and return the buffer
+    //
+    //    if (outputLength)
+    //    {
+    //        outputLength = j;
+    //    }
+    
+    //    return outputBuffer;
+    
+	NSString *result = [[NSString alloc] initWithBytes:outputBuffer length:j encoding:NSASCIIStringEncoding];
+    free(outputBuffer);
+    
+    return result;
+}
+
+
+#pragma mark TODO - change server to send codes list too;
+
+//-(void) updateInternalCountryCodesList;
+//{
+//#if defined(SNOW_SERVER)
+//    
+////    [self createCountrySpecificCodesInCoreDataForMainSystem:mainSystem];
+////    [self finalSave:moc];
+//    
+//#else
+//
+//    CompanyStuff *authorizedUser = [self authorization];
+//    NSArray *allGUIDsMainSystem = [self getAllObjectsListWithEntityForList:@"MainSystem" withMainObjectGUID:nil withMainObjectEntity:nil withAdmin:authorizedUser withDateFrom:nil withDateTo:nil];
+//    NSArray *allObjectsForGUIDS = [self getAllObjectsWithGUIDs:allGUIDsMainSystem withEntity:@"MainSystem" withAdmin:authorizedUser];
+//    [self updateGraphForObjects:allObjectsForGUIDS withEntity:@"MainSystem" withAdmin:authorizedUser withRootObject:nil isEveryTenPercentSave:NO isNecessaryToLocalRegister:NO];
+//    [self finalSave:moc];
+//
+//    NSError *error = nil;
+//    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+//    [fetchRequest setEntity:[NSEntityDescription entityForName:@"MainSystem" inManagedObjectContext:self.moc]];
+//    [fetchRequest setPredicate:nil];
+//    NSArray *result = [self.moc executeFetchRequest:fetchRequest error:&error];
+//    MainSystem *mainSystem = result.lastObject;
+//    NSArray *allGUIDsCodesSpecific = [self getAllObjectsListWithEntityForList:@"CountrySpecificCodeList" withMainObjectGUID:mainSystem.GUID withMainObjectEntity:@"MainSystem" withAdmin:authorizedUser withDateFrom:nil withDateTo:nil];
+//    NSArray *allObjectsCodesSpecificForGUIDS = [self getAllObjectsWithGUIDs:allGUIDsCodesSpecific withEntity:@"CountrySpecificCodeList" withAdmin:authorizedUser];
+//    
+//    //NSArray *updatedCodesSpecificIDs = 
+//    if (allGUIDsCodesSpecific && allObjectsCodesSpecificForGUIDS) [self updateGraphForObjects:allObjectsCodesSpecificForGUIDS withEntity:@"CountrySpecificCodeList" withAdmin:authorizedUser withRootObject:mainSystem isEveryTenPercentSave:YES isNecessaryToLocalRegister:NO];
+////    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+//    [self finalSave:moc];
+////    NSUInteger countForCodes = allGUIDsCodesSpecific.count;
+////
+////    [allGUIDsCodesSpecific enumerateObjectsUsingBlock:^(NSString *guid, NSUInteger idx, BOOL *stop) {
+////        NSNumber *percentDone = [NSNumber numberWithDouble:[[NSNumber numberWithUnsignedInteger:idx] doubleValue] / [[NSNumber numberWithUnsignedInteger:countForCodes] doubleValue]];
+////        [self updateUIwithMessage:@"Parse internal codes list.." andProgressPercent:percentDone withObjectID:nil];
+////
+////        NSError *error = nil;
+////        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+////        NSEntityDescription *entity = [NSEntityDescription entityForName:@"CountrySpecificCodeList" inManagedObjectContext:self.moc];
+////        [fetchRequest setEntity:entity];
+////        [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"GUID == %@",guid]];
+////        NSArray *result = [self.moc executeFetchRequest:fetchRequest error:&error];
+////        if (result.count > 0) {
+////            CountrySpecificCodeList *lastObject = result.lastObject;
+////            [lastObject.codesList enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+////                [self.moc deleteObject:obj];
+////            }];
+////
+////            NSString *codes = lastObject.codes;
+////            NSArray *codesList = [codes componentsSeparatedByString:@","];
+////            [codesList enumerateObjectsUsingBlock:^(NSString *code, NSUInteger idx, BOOL *stop) {
+////                NSNumber *codeNumber = [formatter numberFromString:code];
+////                //NSLog(@"CLIENT CONTROLLER: first setup code created:%@ for country:%@",codeNumber,lastObject.country);
+////                
+////                CodesList *new = (CodesList *)[NSEntityDescription insertNewObjectForEntityForName:@"CodesList" inManagedObjectContext:self.moc];
+////                new.countrySpecificCodesList = lastObject;
+////                new.code = codeNumber;
+////            }];
+////            [self finalSave:self.moc];
+////
+////        } else NSLog(@"CLIENT CONTROLLER: first setup, warning, CountrySpecificCodeList not founded to create CodeList");
+////        //if ((idx % countForCodes * 0.1 == 0)) [self finalSave:self.moc];//,NSLog(@">>>>>>>updateGraphForObjects SAVED");
+////
+////    }];
+////    [formatter release];
+//    //NSLog(@">>>>>> updated codes specific IDs:%@",updatedCodesSpecificIDs);
+//    //[self finalSave:self.moc];
+//
+//#endif
+//    
+//
+//}
 
 #pragma mark TODO move codes chanking to another function to avoid waiting companies list
 - (MainSystem *) firstSetup;
@@ -1094,16 +1437,90 @@ static const short _base64DecodingTable[256] = {
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    //NSLog(@"challenge");
+    NSLog(@"challenge");
     //    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
-    NSString *user = [NSString stringWithFormat:@"%c%s%@", 'a', "le", @"x"];
-    NSString *password = [NSString stringWithFormat:@"%c%s%c%@", 'A', "87AE19C-FEBB", '-', @"4C4C-A534-3CD036ED072A"];
-    
-    NSURLCredential *credential = [NSURLCredential credentialWithUser:user
-                                                             password:password
-                                                          persistence:NSURLCredentialPersistenceForSession];
-    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-    
+//    NSString *user = [NSString stringWithFormat:@"%c%s%@", 'a', "le", @"x"];
+//    NSString *password = [NSString stringWithFormat:@"%c%s%c%@", 'A', "87AE19C-FEBB", '-', @"4C4C-A534-3CD036ED072A"];
+//    
+//    NSURLCredential *credential = [NSURLCredential credentialWithUser:user
+//                                                             password:password
+//                                                          persistence:NSURLCredentialPersistenceForSession];
+//    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
+    {
+        
+        SecTrustRef trustRef = [[challenge protectionSpace] serverTrust];
+        SecTrustEvaluate(trustRef, NULL);
+        CFIndex count = SecTrustGetCertificateCount(trustRef);
+        BOOL trust = NO;
+        if(count > 0){
+            SecCertificateRef certRef = SecTrustGetCertificateAtIndex(trustRef, 0);
+            CFStringRef certSummary = SecCertificateCopySubjectSummary(certRef);
+            //NSString* certSummaryNs = (__bridge NSString*)certSummary;
+            //NSLog(@"cert name:%@",certSummaryNs);
+            
+            NSData *data = (__bridge_transfer NSData *) SecCertificateCopyData(certRef);
+            // .. we have a certificate in DER format!
+            //NSLog(@"received:%@",data);
+            
+            NSURL *indexURL = [[NSBundle mainBundle] URLForResource:@"testvoiproutes.com" withExtension:@"p12"];
+            
+            NSData *localP12 = [NSData dataWithContentsOfURL:indexURL];
+            
+            NSMutableDictionary * options = [[NSMutableDictionary alloc] init];
+            
+            // Set the public key query dictionary
+            //change to your .pfx  password here
+            NSString *password = [NSString stringWithFormat:@"%c%s%c%@", '6', "17b74c906a", '7', @"7742aab3bdbd11559faf"];
+            
+            
+            [options setObject:password forKey:(__bridge id)kSecImportExportPassphrase];
+            
+            CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+            
+            OSStatus securityError = SecPKCS12Import((__bridge CFDataRef) localP12,
+                                                     (__bridge CFDictionaryRef)options, &items);
+            
+            if (securityError == noErr) {
+                // good
+            } else {
+                //bad
+            }
+            
+            CFDictionaryRef identityDict = CFArrayGetValueAtIndex(items, 0);
+            CFArrayRef certificates =
+            (CFArrayRef)CFDictionaryGetValue(identityDict,
+                                             kSecImportItemCertChain);
+            
+            SecCertificateRef localCert = (SecCertificateRef)CFArrayGetValueAtIndex(certificates,0);
+            CFDataRef dataLocal = SecCertificateCopyData(localCert);
+            
+            NSData *local = (__bridge NSData *)dataLocal;
+            
+            //NSLog(@"local:%@",local);
+            
+            if ([data isEqualToData:local]) trust = YES;
+            //else NSLog(@"wrong");
+            
+            //            if([certSummaryNs isEqualToString:@"webcob.net"]){ // split host n
+            //                trust = YES;
+            //            }else{
+            //                NSLog(@"Certificate name does not have required common name");
+            //            }
+            CFRelease(certSummary);
+            CFRelease((CFDataRef) dataLocal);
+            
+        }
+        if(trust){
+            [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+        }else{
+            [challenge.sender cancelAuthenticationChallenge:challenge];
+        }
+    } else {
+        
+    }
+
     
     //    [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
     
@@ -1179,24 +1596,42 @@ static const short _base64DecodingTable[256] = {
 
 -(NSDictionary *) getJSONAnswerForFunction:(NSString *)function withJSONRequest:(NSMutableDictionary *)request;
 {
-//    CompanyStuff *admin = [self authorization];
+    //CompanyStuff *admin = [self authorization];
+    [request setValue:@"1.0" forKey:@"version"];
+    NSString *userEmail = [request valueForKey:@"authorizedUserEmail"];
+    //if (!userEmail) userEmail = [request valueForKey:@"userEmail"];
+    if (!userEmail) userEmail = [request valueForKey:@"login"];
+    NSDate *currentDate = [NSDate date];
+    NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+    [formatterDate setDateFormat:@"yyyyMMddHHmmssSSS"];
+    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [formatterDate setLocale:usLocale];
 
-    [request setValue:@"hash" forKey:@"hash"];
+    NSString *dateString = [formatterDate stringFromDate:currentDate];
+    [request setValue:[formatterDate stringFromDate:currentDate] forKey:@"customerTime"];
+    [request setValue:[self hashForEmail:userEmail withDateString:dateString] forKey:@"hash"];
+
+//    [request setValue:@"hash" forKey:@"hash"];
 //    UIDevice *myDevice = [UIDevice currentDevice];
 //    NSString *deviceUDID = [myDevice uniqueIdentifier];
 //    if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
 //    else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
 
+    
+    
+    
     UIDevice *myDevice = [UIDevice currentDevice];
     NSString *deviceUDID = nil;
+
     if ([myDevice respondsToSelector:@selector(uniqueIdentifier)]) {
-        deviceUDID = [myDevice uniqueIdentifier];
+        deviceUDID = [myDevice uniqueIdentifier].copy;
     } else {
         if ([myDevice respondsToSelector:@selector(identifierForVendor)]) {
-            deviceUDID = [[myDevice identifierForVendor] UUIDString];
+            deviceUDID = [[myDevice identifierForVendor] UUIDString].copy;
         }
     }
-    if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
+
+        if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
     else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
 
     
@@ -1226,7 +1661,7 @@ static const short _base64DecodingTable[256] = {
         NSURL *urlForRequest = [NSURL URLWithString:functionString relativeToURL:mainServer];
         
         NSMutableURLRequest *requestToServer = [NSMutableURLRequest requestWithURL:urlForRequest];
-        //NSLog(@"CLIENT CONTROLLER: URL:%@",requestToServer);
+        NSLog(@"CLIENT CONTROLLER: URL:%@",requestToServer);
         
         [requestToServer setHTTPMethod:@"POST"];
         
@@ -1269,7 +1704,7 @@ static const short _base64DecodingTable[256] = {
     NSData *receivedResult = [[NSData alloc] initWithData:receivedData];
 
     NSString *answer = [[NSString alloc] initWithData:receivedResult encoding:NSUTF8StringEncoding];
-    //NSLog(@"CLIENT CONTROLLER: ANSWER:%@",answer);
+    NSLog(@"CLIENT CONTROLLER: ANSWER:%@",answer);
     
     //[receivedData release];
     JSONDecoder *jkitDecoder = [JSONDecoder decoder];
@@ -1295,160 +1730,160 @@ static const short _base64DecodingTable[256] = {
 #pragma mark -
 #pragma mark GetCompaniesList methods
 
--(void)getCompaniesListWithImmediatelyStart:(BOOL)isImmediatelyStart;
-{
-    //    if (sender && [sender respondsToSelector:@selector(updateUIWithData:)]) {
-    //        [sender performSelector:@selector(updateUIWithData:) withObject:[NSArray arrayWithObject:@"get companies start"]];
-    //    }
-    NSDate *lastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:@"lastGraphUpdatingTime"];
-    if (lastUpdate == nil || -[lastUpdate timeIntervalSinceNow] > 360 || isImmediatelyStart) {
-        
-        CompanyStuff *currentAdmin = [self authorization];
-        
-        NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
-        
-        [self updateUIwithMessage:@"get companies started" withObjectID:nil withLatestMessage:NO error:NO];
-        
-        NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"GetCompaniesList" withJSONRequest:prepeareForJSONRequest];
-        
-        //NSLog(@"CLIENT CONTROLLER: get companies received:%@",receivedObject);
-        
-        [self updateUIwithMessage:@"get companies processing" withObjectID:nil withLatestMessage:NO error:NO];
-        
-        NSArray *companiesList = [receivedObject valueForKey:@"companiesList"];
-
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-        __block NSEntityDescription *entity = [NSEntityDescription entityForName:@"CurrentCompany" inManagedObjectContext:self.moc];
-        [fetchRequest setEntity:entity];
-        __block NSError *error = nil;
-        __unsafe_unretained NSMutableArray *allLocalCompanies = [NSMutableArray arrayWithArray:[self.moc executeFetchRequest:fetchRequest error:&error]];
-
-        
-        [companiesList enumerateObjectsUsingBlock:^(NSDictionary *companyInfo, NSUInteger idx, BOOL *stop) {
-            NSString *objectGUID = [companyInfo valueForKey:@"GUID"];
-            NSArray *companyStuff = [companyInfo valueForKey:@"companyStuff"];
-            //NSString *adminGUID = [companyAdmin valueForKey:@"GUID"];
-            NSMutableDictionary *clearCompanyInfo = [NSMutableDictionary dictionaryWithDictionary:companyInfo];
-            [clearCompanyInfo removeObjectForKey:@"companyStuff"];
-            
-//            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-//            NSEntityDescription *entity = [NSEntityDescription entityForName:@"CurrentCompany" inManagedObjectContext:self.moc];
-//            [fetchRequest setEntity:entity];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",objectGUID];
-//            [fetchRequest setPredicate:predicate];
-//            NSError *error = nil;
-//            NSArray *fetchedObjects = [self.moc executeFetchRequest:fetchRequest error:&error];
-            NSArray *fetchedObjects = [allLocalCompanies filteredArrayUsingPredicate:predicate];
-            if (fetchedObjects == nil)  NSLog(@"Failed to executeFetchRequest:%@ to data store: %@ in function:%@",fetchRequest, [error localizedDescription],NSStringFromSelector(_cmd));
-            CurrentCompany *companyForChanges = nil;
-        
-            
-            if ([fetchedObjects count] == 0) {
-                // only if we create company, this mean's that this company from external server, not local
-                companyForChanges = (CurrentCompany *)[NSEntityDescription 
-                                                       insertNewObjectForEntityForName:@"CurrentCompany" 
-                                                       inManagedObjectContext:self.moc];
-                [self setValuesFromDictionary:clearCompanyInfo anObject:companyForChanges];
-                
-                NSMutableDictionary *clientInfo = [NSMutableDictionary dictionaryWithCapacity:0];
-                [clientInfo setValue:@"external server" forKey:@"update"];
-                [[NSUserDefaults standardUserDefaults] setObject:clientInfo forKey:companyForChanges.GUID];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                
-            };
-            if ([fetchedObjects count] == 1) { 
-                companyForChanges = [fetchedObjects lastObject];
-                [self setValuesFromDictionary:clearCompanyInfo anObject:companyForChanges];
-                [allLocalCompanies removeObject:companyForChanges];
-            };
-            //if (![companyForChanges.GUID isEqualToString:currentAdmin.currentCompany.GUID]) {
-                // all company list updates need only if company not current
-            if ([[companyStuff class] isSubclassOfClass:[NSArray class]]) [companyStuff enumerateObjectsUsingBlock:^(NSDictionary *stuffDict, NSUInteger idx, BOOL *stop) {
-                NSString *guid = [stuffDict valueForKey:@"GUID"];
-             
-                CompanyStuff *stuff = nil;
-                NSEntityDescription *entity = [NSEntityDescription entityForName:@"CompanyStuff" inManagedObjectContext:self.moc];
-                [fetchRequest setEntity:entity];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",guid];
-                [fetchRequest setPredicate:predicate];
-                NSArray *allLocalStuff = [self.moc executeFetchRequest:fetchRequest error:&error];
-                
-                if ([allLocalStuff count] == 0 && guid) { 
-                    stuff = (CompanyStuff *)[NSEntityDescription 
-                                             insertNewObjectForEntityForName:@"CompanyStuff" 
-                                             inManagedObjectContext:self.moc];
-                    
-                } else {
-                    stuff = allLocalStuff.lastObject;
-                }
-                stuff.currentCompany = companyForChanges;
-                
-                [self setValuesFromDictionary:stuffDict anObject:stuff];
-
-//                if ([fetchedObjects count] == 1) { 
-//                    admin = [fetchedObjects lastObject];
-//                };
-//                // don't update password to nil for current admin
-//                if (admin && admin != currentAdmin) { 
-//                    admin.currentCompany = companyForChanges;
-//                    [self setValuesFromDictionary:companyAdmin anObject:admin];
-//                    //NSLog(@"CLIENT CONTROLLER: admin with email:%@ was updated",admin.email);
+//-(void)getCompaniesListWithImmediatelyStart:(BOOL)isImmediatelyStart;
+//{
+//    //    if (sender && [sender respondsToSelector:@selector(updateUIWithData:)]) {
+//    //        [sender performSelector:@selector(updateUIWithData:) withObject:[NSArray arrayWithObject:@"get companies start"]];
+//    //    }
+//    NSDate *lastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:@"lastGraphUpdatingTime"];
+//    if (lastUpdate == nil || -[lastUpdate timeIntervalSinceNow] > 360 || isImmediatelyStart) {
+//        
+//        CompanyStuff *currentAdmin = [self authorization];
+//        
+//        NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
+//        
+//        [self updateUIwithMessage:@"get companies started" withObjectID:nil withLatestMessage:NO error:NO];
+//        
+//        NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"GetCompaniesList" withJSONRequest:prepeareForJSONRequest];
+//        
+//        //NSLog(@"CLIENT CONTROLLER: get companies received:%@",receivedObject);
+//        
+//        [self updateUIwithMessage:@"get companies processing" withObjectID:nil withLatestMessage:NO error:NO];
+//        
+//        NSArray *companiesList = [receivedObject valueForKey:@"companiesList"];
+//
+//        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+//        __block NSEntityDescription *entity = [NSEntityDescription entityForName:@"CurrentCompany" inManagedObjectContext:self.moc];
+//        [fetchRequest setEntity:entity];
+//        __block NSError *error = nil;
+//        __unsafe_unretained NSMutableArray *allLocalCompanies = [NSMutableArray arrayWithArray:[self.moc executeFetchRequest:fetchRequest error:&error]];
+//
+//        
+//        [companiesList enumerateObjectsUsingBlock:^(NSDictionary *companyInfo, NSUInteger idx, BOOL *stop) {
+//            NSString *objectGUID = [companyInfo valueForKey:@"GUID"];
+//            NSArray *companyStuff = [companyInfo valueForKey:@"companyStuff"];
+//            //NSString *adminGUID = [companyAdmin valueForKey:@"GUID"];
+//            NSMutableDictionary *clearCompanyInfo = [NSMutableDictionary dictionaryWithDictionary:companyInfo];
+//            [clearCompanyInfo removeObjectForKey:@"companyStuff"];
+//            
+////            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+////            NSEntityDescription *entity = [NSEntityDescription entityForName:@"CurrentCompany" inManagedObjectContext:self.moc];
+////            [fetchRequest setEntity:entity];
+//            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",objectGUID];
+////            [fetchRequest setPredicate:predicate];
+////            NSError *error = nil;
+////            NSArray *fetchedObjects = [self.moc executeFetchRequest:fetchRequest error:&error];
+//            NSArray *fetchedObjects = [allLocalCompanies filteredArrayUsingPredicate:predicate];
+//            if (fetchedObjects == nil)  NSLog(@"Failed to executeFetchRequest:%@ to data store: %@ in function:%@",fetchRequest, [error localizedDescription],NSStringFromSelector(_cmd));
+//            CurrentCompany *companyForChanges = nil;
+//        
+//            
+//            if ([fetchedObjects count] == 0) {
+//                // only if we create company, this mean's that this company from external server, not local
+//                companyForChanges = (CurrentCompany *)[NSEntityDescription 
+//                                                       insertNewObjectForEntityForName:@"CurrentCompany" 
+//                                                       inManagedObjectContext:self.moc];
+//                [self setValuesFromDictionary:clearCompanyInfo anObject:companyForChanges];
+//                
+//                NSMutableDictionary *clientInfo = [NSMutableDictionary dictionaryWithCapacity:0];
+//                [clientInfo setValue:@"external server" forKey:@"update"];
+//                [[NSUserDefaults standardUserDefaults] setObject:clientInfo forKey:companyForChanges.GUID];
+//                [[NSUserDefaults standardUserDefaults] synchronize];
+//                
+//            };
+//            if ([fetchedObjects count] == 1) { 
+//                companyForChanges = [fetchedObjects lastObject];
+//                [self setValuesFromDictionary:clearCompanyInfo anObject:companyForChanges];
+//                [allLocalCompanies removeObject:companyForChanges];
+//            };
+//            //if (![companyForChanges.GUID isEqualToString:currentAdmin.currentCompany.GUID]) {
+//                // all company list updates need only if company not current
+//            if ([[companyStuff class] isSubclassOfClass:[NSArray class]]) [companyStuff enumerateObjectsUsingBlock:^(NSDictionary *stuffDict, NSUInteger idx, BOOL *stop) {
+//                NSString *guid = [stuffDict valueForKey:@"GUID"];
+//             
+//                CompanyStuff *stuff = nil;
+//                NSEntityDescription *entity = [NSEntityDescription entityForName:@"CompanyStuff" inManagedObjectContext:self.moc];
+//                [fetchRequest setEntity:entity];
+//                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",guid];
+//                [fetchRequest setPredicate:predicate];
+//                NSArray *allLocalStuff = [self.moc executeFetchRequest:fetchRequest error:&error];
+//                
+//                if ([allLocalStuff count] == 0 && guid) { 
+//                    stuff = (CompanyStuff *)[NSEntityDescription 
+//                                             insertNewObjectForEntityForName:@"CompanyStuff" 
+//                                             inManagedObjectContext:self.moc];
 //                    
+//                } else {
+//                    stuff = allLocalStuff.lastObject;
 //                }
-                
-            }];  
-            else {
-                NSString *guid = [companyStuff valueForKey:@"GUID"];
-                
-                CompanyStuff *stuff = nil;
-                NSEntityDescription *entity = [NSEntityDescription entityForName:@"CompanyStuff" inManagedObjectContext:self.moc];
-                [fetchRequest setEntity:entity];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",guid];
-                [fetchRequest setPredicate:predicate];
-                NSArray *allLocalStuff = [self.moc executeFetchRequest:fetchRequest error:&error];
-                
-                if ([allLocalStuff count] == 0 && guid) { 
-                    stuff = (CompanyStuff *)[NSEntityDescription 
-                                             insertNewObjectForEntityForName:@"CompanyStuff" 
-                                             inManagedObjectContext:self.moc];
-                    
-                } else {
-                    stuff = allLocalStuff.lastObject;
-                }
-                stuff.currentCompany = companyForChanges;
-                
-                [self setValuesFromDictionary:(NSDictionary *)companyStuff anObject:stuff];
-
-            }
-                // final updates for both objects
-                
-                //NSLog(@"status for company:%@",[[NSUserDefaults standardUserDefaults] objectForKey:companyForChanges.GUID]);
-            //} else NSLog(@"Don't do updates for company:%@ and guid:%@",companyForChanges.name,companyForChanges.GUID);
-            //NSLog(@"finalUpdateForCompany:%@ withAdmin:%@",companyForChanges,admin);
-            //[fetchRequest release];
-        }];
-        
-        NSMutableArray *idsForRemove = [NSMutableArray array];
-        
-        [allLocalCompanies enumerateObjectsUsingBlock:^(CurrentCompany *companyForRemoving, NSUInteger idx, BOOL *stop) {
-            if (companyForRemoving.objectID != currentAdmin.currentCompany.objectID) { 
-                [idsForRemove addObject:companyForRemoving.objectID];
-                NSLog(@"CLIENT CONTROLLER: company %@ is not on server and will removing",companyForRemoving.name);
-            }
-        }];
-        
-        [idsForRemove enumerateObjectsUsingBlock:^(NSManagedObjectID *idForRemove, NSUInteger idx, BOOL *stop) {
-            [self.moc deleteObject:[self.moc objectWithID:idForRemove]];
-        }];
-        
-        NSLog(@"CLIENT CONTROLLER: get companies finish.");
-        [self finalSave:self.moc];
-        [self updateUIwithMessage:@"get companies finish" withObjectID:nil withLatestMessage:YES error:YES];
-        [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"lastGraphUpdatingTime"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-    } else NSLog(@"CLIENT CONTROLLER: warning, get companies list not started");
-}
+//                stuff.currentCompany = companyForChanges;
+//                
+//                [self setValuesFromDictionary:stuffDict anObject:stuff];
+//
+////                if ([fetchedObjects count] == 1) { 
+////                    admin = [fetchedObjects lastObject];
+////                };
+////                // don't update password to nil for current admin
+////                if (admin && admin != currentAdmin) { 
+////                    admin.currentCompany = companyForChanges;
+////                    [self setValuesFromDictionary:companyAdmin anObject:admin];
+////                    //NSLog(@"CLIENT CONTROLLER: admin with email:%@ was updated",admin.email);
+////                    
+////                }
+//                
+//            }];  
+//            else {
+//                NSString *guid = [companyStuff valueForKey:@"GUID"];
+//                
+//                CompanyStuff *stuff = nil;
+//                NSEntityDescription *entity = [NSEntityDescription entityForName:@"CompanyStuff" inManagedObjectContext:self.moc];
+//                [fetchRequest setEntity:entity];
+//                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(GUID == %@)",guid];
+//                [fetchRequest setPredicate:predicate];
+//                NSArray *allLocalStuff = [self.moc executeFetchRequest:fetchRequest error:&error];
+//                
+//                if ([allLocalStuff count] == 0 && guid) { 
+//                    stuff = (CompanyStuff *)[NSEntityDescription 
+//                                             insertNewObjectForEntityForName:@"CompanyStuff" 
+//                                             inManagedObjectContext:self.moc];
+//                    
+//                } else {
+//                    stuff = allLocalStuff.lastObject;
+//                }
+//                stuff.currentCompany = companyForChanges;
+//                
+//                [self setValuesFromDictionary:(NSDictionary *)companyStuff anObject:stuff];
+//
+//            }
+//                // final updates for both objects
+//                
+//                //NSLog(@"status for company:%@",[[NSUserDefaults standardUserDefaults] objectForKey:companyForChanges.GUID]);
+//            //} else NSLog(@"Don't do updates for company:%@ and guid:%@",companyForChanges.name,companyForChanges.GUID);
+//            //NSLog(@"finalUpdateForCompany:%@ withAdmin:%@",companyForChanges,admin);
+//            //[fetchRequest release];
+//        }];
+//        
+//        NSMutableArray *idsForRemove = [NSMutableArray array];
+//        
+//        [allLocalCompanies enumerateObjectsUsingBlock:^(CurrentCompany *companyForRemoving, NSUInteger idx, BOOL *stop) {
+//            if (companyForRemoving.objectID != currentAdmin.currentCompany.objectID) { 
+//                [idsForRemove addObject:companyForRemoving.objectID];
+//                NSLog(@"CLIENT CONTROLLER: company %@ is not on server and will removing",companyForRemoving.name);
+//            }
+//        }];
+//        
+//        [idsForRemove enumerateObjectsUsingBlock:^(NSManagedObjectID *idForRemove, NSUInteger idx, BOOL *stop) {
+//            [self.moc deleteObject:[self.moc objectWithID:idForRemove]];
+//        }];
+//        
+//        NSLog(@"CLIENT CONTROLLER: get companies finish.");
+//        [self finalSave:self.moc];
+//        [self updateUIwithMessage:@"get companies finish" withObjectID:nil withLatestMessage:YES error:YES];
+//        [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"lastGraphUpdatingTime"];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//        
+//    } else NSLog(@"CLIENT CONTROLLER: warning, get companies list not started");
+//}
 #pragma mark -
 #pragma mark GetObjects methods
 -(void) makeUpdatesForEvents:(NSArray *)eventsExternal;
@@ -2389,109 +2824,109 @@ static const short _base64DecodingTable[256] = {
 
 }
 
--(NSString *)getAllObjectsForEntity:(NSString *)entityName immediatelyStart:(BOOL)isImmediatelyStart isUserAuthorized:(BOOL)isUserAuthorized;
-{
-    CompanyStuff *admin = [self authorization];
-    if (isUserAuthorized) admin.isRegistrationDone = [NSNumber numberWithBool:YES];
-    
-//    if ([admin.isRegistrationDone boolValue] == NO) {
-//        [self updateUIwithMessage:@"Current company admin still not approve you." withObjectID:admin.objectID withLatestMessage:YES error:YES];
-//        return @"Current company admin still not approve you.";
-//    }
-    
-    NSDate *lastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:@"lastGraphUpdatingTime"];
-    NSNumber *isCurrentUpdateProcessing = [[NSUserDefaults standardUserDefaults] objectForKey:@"isCurrentUpdateProcessing"];
-    if (lastUpdate == nil || -[lastUpdate timeIntervalSinceNow] > 60 || isImmediatelyStart) {
-        // give chanse to write all previous changes to disk
-        if (isImmediatelyStart) { 
-            if (!isCurrentUpdateProcessing) [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:YES] forKey:@"isCurrentUpdateProcessing"];
-            else {
-                while ([[[NSUserDefaults standardUserDefaults] objectForKey:@"isCurrentUpdateProcessing"] boolValue]) {
-                    NSLog(@"we are waiting while other job finish");
-                    sleep(4);
-                }
-            }
-            sleep(2);
-        }
-        NSLog(@"CLIENT CONTROLLER: get all objects started..");
-
-        [self updateUIwithMessage:@"get all objects start" withObjectID:nil withLatestMessage:NO error:NO];
-        
-        NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
-        [prepeareForJSONRequest setValue:admin.email forKey:@"authorizedUserEmail"];
-        [prepeareForJSONRequest setValue:admin.password forKey:@"authorizedUserPassword"];
-        [prepeareForJSONRequest setValue:admin.currentCompany.GUID forKey:@"objectGUID"];
-        [prepeareForJSONRequest setValue:entityName forKey:@"objectEntity"];
-        [prepeareForJSONRequest setValue:[NSNumber numberWithBool:YES] forKey:@"isIncludeSubEntities"];
-        [prepeareForJSONRequest setValue:[NSNumber numberWithBool:NO] forKey:@"isIncludeAllObjects"];
-        //NSLog(@"CLIENT CONTROLLER: GetObjects sent:%@",prepeareForJSONRequest);
-        
-        NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"GetObjects" withJSONRequest:prepeareForJSONRequest];
-        if (receivedObject) {
-            [self updateUIwithMessage:@"get all objects processing" withObjectID:nil withLatestMessage:NO error:NO];
-            
-            //NSLog(@"CLIENT CONTROLLER: GetObjects Received:%@",receivedObject);
-            NSString *error = [receivedObject valueForKey:@"error"];
-            if (error) {  
-                [self updateUIwithMessage:error withObjectID:nil withLatestMessage:NO error:YES];
-                return error;
-            } else {
-                // here is update internal graph
-                if ([entityName isEqualToString:@"CurrentCompany"]) { 
-                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
-                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
-                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
-                    
-                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
-                    //NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
-                    [self makeUpdatesForCurrentCompany:listObjects];
-                }
-                if ([entityName isEqualToString:@"CompanyStuff"]) {
-                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
-                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
-                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
-                    
-                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
-                    //                NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
-                    [self makeUpdatesForCompanyStuff:listObjects withCurrentCompany:admin.currentCompany];
-                }
-                if ([entityName isEqualToString:@"Carrier"]) { 
-                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
-                    //NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
-                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
-                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
-                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
-                    
-                    [self makeUpdatesForCarrier:listObjects withCompanyStuff:admin];
-                }
-                if ([entityName isEqualToString:@"Events"]) {
-                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
-                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
-                    NSArray *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
-                    [self makeUpdatesForEvents:listObjects];
-                }
-//                if ([entityName isEqualToString:@"CountrySpecificCodesList"]) {
+//-(NSString *)getAllObjectsForEntity:(NSString *)entityName immediatelyStart:(BOOL)isImmediatelyStart isUserAuthorized:(BOOL)isUserAuthorized;
+//{
+//    CompanyStuff *admin = [self authorization];
+//    if (isUserAuthorized) admin.isRegistrationDone = [NSNumber numberWithBool:YES];
+//    
+////    if ([admin.isRegistrationDone boolValue] == NO) {
+////        [self updateUIwithMessage:@"Current company admin still not approve you." withObjectID:admin.objectID withLatestMessage:YES error:YES];
+////        return @"Current company admin still not approve you.";
+////    }
+//    
+//    NSDate *lastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:@"lastGraphUpdatingTime"];
+//    NSNumber *isCurrentUpdateProcessing = [[NSUserDefaults standardUserDefaults] objectForKey:@"isCurrentUpdateProcessing"];
+//    if (lastUpdate == nil || -[lastUpdate timeIntervalSinceNow] > 60 || isImmediatelyStart) {
+//        // give chanse to write all previous changes to disk
+//        if (isImmediatelyStart) { 
+//            if (!isCurrentUpdateProcessing) [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:YES] forKey:@"isCurrentUpdateProcessing"];
+//            else {
+//                while ([[[NSUserDefaults standardUserDefaults] objectForKey:@"isCurrentUpdateProcessing"] boolValue]) {
+//                    NSLog(@"we are waiting while other job finish");
+//                    sleep(4);
+//                }
+//            }
+//            sleep(2);
+//        }
+//        NSLog(@"CLIENT CONTROLLER: get all objects started..");
+//
+//        [self updateUIwithMessage:@"get all objects start" withObjectID:nil withLatestMessage:NO error:NO];
+//        
+//        NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
+//        [prepeareForJSONRequest setValue:admin.email forKey:@"authorizedUserEmail"];
+//        [prepeareForJSONRequest setValue:admin.password forKey:@"authorizedUserPassword"];
+//        [prepeareForJSONRequest setValue:admin.currentCompany.GUID forKey:@"objectGUID"];
+//        [prepeareForJSONRequest setValue:entityName forKey:@"objectEntity"];
+//        [prepeareForJSONRequest setValue:[NSNumber numberWithBool:YES] forKey:@"isIncludeSubEntities"];
+//        [prepeareForJSONRequest setValue:[NSNumber numberWithBool:NO] forKey:@"isIncludeAllObjects"];
+//        //NSLog(@"CLIENT CONTROLLER: GetObjects sent:%@",prepeareForJSONRequest);
+//        
+//        NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"GetObjects" withJSONRequest:prepeareForJSONRequest];
+//        if (receivedObject) {
+//            [self updateUIwithMessage:@"get all objects processing" withObjectID:nil withLatestMessage:NO error:NO];
+//            
+//            //NSLog(@"CLIENT CONTROLLER: GetObjects Received:%@",receivedObject);
+//            NSString *error = [receivedObject valueForKey:@"error"];
+//            if (error) {  
+//                [self updateUIwithMessage:error withObjectID:nil withLatestMessage:NO error:YES];
+//                return error;
+//            } else {
+//                // here is update internal graph
+//                if ([entityName isEqualToString:@"CurrentCompany"]) { 
+//                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
+//                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
+//                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
+//                    
+//                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
+//                    //NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
+//                    [self makeUpdatesForCurrentCompany:listObjects];
+//                }
+//                if ([entityName isEqualToString:@"CompanyStuff"]) {
+//                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
+//                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
+//                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
+//                    
+//                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
+//                    //                NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
+//                    [self makeUpdatesForCompanyStuff:listObjects withCurrentCompany:admin.currentCompany];
+//                }
+//                if ([entityName isEqualToString:@"Carrier"]) { 
+//                    //NSArray *listObjects = [receivedObject valueForKey:@"objects"];
+//                    //NSDictionary *objects = [receivedObject valueForKey:@"objects"];//[listObjects lastObject];
+//                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
+//                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
+//                    NSDictionary *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
+//                    
+//                    [self makeUpdatesForCarrier:listObjects withCompanyStuff:admin];
+//                }
+//                if ([entityName isEqualToString:@"Events"]) {
 //                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
 //                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
 //                    NSArray *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
 //                    [self makeUpdatesForEvents:listObjects];
 //                }
-
-            }
-            
-            [self finalSave:self.moc];
-            [self updateUIwithMessage:@"get all objects finish" withObjectID:nil withLatestMessage:YES error:NO];
-            
-            [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"lastGraphUpdatingTime"];
-            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:NO] forKey:@"isCurrentUpdateProcessing"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
-    } else { 
-        NSLog(@"CLIENT CONTROLLER: i'm sorry, get all objects was not started.. last update time:%@ and processing:%@",lastUpdate,isCurrentUpdateProcessing);
-        return @"timeout";
-    }
-    return nil;
-}
+////                if ([entityName isEqualToString:@"CountrySpecificCodesList"]) {
+////                    NSString *allObjectsString = [receivedObject valueForKey:@"objects"];
+////                    NSData *allObjectsData = [self dataWithBase64EncodedString:allObjectsString];
+////                    NSArray *listObjects = [NSKeyedUnarchiver unarchiveObjectWithData:allObjectsData];
+////                    [self makeUpdatesForEvents:listObjects];
+////                }
+//
+//            }
+//            
+//            [self finalSave:self.moc];
+//            [self updateUIwithMessage:@"get all objects finish" withObjectID:nil withLatestMessage:YES error:NO];
+//            
+//            [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"lastGraphUpdatingTime"];
+//            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithBool:NO] forKey:@"isCurrentUpdateProcessing"];
+//            [[NSUserDefaults standardUserDefaults] synchronize];
+//        }
+//    } else { 
+//        NSLog(@"CLIENT CONTROLLER: i'm sorry, get all objects was not started.. last update time:%@ and processing:%@",lastUpdate,isCurrentUpdateProcessing);
+//        return @"timeout";
+//    }
+//    return nil;
+//}
 
 #pragma mark -
 #pragma mark GetObjects new guids methods
@@ -2539,7 +2974,7 @@ static const short _base64DecodingTable[256] = {
         
         if (error) {
             
-            NSLog(@"CLIENT CONTROLLER: getJSON answer failed to decode answer with error:%@",[error localizedDescription]);
+            NSLog(@"CLIENT CONTROLLER: getJSON answer failed to decode answer for function->%@ with error:%@",function,[error localizedDescription]);
         }
     }
     NSDictionary *finalResultToReturn = [NSDictionary dictionaryWithDictionary:finalResultAlloc];
@@ -3488,7 +3923,7 @@ static const short _base64DecodingTable[256] = {
 
 #pragma mark -
 #pragma mark V5 SOftswitch methods
--(BOOL) isCurrentUserAuthorized;
+-(NSDictionary *) isCurrentUserAuthorized;
 {
     CompanyStuff *admin = [self authorization];
     
@@ -3497,6 +3932,8 @@ static const short _base64DecodingTable[256] = {
     //if (admin.isCompanyAdmin.boolValue == NO) return NO;
     
     mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
+    //mainServer = [[NSURL alloc] initWithString:@"https://freebsd81.ixc.ua/api"];
+    
     
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
@@ -3504,12 +3941,11 @@ static const short _base64DecodingTable[256] = {
 
     NSLog(@"CLIENT CONTROLLER isCurrentUserAuthorized Sent:%@",prepeareForJSONRequest);
     
-    NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/GetCarriers" withJSONRequest:prepeareForJSONRequest];
+    NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/GetUser" withJSONRequest:prepeareForJSONRequest];
     
     if (!receivedObject) { 
         [self updateUIwithMessage:@"auth not passed" withObjectID:admin.objectID withLatestMessage:YES error:NO];
-
-        return NO;
+        return nil;
     }
     NSLog(@"isCurrentUserAuthorized receivedObject:%@",receivedObject);
     NSString *error = [receivedObject valueForKey:@"error"];
@@ -3520,12 +3956,15 @@ static const short _base64DecodingTable[256] = {
         if (error && error.length > 0) { 
             [self updateUIwithMessage:[NSString stringWithFormat:@"Authorization failed: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
 
-            return NO;
+            return nil;
         }
     }
+    NSArray *result = (NSArray *)receivedObject;
+    NSDictionary *answer = result.lastObject;
+    return answer;
     [self updateUIwithMessage:@"Login success" withObjectID:admin.objectID withLatestMessage:YES error:NO];
 
-    return YES;
+    return nil;
 
 }
 
@@ -3541,7 +3980,7 @@ static const short _base64DecodingTable[256] = {
     
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
     [prepeareForJSONRequest setValue:@"flames" forKey:@"login"];
-    [prepeareForJSONRequest setValue:@"flames123" forKey:@"password"];
+    [prepeareForJSONRequest setValue:@"Yi1MMEVXYm5YLTJmaTExNnZDSVJLU0p2Njhte" forKey:@"password"];
     
     NSString *unique = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *unique8 = [unique substringWithRange:NSMakeRange(0, 6)];
@@ -3568,9 +4007,15 @@ static const short _base64DecodingTable[256] = {
     NSString *userID = [receivedObject valueForKey:@"companyUserID"];
     
     if (userID) {
+        NSString *finalUserID = nil;
+        if ([[userID class] isSubclassOfClass:[NSNumber class]]) finalUserID = [(NSNumber *)userID stringValue];
+        else finalUserID = userID;
+        admin.userID = finalUserID;
+        [self finalSave:self.moc];
+        
         [prepeareForJSONRequest removeAllObjects];
         [prepeareForJSONRequest setValue:@"flames" forKey:@"login"];
-        [prepeareForJSONRequest setValue:@"flames123" forKey:@"password"];
+        [prepeareForJSONRequest setValue:@"Yi1MMEVXYm5YLTJmaTExNnZDSVJLU0p2Njhte" forKey:@"password"];
         [prepeareForJSONRequest setValue:userID forKey:@"userID"];
         [prepeareForJSONRequest setValue:@"861071292" forKey:@"companyID"];
         receivedObject = [self getJSONAnswerForFunction:@"api/AssignUser" withJSONRequest:prepeareForJSONRequest];
@@ -3596,6 +4041,78 @@ static const short _base64DecodingTable[256] = {
     
 }
 
+-(BOOL) getPaymentsList;
+{
+    CompanyStuff *admin = [self authorization];
+    
+    mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
+    
+    NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
+    [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
+    [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
+    [prepeareForJSONRequest setValue:admin.userID forKey:@"userID"];
+    
+    NSLog(@"CLIENT CONTROLLER getPaymentsList Sent:%@",prepeareForJSONRequest);
+    
+    NSArray *receivedObject = (NSArray *)[self getJSONAnswerForFunction:@"api/GetPayments" withJSONRequest:prepeareForJSONRequest];
+    NSLog(@"getCarriersList getPaymentsList:%@",receivedObject);
+    [receivedObject enumerateObjectsUsingBlock:^(NSDictionary *row, NSUInteger idx, BOOL *stop) {
+        NSString *transactionIdentifier = [row valueForKey:@"transactionIdentifier"];
+        
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"GrossBookRecord" inManagedObjectContext:self.moc];
+        [fetchRequest setEntity:entity];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"transactionIdentifier == %@", transactionIdentifier];
+        [fetchRequest setPredicate:predicate];
+        
+        NSError *error = nil;
+        NSInteger count = [self.moc countForFetchRequest:fetchRequest error:&error];
+        if (count == 0) {
+            NSNumber *userID = [row valueForKey:@"userID"];
+            if ([userID.stringValue isEqualToString:admin.userID]) {
+                GrossBookRecord *newRecord = (GrossBookRecord *)[NSEntityDescription insertNewObjectForEntityForName:@"GrossBookRecord" inManagedObjectContext:self.moc];
+                NSNumber *paymentAmount = [row valueForKey:@"paymentAmount"];
+                
+                NSString *paymentDate = [row valueForKey:@"paymentDate"];
+                paymentDate = [paymentDate stringByReplacingOccurrencesOfString:@"T" withString:@""];
+                paymentDate = [paymentDate stringByReplacingOccurrencesOfString:@"Z" withString:@""];
+                
+                NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+                [formatterDate setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+                
+                NSDate *creationDate = [formatterDate dateFromString:paymentDate];
+                NSString *tariffPlan = [row valueForKey:@"tariffPlan"];
+                
+                NSString *receiptFromItunes64 = [row valueForKey:@"receiptFromItunes64"];
+                NSData *receiptFromItunes = [self decodeBase64:receiptFromItunes64];
+                if (paymentAmount && ![[paymentAmount class] isSubclassOfClass:[NSNull class]]) newRecord.paymentAmount = paymentAmount;
+                newRecord.creationDate = creationDate;
+                newRecord.tariffPlan = tariffPlan;
+                newRecord.receiptFromItunes = receiptFromItunes;
+                newRecord.companyStuff = admin;
+                newRecord.transactionIdentifier = transactionIdentifier;
+                
+                NSLog(@"CREATED PAYMENT -> %@",newRecord);
+                
+            } else NSLog(@"incorrectUserID");
+
+        }
+    }];
+    [self finalSave:self.moc];
+//    NSString *error = [receivedObject valueForKey:@"error"];
+//    
+//    if ([[error class] isSubclassOfClass:[NSArray class]]) {
+//        
+//    } else {
+//        if (error && error.length > 0) return NO;
+//        
+//    }
+    
+    [self updateUIwithMessage:@"payments received" withObjectID:admin.objectID withLatestMessage:YES error:NO];
+    return YES;
+    
+}
 
 
 -(BOOL) getCarriersList;
@@ -4431,6 +4948,173 @@ static const short _base64DecodingTable[256] = {
 
     
 
+}
+
+
+-(void) sendPaymentWithTransactionReceipt:(NSData *)transactionReceipt
+                 andTransactionIdentifier:(NSString *)transactionIdentifier
+                            forDeviceUDID:(NSString *)deviceUDID
+                       forDeviceTokenData:(NSData *)deviceTokenData
+                             forOperation:(NSString *)operation;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
+        mainServer = [[NSURL alloc] initWithString:@"http://flames.ixc.ua/api"];
+
+        NSError *errorItunes = nil;
+        NSData *transactionReceiptData = transactionReceipt;
+        
+        NSString *transactionReceipt = [self base64EncodedStringWithData:transactionReceiptData];
+        NSDictionary *requestToItunes = [NSDictionary dictionaryWithObjectsAndKeys:transactionReceipt,@"receipt-data", nil];
+        //NSString *jsonStringForReturn = [requestToItunes JSONStringWithOptions:JKSerializeOptionNone serializeUnsupportedClassesUsingBlock:nil error:&errorItunes];
+        //NSLog(@">>>>>>>>>>>>>>>>sent:%@",requestToItunes);
+        NSData* bodyData = [NSJSONSerialization dataWithJSONObject:requestToItunes
+                                                           options:NSJSONWritingPrettyPrinted error:&errorItunes];
+        
+        if (errorItunes) NSLog(@"PHONE CONFIG: json decoding error:%@ ",[errorItunes localizedDescription]);
+        //NSData *bodyData = [jsonStringForReturn dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *dataForBody = [[NSData alloc] initWithData:bodyData];
+        
+        //#warning change back
+        
+        //NSString *functionString = [NSString stringWithFormat:@"https://buy.itunes.apple.com/verifyReceipt"];
+        NSString *functionString = [NSString stringWithFormat:@"https://sandbox.itunes.apple.com/verifyReceipt"];
+        NSURL *urlForRequest = [NSURL URLWithString:functionString relativeToURL:nil];
+        NSMutableURLRequest *requestToServer = [NSMutableURLRequest requestWithURL:urlForRequest];
+        [requestToServer setHTTPMethod:@"POST"];
+        [requestToServer setHTTPBody:dataForBody];
+        [requestToServer setTimeoutInterval:200];
+        NSData *receivedResult = [NSURLConnection sendSynchronousRequest:requestToServer returningResponse:nil error:&errorItunes];
+        
+        if (errorItunes) {
+            NSLog(@"PHONE CONFIGURATION: getJSON answer error download:%@",[errorItunes localizedDescription]);
+            //[self showErrorMessage:[errorItunes localizedDescription]];
+            //[self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:errorItunes:%@",[errorItunes localizedDescription]] andProgressPercent:nil];
+            [self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:errorItunes:%@",[errorItunes localizedDescription]] withObjectID:nil withLatestMessage:YES error:NO];
+
+            
+        }
+        
+        NSDictionary *finalResult = [NSJSONSerialization
+                                     JSONObjectWithData:receivedResult
+                                     options:NSJSONReadingMutableLeaves
+                                     error:&errorItunes];
+        if (errorItunes) NSLog(@"PHONE CONFIG: json decoding error:%@ ",[errorItunes localizedDescription]);
+        
+        //[jkitDecoder objectWithUTF8String:(const unsigned char *)[answer UTF8String] length:
+        //NSString *answer = [[NSString alloc] initWithData:receivedResult encoding:NSUTF8StringEncoding];
+        //JSONDecoder *jkitDecoder = [JSONDecoder decoder];
+        //NSDictionary *finalResult = nil;//[jkitDecoder objectWithUTF8String:(const unsigned char *)[answer UTF8String] length:[answer length] error:&errorItunes];
+        //NSLog(@">>>>>>>>>>>>>>>>received:%@",finalResult);
+        
+        NSNumber *status = [finalResult valueForKey:@"status"];
+        NSDictionary *receipt = [finalResult valueForKey:@"receipt"];
+        
+        //NSString *email = [[NSUserDefaults standardUserDefaults] valueForKey:@"userEmail"];
+        
+        NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
+        
+        if (deviceUDID) [prepeareForJSONRequest setValue:deviceUDID forKey:@"udid"];
+        else [prepeareForJSONRequest setValue:@"UDIDNotFound" forKey:@"udid"];
+        
+        NSString *deviceMAC = [self getMacAddress];
+        if (deviceUDID) [prepeareForJSONRequest setValue:deviceMAC forKey:@"deviceMAC"];
+        else [prepeareForJSONRequest setValue:@"macNotFound" forKey:@"deviceMAC"];
+        
+        NSLocale *current = [NSLocale currentLocale];
+        [prepeareForJSONRequest setValue:[current localeIdentifier] forKey:@"localeIdentifier"];
+        
+        NSString *deviceModel = [self getModel];
+        if (deviceModel) {
+            [prepeareForJSONRequest setValue:deviceModel forKey:@"deviceType"];
+        } else {
+            //if (delegateMain.isPad) [prepeareForJSONRequest setValue:@"iPad" forKey:@"deviceType"];
+            //else
+            [prepeareForJSONRequest setValue:@"iPhone" forKey:@"deviceType"];
+        }
+        
+        //[prepeareForJSONRequest setValue:email forKey:@"email"];
+        
+        //        AppDelegate *delegateMain = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [prepeareForJSONRequest setValue:[self getIPAddress] forKey:@"localIP"];
+        
+//        [prepeareForJSONRequest setValue:operation forKey:@"tariffPlan"];
+        [prepeareForJSONRequest setValue:transactionIdentifier forKey:@"transactionIdentifier"];
+        //[prepeareForJSONRequest setValue:transactionReceipt forKey:@"transactionReceipt"];
+        NSString *errorSerialization;
+        NSData *allArchivedObjects = [NSPropertyListSerialization dataFromPropertyList:receipt format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorSerialization];
+        if (errorSerialization) NSLog(@"PHONE CONFIGURATION: receipt error serialization:%@",errorSerialization);
+        
+        [prepeareForJSONRequest setValue:[self encodeTobase64InputData:allArchivedObjects] forKey:@"receiptFromItunes64"];
+        
+        //NSLog(@">>>>>>>>>>>>>>>>sent:%@",prepeareForJSONRequest);
+        NSDictionary *receivedObject = nil;
+        
+        NSDate *currentDate = [NSDate date];
+        NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+        [formatterDate setDateFormat:@"yyyyMMddHHmmssSSS"];
+        NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        [formatterDate setLocale:usLocale];
+        
+        NSString *dateString = [formatterDate stringFromDate:currentDate];
+        [prepeareForJSONRequest setValue:[formatterDate stringFromDate:currentDate] forKey:@"customerTime"];
+        CompanyStuff *admin = [self authorization];
+        [prepeareForJSONRequest setValue:admin.userID forKey:@"userID"];
+
+        [prepeareForJSONRequest setValue:[self hashForEmail:admin.email withDateString:dateString] forKey:@"hash"];
+        [prepeareForJSONRequest setValue:admin.login forKey:@"login"];
+        [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
+        
+        [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+
+        //[prepeareForJSONRequest setValue:[NSDate date] forKey:@"paymentDate"];
+        NSNumber *paymentAmount = nil;
+
+        if ([operation isEqualToString:@"Advanced"]) {
+            paymentAmount = [NSNumber numberWithDouble:99.99];
+            [prepeareForJSONRequest setValue:paymentAmount forKey:@"paymentAmount"];
+
+            [prepeareForJSONRequest setValue:@"Advanced" forKey:@"tariffPlan"];
+
+        }
+        if ([operation isEqualToString:@"AdvancedPlusFax"]) {
+            
+            paymentAmount = [NSNumber numberWithDouble:149.99];
+            [prepeareForJSONRequest setValue:paymentAmount forKey:@"paymentAmount"];
+            [prepeareForJSONRequest setValue:@"Advanced+FAX" forKey:@"tariffPlan"];
+
+        }
+
+        NSInteger idx = 0;
+        while (!receivedObject) {
+            sleep(1);
+            [prepeareForJSONRequest setValue:[NSNumber numberWithInteger:idx] forKey:@"attemptNumberFirstServer"];
+            
+            receivedObject = [self getJSONAnswerForFunction:@"api/PutPayment" withJSONRequest:prepeareForJSONRequest];
+            idx++;
+        }
+        //NSLog(@">>>>>>>>>>>>>>>>received:%@",receivedObject);
+        
+        //NSNumber  *price = [receivedObject valueForKey:@"price"];
+        NSString  *grossbook_id = [receivedObject valueForKey:@"grossbookID"];
+        
+        if (grossbook_id && status.intValue == 0) {
+            GrossBookRecord *newRecord = (GrossBookRecord *)[NSEntityDescription insertNewObjectForEntityForName:@"GrossBookRecord" inManagedObjectContext:self.moc];
+            newRecord.tariffPlan = operation;
+            newRecord.transactionIdentifier = transactionIdentifier;
+            newRecord.receiptFromItunes = transactionReceiptData;
+            newRecord.paymentAmount = paymentAmount;
+            newRecord.companyStuff = admin;
+            [self finalSave:self.moc];
+
+                        
+//            [self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:balanceUpdated:%@",priceString] andProgressPercent:nil];
+            
+            
+        } else {
+            //[self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
+        }
+    });
+    
 }
 
 @end

@@ -29,7 +29,7 @@
 
 @property (unsafe_unretained) id sender;
 
-@property  NSURL *mainServer;
+//@property  NSURL *mainServer;
 @property NSString *deviceToken64;
 
 -(id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator withSender:(id)senderForThisClass withMainMoc:(NSManagedObjectContext *)itMainMoc;
@@ -45,8 +45,8 @@
 -(MainSystem *)getMainSystem;
 
 
--(void)getCompaniesListWithImmediatelyStart:(BOOL)isImmediatelyStart;
--(NSString *)getAllObjectsForEntity:(NSString *)entityName immediatelyStart:(BOOL)isImmediatelyStart isUserAuthorized:(BOOL)isUserAuthorized;
+//-(void)getCompaniesListWithImmediatelyStart:(BOOL)isImmediatelyStart;
+//-(NSString *)getAllObjectsForEntity:(NSString *)entityName immediatelyStart:(BOOL)isImmediatelyStart isUserAuthorized:(BOOL)isUserAuthorized;
 -(void)putObjectWithTimeoutWithIDs:(NSArray *)objectIDs mustBeApproved:(BOOL)isMustBeApproved;
 -(void)removeObjectWithID:(NSManagedObjectID *)objectID;
 
@@ -79,13 +79,15 @@
                                                   withDateTo:(NSDate *)dateTo
                                                    withAdmin:(CompanyStuff *)admin;
 -(void) processLoginForEmail:(NSString *)email forPassword:(NSString *)password;
--(void) updateInternalCountryCodesList;
+//-(void) updateInternalCountryCodesList;
 
 
 // V5.0
--(BOOL) isCurrentUserAuthorized;
+-(NSDictionary *) isCurrentUserAuthorized;
 
 -(BOOL) getCarriersList;
+-(BOOL) getPaymentsList;
+
 -(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forCodes:(NSArray *)codes forNumbers:(NSArray *)numbers withProtocolSIP:(BOOL)isSIP;
 
 -(BOOL) addCarrierWithID:(NSManagedObjectID *)carrierID;
@@ -94,5 +96,11 @@
 -(BOOL) addOutPeerWithID:(NSManagedObjectID *)outPeerID;
 -(BOOL) removeOutPeerWithID:(NSString *)outPeerExternalID;
 -(void) startGetPhoneNumbersForContrySpecific:(NSArray *)destinations;
+
+-(void) sendPaymentWithTransactionReceipt:(NSData *)transactionReceipt
+                 andTransactionIdentifier:(NSString *)transactionIdentifier
+                            forDeviceUDID:(NSString *)deviceUDID
+                       forDeviceTokenData:(NSData *)deviceTokenData
+                             forOperation:(NSString *)operation;
 
 @end

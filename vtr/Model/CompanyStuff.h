@@ -1,9 +1,9 @@
 //
 //  CompanyStuff.h
-//  vtr
+//  tvr
 //
-//  Created by Oleksii Vynogradov on 4/22/12.
-//  Copyright (c) 2012 IXC-USA Corp. All rights reserved.
+//  Created by Oleksii Vynogradov on 1/4/13.
+//  Copyright (c) 2013 IXC-USA Corp. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -30,9 +30,11 @@
 @property (nonatomic, retain) NSData * photo;
 @property (nonatomic, retain) NSString * toIP;
 @property (nonatomic, retain) NSData * transactionReceipt;
+@property (nonatomic, retain) NSString * userID;
 @property (nonatomic, retain) NSSet *carrier;
 @property (nonatomic, retain) CurrentCompany *currentCompany;
 @property (nonatomic, retain) NSSet *invoicesAndPayments;
+@property (nonatomic, retain) NSOrderedSet *grossBookRecord;
 @end
 
 @interface CompanyStuff (CoreDataGeneratedAccessors)
@@ -47,4 +49,14 @@
 - (void)addInvoicesAndPayments:(NSSet *)values;
 - (void)removeInvoicesAndPayments:(NSSet *)values;
 
+- (void)insertObject:(NSManagedObject *)value inGrossBookRecordAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromGrossBookRecordAtIndex:(NSUInteger)idx;
+- (void)insertGrossBookRecord:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeGrossBookRecordAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInGrossBookRecordAtIndex:(NSUInteger)idx withObject:(NSManagedObject *)value;
+- (void)replaceGrossBookRecordAtIndexes:(NSIndexSet *)indexes withGrossBookRecord:(NSArray *)values;
+- (void)addGrossBookRecordObject:(NSManagedObject *)value;
+- (void)removeGrossBookRecordObject:(NSManagedObject *)value;
+- (void)addGrossBookRecord:(NSOrderedSet *)values;
+- (void)removeGrossBookRecord:(NSOrderedSet *)values;
 @end

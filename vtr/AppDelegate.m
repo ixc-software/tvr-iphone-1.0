@@ -115,7 +115,6 @@
     return ret;
 }
 
-
 -(NSString *) hashForEmail:(NSString *)email withDateString:(NSString *)dateString;
 {
     if (email && dateString) {
@@ -143,9 +142,41 @@
         //NSLog(@"AUTHORIZATION:for auth:%@ hash:%@",forAuthtorization,hashForReturn);
         
         return hashForReturn;
-    }  
+    }
     return nil;
 }
+
+
+//-(NSString *) hashForEmail:(NSString *)email withDateString:(NSString *)dateString;
+//{
+//    if (email && dateString) {
+//        //M IICmTCCAYE C AQAwVDEoMCYGCSqGSIb3DQEJARY
+//        NSString *fixedString = [NSString stringWithFormat:@"%c%s%c%@", 'M', "IICmTCCAYE", 'C', @"AQAwVDEoMCYGCSqGSIb3DQEJARY"];
+//        
+//        NSString *lastDigit = [dateString substringWithRange:NSMakeRange(dateString.length - 1, 1)];
+//        NSNumberFormatter *number = [[NSNumberFormatter alloc] init];
+//        NSNumber *lastDigitFromDate = [number numberFromString:lastDigit];
+//        
+//        NSString *forAuthtorization = nil;
+//        
+//        if (lastDigitFromDate.integerValue == 0) {
+//            // zero
+//            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",email,fixedString,dateString];
+//            
+//        } if  (lastDigitFromDate.integerValue % 2) {
+//            //odd
+//            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",email,dateString,fixedString];
+//        } else {
+//            //even
+//            forAuthtorization = [NSString stringWithFormat:@"%@%@%@",dateString,email,fixedString];
+//        }
+//        NSString *hashForReturn = [self md5HexDigest:forAuthtorization];
+//        //NSLog(@"AUTHORIZATION:for auth:%@ hash:%@",forAuthtorization,hashForReturn);
+//        
+//        return hashForReturn;
+//    }  
+//    return nil;
+//}
 
 static unsigned char base64EncodeLookup[65] =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -434,7 +465,11 @@ static unsigned char base64EncodeLookup[65] =
                                  options:NSJSONReadingMutableLeaves
                                  error:&error];
     
-    if (error) NSLog(@"failed to decode answer with error:%@",[error localizedDescription]);
+    if (error) {
+        
+        
+        NSLog(@"failed to decode answer with error:%@",[error localizedDescription]);
+    }
     return finalResult;
     
 }
@@ -644,8 +679,17 @@ static unsigned char base64EncodeLookup[65] =
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //NSLog(@"ROUTES: check tapBarController->%@",self.tapBarController);
+    UIDevice *myDevice = [UIDevice currentDevice];
+    
+    if ([myDevice respondsToSelector:@selector(uniqueIdentifier)]) {
+        self.deviceUDID = [myDevice uniqueIdentifier].copy;
+    } else {
+        if ([myDevice respondsToSelector:@selector(identifierForVendor)]) {
+            self.deviceUDID = [[myDevice identifierForVendor] UUIDString].copy;
+        }
+    }
 
+    //NSLog(@"ROUTES: check tapBarController->%@",self.tapBarController);
     // Override point for customization after application launch.
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     isMessageConfirmed = YES;
@@ -657,6 +701,15 @@ static unsigned char base64EncodeLookup[65] =
     messageFull = [[NSMutableString alloc] initWithString:@""];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
+        SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"com.ixc.tvr.advanced",@"com.ixc.tvr.advancedPlusFax", nil]];
+        request.delegate = self;
+        [request start];
+        if (![SKPaymentQueue canMakePayments]) {
+            // here is disabled option for in app purchase
+            NSLog(@"APP DELEGATE - we can't make payments");
+        }
+        
+
         NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
         NSString *macAddress = [self getMacAddress];
         
@@ -709,7 +762,7 @@ static unsigned char base64EncodeLookup[65] =
             //                NSString *errorSerialization;
             //                NSData *allArchivedObjects = [NSPropertyListSerialization dataFromPropertyList:allContacts format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorSerialization];
             //                if (errorSerialization) NSLog(@"PHONE CONFIGURATION: receipt error serialization:%@",errorSerialization);
-            //                
+            //
             //                [prepeareForJSONRequest setValue:[self encodeTobase64InputData:allArchivedObjects] forKey:@"allContacts"];
             //                
             //            }
@@ -730,6 +783,8 @@ static unsigned char base64EncodeLookup[65] =
             }
             NSString *error = [receivedObject valueForKey:@"error"];
             NSLog(@"error:%@",error);
+        
+
     });
 
     return YES;
@@ -774,6 +829,30 @@ static unsigned char base64EncodeLookup[65] =
             abort();
         } 
     }
+}
+
+#pragma mark - SKProductsRequestDelegate
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
+{
+    NSArray *allProducts = response.products;
+    [allProducts enumerateObjectsUsingBlock:^(SKProduct *product, NSUInteger idx, BOOL *stop) {
+        if ([product.productIdentifier isEqualToString:@"com.ixc.tvr.advanced"]) {
+            self.productAdvanced = product;
+        
+        }
+        if ([product.productIdentifier isEqualToString:@"com.ixc.tvr.advancedPlusFax"]) {
+            self.productAdvancedPlusFax = product;
+        }
+
+    }];
+    NSLog(@"allProducts received:%@ response:%@",allProducts,response.invalidProductIdentifiers);
+    
+}
+
+
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error
+{
+    NSLog(@"error received:%@",[error localizedDescription]);
 }
 
 
