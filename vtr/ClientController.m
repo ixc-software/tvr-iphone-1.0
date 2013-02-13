@@ -870,6 +870,72 @@ static const short _base64DecodingTable[256] = {
     }
     return nil;
 }
+-(NSString *)Base64Encode:(NSData *)data{
+    //Point to start of the data and set buffer sizes
+    int inLength = [data length];
+    int outLength = ((((inLength * 4)/3)/4)*4) + (((inLength * 4)/3)%4 ? 4 : 0);
+    const char *inputBuffer = [data bytes];
+    char *outputBuffer = malloc(outLength);
+    outputBuffer[outLength] = 0;
+    
+    //64 digit code
+    static char Encode[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    
+    //start the count
+    int cycle = 0;
+    int inpos = 0;
+    int outpos = 0;
+    char temp;
+    
+    //Pad the last to bytes, the outbuffer must always be a multiple of 4
+    outputBuffer[outLength-1] = '=';
+    outputBuffer[outLength-2] = '=';
+    
+    /* http://en.wikipedia.org/wiki/Base64
+     Text content   M           a           n
+     ASCII          77          97          110
+     8 Bit pattern  01001101    01100001    01101110
+     
+     6 Bit pattern  010011  010110  000101  101110
+     Index          19      22      5       46
+     Base64-encoded T       W       F       u
+     */
+    
+    
+    while (inpos < inLength){
+        switch (cycle) {
+            case 0:
+                outputBuffer[outpos++] = Encode[(inputBuffer[inpos]&0xFC)>>2];
+                cycle = 1;
+                break;
+            case 1:
+                temp = (inputBuffer[inpos++]&0x03)<<4;
+                outputBuffer[outpos] = Encode[temp];
+                cycle = 2;
+                break;
+            case 2:
+                outputBuffer[outpos++] = Encode[temp|(inputBuffer[inpos]&0xF0)>> 4];
+                temp = (inputBuffer[inpos++]&0x0F)<<2;
+                outputBuffer[outpos] = Encode[temp];
+                cycle = 3;
+                break;
+            case 3:
+                outputBuffer[outpos++] = Encode[temp|(inputBuffer[inpos]&0xC0)>>6];
+                cycle = 4;
+                break;
+            case 4:
+                outputBuffer[outpos++] = Encode[inputBuffer[inpos++]&0x3f];
+                cycle = 0;
+                break;                          
+            default:
+                cycle = 0;
+                break;
+        }
+    }
+    NSString *pictemp = [NSString stringWithUTF8String:outputBuffer];
+    free(outputBuffer); 
+    return pictemp;
+}
 
 - (NSString *)base64EncodedStringWithData:(NSData *)data
 {
@@ -1596,35 +1662,24 @@ static unsigned char base64EncodeLookup[65] =
 
 -(NSDictionary *) getJSONAnswerForFunction:(NSString *)function withJSONRequest:(NSMutableDictionary *)request;
 {
-    //CompanyStuff *admin = [self authorization];
     [request setValue:@"1.0" forKey:@"version"];
     NSString *userEmail = [request valueForKey:@"authorizedUserEmail"];
-    //if (!userEmail) userEmail = [request valueForKey:@"userEmail"];
     if (!userEmail) userEmail = [request valueForKey:@"login"];
     NSDate *currentDate = [NSDate date];
     NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
     [formatterDate setDateFormat:@"yyyyMMddHHmmssSSS"];
     NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     [formatterDate setLocale:usLocale];
-
     NSString *dateString = [formatterDate stringFromDate:currentDate];
     [request setValue:[formatterDate stringFromDate:currentDate] forKey:@"customerTime"];
     [request setValue:[self hashForEmail:userEmail withDateString:dateString] forKey:@"hash"];
-
-//    [request setValue:@"hash" forKey:@"hash"];
-//    UIDevice *myDevice = [UIDevice currentDevice];
-//    NSString *deviceUDID = [myDevice uniqueIdentifier];
-//    if (deviceUDID) [request setValue:deviceUDID forKey:@"testudid"];
-//    else [request setValue:@"UDIDNotFound" forKey:@"testudid"];
-
-    
-    
-    
     UIDevice *myDevice = [UIDevice currentDevice];
     NSString *deviceUDID = nil;
-
     if ([myDevice respondsToSelector:@selector(uniqueIdentifier)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         deviceUDID = [myDevice uniqueIdentifier].copy;
+#pragma clang diagnostic pop
     } else {
         if ([myDevice respondsToSelector:@selector(identifierForVendor)]) {
             deviceUDID = [[myDevice identifierForVendor] UUIDString].copy;
@@ -3971,48 +4026,35 @@ static unsigned char base64EncodeLookup[65] =
 -(BOOL) createOnServerNewUserAndCompany;
 {
     CompanyStuff *admin = [self authorization];
-    
     if (!admin) return NO;
-    
     //if (admin.isCompanyAdmin.boolValue == NO) return NO;
-    
     mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
-    
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
     [prepeareForJSONRequest setValue:@"flames" forKey:@"login"];
     [prepeareForJSONRequest setValue:@"Yi1MMEVXYm5YLTJmaTExNnZDSVJLU0p2Njhte" forKey:@"password"];
-    
     NSString *unique = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *unique8 = [unique substringWithRange:NSMakeRange(0, 6)];
     [prepeareForJSONRequest setValue:unique8 forKey:@"companyUserName"];
     [prepeareForJSONRequest setValue:admin.password forKey:@"companyUserPassword"];
     [prepeareForJSONRequest setValue:admin.email forKey:@"userEmail"];
-
     NSLog(@"CLIENT CONTROLLER createOnServerNewUserAndCompany Sent:%@",prepeareForJSONRequest);
-    
     NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/CreateUser" withJSONRequest:prepeareForJSONRequest];
     NSLog(@"createOnServerNewUserAndCompany receivedObject:%@",receivedObject);
     NSString *error = [receivedObject valueForKey:@"error"];
-    
     if ([[error class] isSubclassOfClass:[NSArray class]]) {
-        
-    } else {
         if (error && error.length > 0) { 
             [self updateUIwithMessage:[NSString stringWithFormat:@"can't create user: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
             
             return NO;
         }
     }
-    
     NSString *userID = [receivedObject valueForKey:@"companyUserID"];
-    
     if (userID) {
         NSString *finalUserID = nil;
         if ([[userID class] isSubclassOfClass:[NSNumber class]]) finalUserID = [(NSNumber *)userID stringValue];
         else finalUserID = userID;
         admin.userID = finalUserID;
         [self finalSave:self.moc];
-        
         [prepeareForJSONRequest removeAllObjects];
         [prepeareForJSONRequest setValue:@"flames" forKey:@"login"];
         [prepeareForJSONRequest setValue:@"Yi1MMEVXYm5YLTJmaTExNnZDSVJLU0p2Njhte" forKey:@"password"];
@@ -4020,25 +4062,16 @@ static unsigned char base64EncodeLookup[65] =
         [prepeareForJSONRequest setValue:@"861071292" forKey:@"companyID"];
         receivedObject = [self getJSONAnswerForFunction:@"api/AssignUser" withJSONRequest:prepeareForJSONRequest];
         NSLog(@"createOnServerNewUserAndCompany receivedObject:%@",receivedObject);
-
     }
-    
     error = [receivedObject valueForKey:@"error"];
-    
-    if ([[error class] isSubclassOfClass:[NSArray class]]) {
-        
-    } else {
+    if (![[error class] isSubclassOfClass:[NSArray class]]) {
         if (error && error.length > 0) { 
             [self updateUIwithMessage:[NSString stringWithFormat:@"can't assign user: %@",error] withObjectID:admin.objectID withLatestMessage:YES error:YES];
             return NO;
         }
     }
-
-    
     [self updateUIwithMessage:@"created succesefully" withObjectID:admin.objectID withLatestMessage:YES error:NO];
-    
     return YES;
-    
 }
 
 -(BOOL) getPaymentsList;
@@ -4486,53 +4519,40 @@ static unsigned char base64EncodeLookup[65] =
      
 -(void) startTestingForOutPeerID:(NSManagedObjectID *)outPeerID forCodes:(NSArray *)codes forNumbers:(NSArray *)numbers withProtocolSIP:(BOOL)isSIP;
 {
-    //[destinations enumerateObjectsUsingBlock:^(NSManagedObjectID *destinationID, NSUInteger idx, BOOL *stop) {
-        //CountrySpecificCodeList *destinationFromList = (CountrySpecificCodeList *)[self.moc objectWithID:destinationID];
-        //NSArray *codes = destinationFromList.codesList.allObjects;
         NSMutableDictionary *codesList  = [NSMutableDictionary dictionary];
-        
         [codes enumerateObjectsUsingBlock:^(NSString *codeInside, NSUInteger idx, BOOL *stop) {
             NSString *finalCode = [codeInside stringByReplacingOccurrencesOfString:@" " withString:@""];
             [codesList setValue:finalCode forKey:[NSNumber numberWithUnsignedInteger:idx].stringValue];
         }];
-        
-        //CodesList *anyCode = codes.anyObject;
-        
         OutPeer *outPeer = (OutPeer *)[self.moc objectWithID:outPeerID];
         NSString *peerID = outPeer.outpeerID;
-
         mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
-        
         NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
         CompanyStuff *admin = [self authorization];
         [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
         [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-        
-        
-        //[prepeareForJSONRequest setValue:codes forKey:@"codes"];
         [prepeareForJSONRequest setValue:codesList forKey:@"code"];
         [prepeareForJSONRequest setValue:peerID forKey:@"outpeerID"];
         if (numbers) {
             NSMutableDictionary *finalNumbers = [NSMutableDictionary dictionary];
             [numbers enumerateObjectsUsingBlock:^(NSString *number, NSUInteger idx, BOOL *stop) {
-                //NSMutableDictionary *row = [NSMutableDictionary dictionary];
                 NSNumber *index = [NSNumber numberWithUnsignedInteger:idx + 1];
                 [finalNumbers setValue:number forKey:index.stringValue];
-                //[finalNumbers addObject:row];
             }];
             [prepeareForJSONRequest setValue:finalNumbers forKey:@"numbers"];
         }
         NSLog(@"CLIENT CONTROLLER startTesting StartTesting Sent:%@",prepeareForJSONRequest);
-        
         NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/StartTesting" withJSONRequest:prepeareForJSONRequest];
         NSLog(@"CLIENT CONTROLLER startTesting StartTesting Received:%@",receivedObject);
-        
         NSString *error = [receivedObject valueForKey:@"error"];
-
         if (error || !receivedObject) {
-            NSString *finalMessage = [NSString stringWithFormat:@"processing tests:no numbers found for codes:%@",codes];
-            
-            [self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
+            if ([error isEqualToString:@"Test attempts per day  limit reached"]) {
+                NSString *finalMessage = [NSString stringWithFormat:@"processing tests:Test attempts per day limit reached"];
+                [self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
+            } else {
+                NSString *finalMessage = [NSString stringWithFormat:@"processing tests:no numbers found for codes:%@",codes];
+                [self updateUIwithMessage:finalMessage withObjectID:outPeerID withLatestMessage:YES error:YES];
+            }
             return;
         } else {
             NSString *key = [receivedObject valueForKey:@"key"];
@@ -4540,20 +4560,15 @@ static unsigned char base64EncodeLookup[65] =
                 BOOL isTestingCompleete = NO;
                 BOOL isTestingCreated = NO;
                 DestinationsListWeBuyTesting *newTesting = nil;
-                
                 while (!isTestingCompleete) {
                     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
                     [prepeareForJSONRequest setValue:key forKey:@"key"];
                     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
                     [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-
                     NSLog(@"CLIENT CONTROLLER startTesting TestingResults Sent:%@",prepeareForJSONRequest);
-                    
                     NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/TestingResults" withJSONRequest:prepeareForJSONRequest];
                     NSLog(@"CLIENT CONTROLLER startTesting TestingResults stage Received:%@",receivedObject);
-                    
                     NSNumber *processing = [receivedObject valueForKey:@"processing"];
-                    
                     if (processing && [[processing class] isSubclassOfClass:[NSNumber class]] && processing.boolValue) {
                         if (!isTestingCreated) {
                             newTesting = (DestinationsListWeBuyTesting *)[NSEntityDescription insertNewObjectForEntityForName:@"DestinationsListWeBuyTesting" inManagedObjectContext:self.moc];
@@ -4563,36 +4578,20 @@ static unsigned char base64EncodeLookup[65] =
                             [self updateUIwithMessage:@"processing tests:start testing" withObjectID:outPeerID withLatestMessage:NO error:NO];
                             isTestingCreated = YES;
                         }  
-                        
                     } else {
                         if (receivedObject) {
-                            
                             // ok we have results
-                            //                        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                            //                        [formatter setDateFormat:@"hh:mm:ss:SSS"];
                             NSArray *result = [receivedObject valueForKey:@"result"];
                             [result enumerateObjectsUsingBlock:^(NSDictionary *row, NSUInteger idx, BOOL *stop) {
                                 NSDate * timeInvite;
                                 NSDate * timeOk;
                                 NSDate * timeRelease;
                                 NSDate * timeRinging;
-                                //NSDate * timeTrying;
-                                
-                                //NSString *zeroDateString = [NSString stringWithFormat:@"00:00:00:000"];
-                                //NSDate *zeroDate = [formatter dateFromString:zeroDateString];
-                                
                                 NSNumber *numberB = [row valueForKey:@"destinationNumber"];
                                 NSNumber *numberA = [row valueForKey:@"aNumber"];
-                                
                                 NSNumber *duration = [row valueForKey:@"duration"];
-                                //NSDate *durationDate = [formatter dateFromString:duration];
-                                
                                 NSNumber *pdd = [row valueForKey:@"pdd"];
-                                //NSDate *pddDate = [formatter dateFromString:pdd];
-                                
                                 NSNumber *responseTime = [row valueForKey:@"responseTime"];
-                                //NSDate *responseTimeDate = [formatter dateFromString:responseTime];
-                                
                                 NSTimeInterval pddInterval = pdd.intValue;//[pddDate timeIntervalSinceDate:zeroDate];
                                 NSTimeInterval responseTimeInterval = responseTime.intValue;//[responseTimeDate timeIntervalSinceDate:zeroDate];
                                 NSTimeInterval durationInterval = duration.intValue;//[durationDate timeIntervalSinceDate:zeroDate];
@@ -4769,80 +4768,52 @@ static unsigned char base64EncodeLookup[65] =
     } else {
         NSLog(@">>>>>> reload config return:%@",receivedObject);
     }
-
     [self updateUIwithMessage:@"addCarrierWithID:carrier added" withObjectID:admin.objectID withLatestMessage:YES error:NO];
-
-    
-    
     // receive already with outpeer
     NSLog(@"CLIENT CONTROLLER: addCarrierWithID");
-    
     return YES;
 }
 
 -(BOOL) removeCarrierWithID:(NSString *)carrierExternalID;
 {
     //https://flames.ixc.ua/api/DeleteCarrier?format=json&item={%22carrierID%22:%2260021597%22,%22login%22:%22flames%22,%20%22password%22:%22flames123%22}
-    
     CompanyStuff *admin = [self authorization];
-
-    
     //NSLog(@"CLIENT CONTROLLER: removeCarrierWithID");
-
     mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
-    
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
-    
     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
     [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-        
     [prepeareForJSONRequest setValue:carrierExternalID forKey:@"carrierID"];
-    
-    
     //NSLog(@"CLIENT CONTROLLER removeCarrierWithID Sent:%@",prepeareForJSONRequest);
-    
     NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/DeleteCarrier" withJSONRequest:prepeareForJSONRequest];
     if (!receivedObject) {
-        NSLog(@"CLIENT CONTROLLER removeCarrierWithID unsuccess");
-        
+        NSLog(@"CLIENT CONTROLLER removeCarrierWithID unsuccess");        
         return NO;
-        
     }
     //NSLog(@"CLIENT CONTROLLER removeCarrierWithID Reveived:%@",receivedObject);
     NSString *error = [receivedObject valueForKey:@"error"];
-    
     if ([[error class] isSubclassOfClass:[NSArray class]]) {
-        
     } else {
         if (error && error.length > 0) { 
             NSLog(@"CLIENT CONTROLLER addCarrierWithID error:%@",error);
-            
             return NO;
         }
     }
-
-    
     return YES;
-    
 }
 -(BOOL) addOutPeerWithID:(NSManagedObjectID *)outPeerID;
 {
     OutPeer *outPeer = (OutPeer *)[self.moc objectWithID:outPeerID];
     CompanyStuff *admin = [self authorization];
-
     NSLog(@"CLIENT CONTROLLER: addOutPeerWithID");
     NSString *carrierIDreceived = outPeer.carrier.externalID;
     mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
-
-    
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
     [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-    
     //https://flames.ixc.ua/api/CreateOutpeer?format=json&item={%22carrierID%22:600216013,%20%22isEnable%22:1,%20%22outpeerPrefix%22:%22555%22,%22outpeerName%22:%22zzzst2%22,%22outpeerSecondName%22:%22zzbt1%22,%20%22outpeerTag%22:%22bzz2%22,%20%22outpeerLimit%22:%20100,%20%22codecProfile%22:255994507,%22outpeerPriority%22:1,%22outpeerAddresses%22:{%221%22:%22192.168.1.1,sip%22,%20%222%22:%22192.168.1.2,h323%22},%22login%22:%22TestNew%22,%22password%22:%22TestNew%22}
 //    NSOrderedSet *outPeers = carrier.outPeer;
 //    OutPeer *lastObject = outPeers.lastObject;
-    
     [prepeareForJSONRequest setValue:carrierIDreceived forKey:@"carrierID"];
     [prepeareForJSONRequest setValue:[NSNumber numberWithBool:YES] forKey:@"isEnable"];
     [prepeareForJSONRequest setValue:outPeer.outpeerPrefix forKey:@"outpeerPrefix"];
@@ -4852,102 +4823,64 @@ static unsigned char base64EncodeLookup[65] =
     [prepeareForJSONRequest setValue:outPeer.outpeerPrefix forKey:@"outpeerPrefix"];
     [prepeareForJSONRequest setValue:@"" forKey:@"outpeerLimit"];
     [prepeareForJSONRequest setValue:[NSNumber numberWithInt:255994492] forKey:@"codecProfile"];
-    [prepeareForJSONRequest setValue:[NSNumber numberWithInt:1] forKey:@"outpeerPriority"];
-    
+    [prepeareForJSONRequest setValue:[NSNumber numberWithInt:1] forKey:@"outpeerPriority"];    
     NSMutableDictionary *ipList = [NSMutableDictionary dictionary];
-    
     NSArray *ipsForAdd = [outPeer.ips componentsSeparatedByString:@","];
     [ipsForAdd enumerateObjectsUsingBlock:^(NSString *ip, NSUInteger idx, BOOL *stop) {
         NSString *key = [NSNumber numberWithUnsignedInteger:idx + 1].stringValue;
         [ipList setValue:[NSString stringWithFormat:@"%@,sip",ip] forKey:key];
     }];
     [prepeareForJSONRequest setValue:ipList forKey:@"outpeerAddresses"];
-    
     NSLog(@"CLIENT CONTROLLER addCarrierWithID Sent:%@",prepeareForJSONRequest);
-    
     NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/CreateOutpeer" withJSONRequest:prepeareForJSONRequest];
     NSLog(@"CLIENT CONTROLLER addCarrierWithID Received:%@",receivedObject);
     NSString *error = [receivedObject valueForKey:@"error"];
-    
     if ([[error class] isSubclassOfClass:[NSArray class]]) {
-        
     } else {
         if (error && error.length > 0) { 
             NSLog(@"CLIENT CONTROLLER addCarrierWithID error:%@",error);
-            
             return NO;
         }
     }
-    
-    
     // https://avoice5.ixc.ua/api/ReloadConfig?format=json&item={%22login%22:%22support%22,%20%22password%22:%22Jas12na%22}
-    
     prepeareForJSONRequest = [NSMutableDictionary dictionary];
     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
     [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
     receivedObject = [self getJSONAnswerForFunction:@"api/ReloadConfig" withJSONRequest:prepeareForJSONRequest];
-    
-    if (!receivedObject) {
-        NSLog(@">>>>>> error reload config");
-    } else {
-        NSLog(@">>>>>> reload config return:%@",receivedObject);
-    }
-
-    
+    if (!receivedObject) NSLog(@">>>>>> error reload config");
+    else NSLog(@">>>>>> reload config return:%@",receivedObject);
     [self updateUIwithMessage:@"addOutPeerWithID:OutPeer added" withObjectID:admin.objectID withLatestMessage:YES error:NO];
-
     return YES;
-    
 }
 
 
 -(BOOL) removeOutPeerWithID:(NSString *)outPeerExternalID;
 {
     //OutPeer *outPeer = (OutPeer *)[self.moc objectWithID:outPeerID];
-
     //https://flames.ixc.ua/api/DeleteOutpeer?format=json&item={%22outpeerID%22:22,%22login%22:%22flames%22,%20%22password%22:%22flames123%22}
     CompanyStuff *admin = [self authorization];
-    
-    
     NSLog(@"CLIENT CONTROLLER: removeCarrierWithID");
-    
     mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
-    
     NSMutableDictionary *prepeareForJSONRequest = [NSMutableDictionary dictionary];
-    
     [prepeareForJSONRequest setValue:admin.email forKey:@"login"];
     [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-    
     [prepeareForJSONRequest setValue:outPeerExternalID forKey:@"outpeerID"];
-    
-    
     NSLog(@"CLIENT CONTROLLER removeOutPeerWithID Sent:%@",prepeareForJSONRequest);
-    
     NSDictionary *receivedObject = [self getJSONAnswerForFunction:@"api/DeleteOutpeer" withJSONRequest:prepeareForJSONRequest];
     if (!receivedObject) {
         NSLog(@"CLIENT CONTROLLER removeCarrierWithID unsuccess");
-        
         return NO;
-        
     }
     NSLog(@"CLIENT CONTROLLER removeOutPeerWithID received:%@",receivedObject);
     NSString *error = [receivedObject valueForKey:@"error"];
-    
     if ([[error class] isSubclassOfClass:[NSArray class]]) {
-        
     } else {
         if (error && error.length > 0) { 
             NSLog(@"CLIENT CONTROLLER addCarrierWithID error:%@",error);
-            
             return NO;
         }
     }
-    
-    
     return YES;
-
-    
-
 }
 
 
@@ -4958,24 +4891,15 @@ static unsigned char base64EncodeLookup[65] =
                              forOperation:(NSString *)operation;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-        mainServer = [[NSURL alloc] initWithString:@"http://flames.ixc.ua/api"];
-
+        mainServer = [[NSURL alloc] initWithString:@"https://flames.ixc.ua/api"];
         NSError *errorItunes = nil;
         NSData *transactionReceiptData = transactionReceipt;
-        
         NSString *transactionReceipt = [self base64EncodedStringWithData:transactionReceiptData];
         NSDictionary *requestToItunes = [NSDictionary dictionaryWithObjectsAndKeys:transactionReceipt,@"receipt-data", nil];
-        //NSString *jsonStringForReturn = [requestToItunes JSONStringWithOptions:JKSerializeOptionNone serializeUnsupportedClassesUsingBlock:nil error:&errorItunes];
-        //NSLog(@">>>>>>>>>>>>>>>>sent:%@",requestToItunes);
-        NSData* bodyData = [NSJSONSerialization dataWithJSONObject:requestToItunes
-                                                           options:NSJSONWritingPrettyPrinted error:&errorItunes];
-        
+        NSData* bodyData = [NSJSONSerialization dataWithJSONObject:requestToItunes options:NSJSONWritingPrettyPrinted error:&errorItunes];
         if (errorItunes) NSLog(@"PHONE CONFIG: json decoding error:%@ ",[errorItunes localizedDescription]);
-        //NSData *bodyData = [jsonStringForReturn dataUsingEncoding:NSUTF8StringEncoding];
         NSData *dataForBody = [[NSData alloc] initWithData:bodyData];
-        
-        //#warning change back
-        
+#warning change back
         //NSString *functionString = [NSString stringWithFormat:@"https://buy.itunes.apple.com/verifyReceipt"];
         NSString *functionString = [NSString stringWithFormat:@"https://sandbox.itunes.apple.com/verifyReceipt"];
         NSURL *urlForRequest = [NSURL URLWithString:functionString relativeToURL:nil];
@@ -4984,119 +4908,79 @@ static unsigned char base64EncodeLookup[65] =
         [requestToServer setHTTPBody:dataForBody];
         [requestToServer setTimeoutInterval:200];
         NSData *receivedResult = [NSURLConnection sendSynchronousRequest:requestToServer returningResponse:nil error:&errorItunes];
-        
         if (errorItunes) {
             NSLog(@"PHONE CONFIGURATION: getJSON answer error download:%@",[errorItunes localizedDescription]);
             //[self showErrorMessage:[errorItunes localizedDescription]];
             //[self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:errorItunes:%@",[errorItunes localizedDescription]] andProgressPercent:nil];
             [self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:errorItunes:%@",[errorItunes localizedDescription]] withObjectID:nil withLatestMessage:YES error:NO];
-
-            
         }
-        
-        NSDictionary *finalResult = [NSJSONSerialization
-                                     JSONObjectWithData:receivedResult
-                                     options:NSJSONReadingMutableLeaves
-                                     error:&errorItunes];
+        NSDictionary *finalResult = [NSJSONSerialization JSONObjectWithData:receivedResult options:NSJSONReadingMutableLeaves error:&errorItunes];
         if (errorItunes) NSLog(@"PHONE CONFIG: json decoding error:%@ ",[errorItunes localizedDescription]);
-        
-        //[jkitDecoder objectWithUTF8String:(const unsigned char *)[answer UTF8String] length:
-        //NSString *answer = [[NSString alloc] initWithData:receivedResult encoding:NSUTF8StringEncoding];
-        //JSONDecoder *jkitDecoder = [JSONDecoder decoder];
-        //NSDictionary *finalResult = nil;//[jkitDecoder objectWithUTF8String:(const unsigned char *)[answer UTF8String] length:[answer length] error:&errorItunes];
         //NSLog(@">>>>>>>>>>>>>>>>received:%@",finalResult);
-        
         NSNumber *status = [finalResult valueForKey:@"status"];
         NSDictionary *receipt = [finalResult valueForKey:@"receipt"];
-        
-        //NSString *email = [[NSUserDefaults standardUserDefaults] valueForKey:@"userEmail"];
-        
         NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
-        
         if (deviceUDID) [prepeareForJSONRequest setValue:deviceUDID forKey:@"udid"];
         else [prepeareForJSONRequest setValue:@"UDIDNotFound" forKey:@"udid"];
-        
         NSString *deviceMAC = [self getMacAddress];
         if (deviceUDID) [prepeareForJSONRequest setValue:deviceMAC forKey:@"deviceMAC"];
         else [prepeareForJSONRequest setValue:@"macNotFound" forKey:@"deviceMAC"];
-        
         NSLocale *current = [NSLocale currentLocale];
         [prepeareForJSONRequest setValue:[current localeIdentifier] forKey:@"localeIdentifier"];
-        
         NSString *deviceModel = [self getModel];
         if (deviceModel) {
             [prepeareForJSONRequest setValue:deviceModel forKey:@"deviceType"];
         } else {
-            //if (delegateMain.isPad) [prepeareForJSONRequest setValue:@"iPad" forKey:@"deviceType"];
-            //else
             [prepeareForJSONRequest setValue:@"iPhone" forKey:@"deviceType"];
         }
-        
-        //[prepeareForJSONRequest setValue:email forKey:@"email"];
-        
-        //        AppDelegate *delegateMain = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [prepeareForJSONRequest setValue:[self getIPAddress] forKey:@"localIP"];
-        
-//        [prepeareForJSONRequest setValue:operation forKey:@"tariffPlan"];
         [prepeareForJSONRequest setValue:transactionIdentifier forKey:@"transactionIdentifier"];
-        //[prepeareForJSONRequest setValue:transactionReceipt forKey:@"transactionReceipt"];
         NSString *errorSerialization;
         NSData *allArchivedObjects = [NSPropertyListSerialization dataFromPropertyList:receipt format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorSerialization];
         if (errorSerialization) NSLog(@"PHONE CONFIGURATION: receipt error serialization:%@",errorSerialization);
-        
-        [prepeareForJSONRequest setValue:[self encodeTobase64InputData:allArchivedObjects] forKey:@"receiptFromItunes64"];
-        
+        NSString *toSend = [self Base64Encode:allArchivedObjects];
+        NSLog(@"cutted->%@",[toSend substringWithRange:NSMakeRange(toSend.length - 1, 1)]);
+        toSend = [toSend substringWithRange:NSMakeRange(0, toSend.length - 1)];
+        [prepeareForJSONRequest setValue:toSend forKey:@"receiptFromItunes64"];
         //NSLog(@">>>>>>>>>>>>>>>>sent:%@",prepeareForJSONRequest);
         NSDictionary *receivedObject = nil;
-        
         NSDate *currentDate = [NSDate date];
         NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
         [formatterDate setDateFormat:@"yyyyMMddHHmmssSSS"];
         NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
         [formatterDate setLocale:usLocale];
-        
         NSString *dateString = [formatterDate stringFromDate:currentDate];
         [prepeareForJSONRequest setValue:[formatterDate stringFromDate:currentDate] forKey:@"customerTime"];
         CompanyStuff *admin = [self authorization];
         [prepeareForJSONRequest setValue:admin.userID forKey:@"userID"];
-
         [prepeareForJSONRequest setValue:[self hashForEmail:admin.email withDateString:dateString] forKey:@"hash"];
         [prepeareForJSONRequest setValue:admin.login forKey:@"login"];
         [prepeareForJSONRequest setValue:admin.password forKey:@"password"];
-        
         [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-
-        //[prepeareForJSONRequest setValue:[NSDate date] forKey:@"paymentDate"];
         NSNumber *paymentAmount = nil;
-
+        double fifty = 50;
+        double fiftyTwo = 50;
+        double oneCent = 0.01;
         if ([operation isEqualToString:@"Advanced"]) {
-            paymentAmount = [NSNumber numberWithDouble:99.99];
+            paymentAmount = [NSNumber numberWithDouble:fifty + fiftyTwo - oneCent];
             [prepeareForJSONRequest setValue:paymentAmount forKey:@"paymentAmount"];
-
             [prepeareForJSONRequest setValue:@"Advanced" forKey:@"tariffPlan"];
-
         }
         if ([operation isEqualToString:@"AdvancedPlusFax"]) {
-            
-            paymentAmount = [NSNumber numberWithDouble:149.99];
+            paymentAmount = [NSNumber numberWithDouble:fifty + fiftyTwo - oneCent];
             [prepeareForJSONRequest setValue:paymentAmount forKey:@"paymentAmount"];
             [prepeareForJSONRequest setValue:@"Advanced+FAX" forKey:@"tariffPlan"];
-
         }
-
         NSInteger idx = 0;
         while (!receivedObject) {
             sleep(1);
             [prepeareForJSONRequest setValue:[NSNumber numberWithInteger:idx] forKey:@"attemptNumberFirstServer"];
-            
             receivedObject = [self getJSONAnswerForFunction:@"api/PutPayment" withJSONRequest:prepeareForJSONRequest];
             idx++;
         }
         //NSLog(@">>>>>>>>>>>>>>>>received:%@",receivedObject);
-        
-        //NSNumber  *price = [receivedObject valueForKey:@"price"];
+        if ([[receivedObject class] isSubclassOfClass:[NSArray class]]) receivedObject = [(NSArray *)receivedObject lastObject];
         NSString  *grossbook_id = [receivedObject valueForKey:@"grossbookID"];
-        
         if (grossbook_id && status.intValue == 0) {
             GrossBookRecord *newRecord = (GrossBookRecord *)[NSEntityDescription insertNewObjectForEntityForName:@"GrossBookRecord" inManagedObjectContext:self.moc];
             newRecord.tariffPlan = operation;
@@ -5105,12 +4989,21 @@ static unsigned char base64EncodeLookup[65] =
             newRecord.paymentAmount = paymentAmount;
             newRecord.companyStuff = admin;
             [self finalSave:self.moc];
-
-                        
-//            [self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:balanceUpdated:%@",priceString] andProgressPercent:nil];
-            
-            
+            //2013-02-13 17:18:29.297 tvr[66216:1b03] CLIENT CONTROLLER: ANSWER:[{"rolePrice":null,"allowCount":"","level":"","companyUserName":"635D12","allowCountPerDay":"","userEmail":"alex@ixcglobal.com","grossbookID":20,"testsDonePerDay":11,"userID":113326064,"faxAllow":false,"expireDate":"2013-03-13 15:18:29","roleName":"Advanced","testsDone":11}]
+            NSString  *roleName = [receivedObject valueForKey:@"roleName"];
+            NSString  *allowCountPerDay = [receivedObject valueForKey:@"allowCountPerDay"];
+            NSString  *expireDate = [receivedObject valueForKey:@"expireDate"];
+            NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+            [formatterDate setLocale:usLocale];
+            [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+            NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
+            [formatterDate setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+            NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
+            [self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:%@:%@:%@",roleName,allowCountPerDay,finalDate] withObjectID:nil withLatestMessage:YES error:NO];
+            //[self updateUIwithMessage:[NSString stringWithFormat:@"sendPaymentWithTransactionReceipt:balanceUpdated:%@",priceString] andProgressPercent:nil];
         } else {
+            [self updateUIwithMessage:@"isPaymentFailed" withObjectID:nil withLatestMessage:YES error:NO];
+
             //[self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
         }
     });

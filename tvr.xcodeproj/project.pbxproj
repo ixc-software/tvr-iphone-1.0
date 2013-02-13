@@ -401,7 +401,7 @@
 		FAA2AA37154470EC003C0822 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		FAA3973D1694EB3D00A5844B /* snow000006.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = snow000006.xcdatamodel; sourceTree = "<group>"; };
 		FAA398701695CFCB00A5844B /* testvoiproutes.com.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = testvoiproutes.com.p12; sourceTree = "<group>"; };
-		FAA5D5B11696EF37002F690B /* snow000007.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = snow000007.xcdatamodel; sourceTree = "<group>"; };
+		FAA5D5B11696EF37002F690B /* snow000007.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = snow000007.xcdatamodel; sourceTree = "<group>"; };
 		FAA5D5B31696F5EF002F690B /* CompanyStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompanyStuff.h; sourceTree = "<group>"; };
 		FAA5D5B41696F5EF002F690B /* CompanyStuff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CompanyStuff.m; sourceTree = "<group>"; };
 		FAA5D5B91696F634002F690B /* GrossBookRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrossBookRecord.h; sourceTree = "<group>"; };
@@ -804,7 +804,7 @@
 		FAA2A98915445D58003C0822 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "IXC-USA Corp";
 			};
 			buildConfigurationList = FAA2A98C15445D58003C0822 /* Build configuration list for PBXProject "tvr" */;
@@ -1044,6 +1044,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -1072,6 +1076,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;

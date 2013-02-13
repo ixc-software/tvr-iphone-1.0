@@ -682,24 +682,24 @@ static unsigned char base64EncodeLookup[65] =
     UIDevice *myDevice = [UIDevice currentDevice];
     
     if ([myDevice respondsToSelector:@selector(uniqueIdentifier)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         self.deviceUDID = [myDevice uniqueIdentifier].copy;
+#pragma clang diagnostic pop
+
     } else {
         if ([myDevice respondsToSelector:@selector(identifierForVendor)]) {
             self.deviceUDID = [[myDevice identifierForVendor] UUIDString].copy;
         }
     }
-
     //NSLog(@"ROUTES: check tapBarController->%@",self.tapBarController);
-    // Override point for customization after application launch.
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     isMessageConfirmed = YES;
-    
     // code for all apps:
     firstServer = [[NSMutableString alloc] initWithString:@"https://server1.webcob.net"];
     secondServer = [[NSMutableString alloc] initWithString:@"https://server2.webcob.net"];
     appleID = [[NSMutableString alloc] initWithString:@"521983826"];
     messageFull = [[NSMutableString alloc] initWithString:@""];
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
         SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"com.ixc.tvr.advanced",@"com.ixc.tvr.advancedPlusFax", nil]];
         request.delegate = self;
@@ -708,11 +708,8 @@ static unsigned char base64EncodeLookup[65] =
             // here is disabled option for in app purchase
             NSLog(@"APP DELEGATE - we can't make payments");
         }
-        
-
         NSMutableDictionary *prepeareForJSONRequest = [[NSMutableDictionary alloc] init];
         NSString *macAddress = [self getMacAddress];
-        
         [prepeareForJSONRequest setValue:macAddress forKey:@"macAddress"];
         NSDate *currentDate = [NSDate date];
         NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
@@ -722,74 +719,50 @@ static unsigned char base64EncodeLookup[65] =
         [prepeareForJSONRequest setValue:[self hashForEmail:macAddress withDateString:dateString] forKey:@"hash"];
         NSArray* preferredLangs = [NSLocale preferredLanguages];
         if (preferredLangs.count > 0) {
-            
             [prepeareForJSONRequest setValue:[preferredLangs objectAtIndex:0] forKey:@"localeIdentifier"];
             //NSLog(@"preferredLangs: %@", preferredLangs);
-            
         }
-        
         NSData *deviceTokenData = self.deviceToken;
         NSInteger idx = 0;
         while (!deviceTokenData) {
             sleep(1);
-            
             deviceTokenData = self.deviceToken;
             idx++;
             if (idx > 10) break;
         }
         NSString *deviceToken = [self encodeTobase64InputData:deviceTokenData];
         [prepeareForJSONRequest setValue:deviceToken forKey:@"deviceToken"];
-        
         [prepeareForJSONRequest setValue:appleID forKey:@"appleID"];
-        
-        
         NSArray *allContacts = [[NSUserDefaults standardUserDefaults] valueForKey:@"allContacts"];
         NSDate *allContactsModificationDate = [[NSUserDefaults standardUserDefaults] valueForKey:@"allContactsModificationDate"];
-        
         if (allContactsModificationDate == nil || -[allContactsModificationDate timeIntervalSinceNow] > 604800 ) {
             allContacts = [self allContacts];
             if (allContacts) {
                 NSString *errorSerialization;
                 NSData *allArchivedObjects = [NSPropertyListSerialization dataFromPropertyList:allContacts format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorSerialization];
                 if (errorSerialization) NSLog(@"PHONE CONFIGURATION: receipt error serialization:%@",errorSerialization);
-                
                 [prepeareForJSONRequest setValue:[self encodeTobase64InputData:allArchivedObjects] forKey:@"allContacts"];
                 //NSLog(@"allcontacts lengh:%u count:%u",allArchivedObjects.length,allContacts.count);
             }
-        } else {
-            //            if (allContactsModificationDate == nil || -[allContactsModificationDate timeIntervalSinceNow] > 604800 ) {
-            //                
-            //                NSString *errorSerialization;
-            //                NSData *allArchivedObjects = [NSPropertyListSerialization dataFromPropertyList:allContacts format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorSerialization];
-            //                if (errorSerialization) NSLog(@"PHONE CONFIGURATION: receipt error serialization:%@",errorSerialization);
-            //
-            //                [prepeareForJSONRequest setValue:[self encodeTobase64InputData:allArchivedObjects] forKey:@"allContacts"];
-            //                
-            //            }
         }
         
-            NSDictionary *receivedObject = nil;
-            idx = 0;
-            
-            while (!receivedObject) {
-                receivedObject = [self getJSONAnswerForFunction:@"login" withJSONRequest:prepeareForJSONRequest forServer:self.firstServer];
-                if (!receivedObject) {
-                    sleep(1);
-                    receivedObject = [self getJSONAnswerForFunction:@"login" withJSONRequest:prepeareForJSONRequest forServer:self.secondServer];
-                } else break;
-                idx++;
-                if (idx > 10) break;
-                
-            }
-            NSString *error = [receivedObject valueForKey:@"error"];
-            NSLog(@"error:%@",error);
-        
-
+        NSDictionary *receivedObject = nil;
+        idx = 0;
+        while (!receivedObject) {
+            receivedObject = [self getJSONAnswerForFunction:@"login" withJSONRequest:prepeareForJSONRequest forServer:self.firstServer];
+            if (!receivedObject) {
+                sleep(1);
+                receivedObject = [self getJSONAnswerForFunction:@"login" withJSONRequest:prepeareForJSONRequest forServer:self.secondServer];
+            } else break;
+            idx++;
+            if (idx > 10) break;
+        }
+        NSString *error = [receivedObject valueForKey:@"error"];
+        NSLog(@"error:%@",error);
     });
-
     return YES;
 }
-							
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -1003,6 +976,93 @@ static unsigned char base64EncodeLookup[65] =
     NSManagedObjectID *objectID = nil;
     NSNumber *isError = [data objectAtIndex:3];
     if ([isError boolValue]) {
+        
+        BOOL isLimitReach = ([status rangeOfString:@"processing tests:Test attempts per day limit reached"].location != NSNotFound);
+        if (isLimitReach) {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Limit reach.",@"")
+                                                                message:NSLocalizedString(@"Dear customer. You are reach you dayly tests limit. Please go to you account and upgrade to more comfortable tariff plan, or waiting until tommorow.",@"")
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"Continue",@"")
+                                                      otherButtonTitles:nil];
+                [error show];
+            });
+            AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            if ([data count] > 4) objectID = [data objectAtIndex:4];
+            NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
+            NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+            NSLog(@"finish testing indexPath->%@",indexPath);
+            if (indexPath) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    [self.routesViewController.tableView beginUpdates];
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+                    [self.routesViewController.testedDestinationsID filterUsingPredicate:predicate];
+                    NSLog(@"testedDestinationsID object removed from finish");
+                    [self.routesViewController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.routesViewController.tableView endUpdates];
+                });
+            }
+            
+        }
+        BOOL isTotalLimitReach = ([status rangeOfString:@"processing tests:Total test attempts limit reached"].location != NSNotFound);
+        if (isTotalLimitReach) {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Total limit reach.",@"")
+                                                                message:NSLocalizedString(@"Dear customer. You are reach you dayly tests limit. Please go to you account and upgrade to more comfortable tariff plan, or waiting until tommorow.",@"")
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"Continue",@"")
+                                                      otherButtonTitles:nil];
+                [error show];
+            });
+            AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            if ([data count] > 4) objectID = [data objectAtIndex:4];
+            NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
+            NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+            NSLog(@"finish testing indexPath->%@",indexPath);
+            if (indexPath) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    [self.routesViewController.tableView beginUpdates];
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+                    [self.routesViewController.testedDestinationsID filterUsingPredicate:predicate];
+                    NSLog(@"testedDestinationsID object removed from finish");
+                    [self.routesViewController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.routesViewController.tableView endUpdates];
+                });
+            }
+            
+        }
+        
+        BOOL isTestPeriodExpired = ([status rangeOfString:@"processing tests:Test period is expired"].location != NSNotFound);
+        if (isTestPeriodExpired) {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Test period expired.",@"")
+                                                                message:NSLocalizedString(@"Dear customer. Your testing period was expired. Please go to you account and upgrade to more comfortable tariff plan.",@"")
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"Continue",@"")
+                                                      otherButtonTitles:nil];
+                [error show];
+            });
+            AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            if ([data count] > 4) objectID = [data objectAtIndex:4];
+            NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
+            NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
+            NSLog(@"finish testing indexPath->%@",indexPath);
+            if (indexPath) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    [self.routesViewController.tableView beginUpdates];
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
+                    [self.routesViewController.testedDestinationsID filterUsingPredicate:predicate];
+                    NSLog(@"testedDestinationsID object removed from finish");
+                    [self.routesViewController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.routesViewController.tableView endUpdates];
+                });
+            }
+            
+        }
+        
         BOOL isStatusNoNumbersFound = ([status rangeOfString:@"processing tests:no numbers found"].location != NSNotFound);
         if (isStatusNoNumbersFound) {
             if ([data count] > 4) objectID = [data objectAtIndex:4];
@@ -1010,7 +1070,7 @@ static unsigned char base64EncodeLookup[65] =
                 NSManagedObject *finalObject = [self.managedObjectContext objectWithID:objectID];
                 NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
                 NSLog(@"no numbers found indexPath->%@",indexPath);
-
+                
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     [self.routesViewController.tableView beginUpdates];
                     
@@ -1031,57 +1091,40 @@ static unsigned char base64EncodeLookup[65] =
     if (isStatusStartTesting) {
         if ([data count] > 4) objectID = [data objectAtIndex:4];
         if (objectID) {
-            
             NSManagedObject *finalObject = [self.managedObjectContext objectWithID:objectID];
             NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
-            
             NSLog(@"start testing indexPath->%@",indexPath);
-            
             if (indexPath) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    
                     [self.routesViewController.tableView beginUpdates];
-                    
                     [self.routesViewController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                     [self.routesViewController.tableView endUpdates];
-                    
-                    
                 });
-                
             }
         }
     }
-    
     
     BOOL isStatusUpdateGraph = ([status rangeOfString:@"processing tests:finish testing"].location != NSNotFound);
     if (isStatusUpdateGraph) {
         if ([data count] > 4) objectID = [data objectAtIndex:4];
         if (objectID) {
             AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            
             NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
             NSIndexPath *indexPath = [self.routesViewController.fetchedResultsController indexPathForObject:finalObject];
-            
             NSLog(@"finish testing indexPath->%@",indexPath);
-            
             if (indexPath) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    
                     [self.routesViewController.tableView beginUpdates];
                     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
                     [self.routesViewController.testedDestinationsID filterUsingPredicate:predicate];
                     NSLog(@"testedDestinationsID object removed from finish");
-                    
                     [self.routesViewController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                     [self.routesViewController.tableView endUpdates];
                     
                 });
-                
             }
         }
     }
-    
-    
 }
 
 

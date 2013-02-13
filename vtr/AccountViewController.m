@@ -49,20 +49,11 @@
 {
     [super viewDidLoad];
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-
-	// Do any additional setup after loading the view, typically from a nib.
-//    [login removeAllSegments];
-//    [login insertSegmentWithTitle:@"Login" atIndex:0 animated:NO];
-    //loginButton.titleLabel.text = @"Login";
     [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
     loginOrRegisterButton.hidden = YES;
     loginButton.enabled = NO;
     operationActivity.alpha = 1.0;
     [operationActivity startAnimating];
-
-//    [registration removeAllSegments];
-//    [registration insertSegmentWithTitle:@"Registration" atIndex:0 animated:NO];
-//    [registration addTarget:self action:@selector(registration:) forControlEvents:UIControlEventValueChanged];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
         AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
@@ -70,12 +61,9 @@
         CompanyStuff *admin = [clientController authorization];
         NSDictionary *answer = [clientController isCurrentUserAuthorized];
         if (admin && admin.isCompanyAdmin.boolValue == YES && answer) {
-            
             admin.userID = [[answer valueForKey:@"userID"] stringValue];
             [clientController finalSave:clientController.moc];
-
             dispatch_async(dispatch_get_main_queue(), ^(void) {
-
                 [UIView beginAnimations:@"flipbutton" context:NULL];
                 [UIView setAnimationDuration:0.4];
                 [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:loginButton cache:YES];
@@ -87,63 +75,48 @@
                     [loginButton setImage:[UIImage imageNamed:@"button_logout_downIPhone.png"] forState:UIControlStateSelected];
                 }
                 [UIView commitAnimations];
-
                 [loginButton removeTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
                 [loginButton addTarget:self action:@selector(logout:) forControlEvents:UIControlEventTouchUpInside];
-                
                 emailLabel.userInteractionEnabled = NO;
                 emailLabel.borderStyle = UITextBorderStyleNone;
                 passwordLabel.userInteractionEnabled = NO;
                 passwordLabel.borderStyle = UITextBorderStyleNone;
-                
                 companyNameLabel.userInteractionEnabled = NO;
                 companyNameLabel.borderStyle = UITextBorderStyleNone;
-                
                 ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
                 CompanyStuff *admin = [clientController authorization];
-
                 emailLabel.text = admin.email;
                 passwordLabel.text = admin.password;
                 companyNameLabel.text = admin.currentCompany.name;
                 loginButton.enabled = YES;
                 operationActivity.alpha = 0.0;
-                
                 [operationActivity stopAnimating];
                 [[super.tabBarController.viewControllers objectAtIndex:1] tabBarItem].enabled = YES;
                 [[super.tabBarController.viewControllers objectAtIndex:2] tabBarItem].enabled = YES;
                 [[super.tabBarController.viewControllers objectAtIndex:3] tabBarItem].enabled = YES;
-
-                NSLog(@"1 email:%@ isCompanyAdmin:%@ answer->%@",admin.email,admin.isCompanyAdmin,answer);
-                
+                //NSLog(@"1 email:%@ isCompanyAdmin:%@ answer->%@",admin.email,admin.isCompanyAdmin,answer);
                 NSString *roleName = [answer valueForKey:@"roleName"];
                 NSNumber *allowCountPerDay = [answer valueForKey:@"allowCountPerDay"];
                 NSString *expireDate = [answer valueForKey:@"expireDate"];
-                
-                NSMutableString *finalString = [NSMutableString string];
-                [finalString appendFormat:@"Your tariff plan is:%@. \n",roleName];
-                if ([[allowCountPerDay class] isSubclassOfClass:[NSNumber class]]) [finalString appendFormat:@"Allowed %@ tests per day.\n",allowCountPerDay];
-                
-                
-                
-                if (expireDate.length > 2) {
-                    NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
-                    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-                    [formatterDate setLocale:usLocale];
-                    [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-                    NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
-                    [formatterDate setDateFormat:@"yyyy-MM-dd"];
-
-                    NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
-                    
-                    [finalString appendFormat:@"Expire date is:%@. \n",finalDate];
-                }
-                
+                [self setTariffPlannDesctiprionForRoleName:roleName forAllowCountPerDay:allowCountPerDay forExpireDate:expireDate];
+//                NSMutableString *finalString = [NSMutableString string];
+//                [finalString appendFormat:@"Your tariff plan is:%@. \n",roleName];
+//                if ([[allowCountPerDay class] isSubclassOfClass:[NSNumber class]]) [finalString appendFormat:@"Allowed %@ tests per day.\n",allowCountPerDay];
+//                if (expireDate.length > 2) {
+//                    NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+//                    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+//                    [formatterDate setLocale:usLocale];
+//                    [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//                    NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
+//                    [formatterDate setDateFormat:@"yyyy-MM-dd"];
+//                    NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
+//                    [finalString appendFormat:@"Expire date is:%@. \n",finalDate];
+//                }
+//                self.planDescription.text = finalString;
                 self.changePlanButton.hidden = NO;
                 self.paymentHistoryButton.hidden = NO;
-
                 self.planDescription.hidden = NO;
 
-                self.planDescription.text = finalString;
             });
             [clientController getCarriersList];
             [clientController getPaymentsList];
@@ -223,6 +196,31 @@
 
 #pragma mark -
 #pragma mark Animation block
+-(void) setTariffPlannDesctiprionForRoleName:(NSString *)roleName forAllowCountPerDay:(NSNumber *)allowCountPerDay forExpireDate:(NSString *)expireDate;
+{
+    //NSString *roleName = [answer valueForKey:@"roleName"];
+    //NSNumber *allowCountPerDay = [answer valueForKey:@"allowCountPerDay"];
+    //NSString *expireDate = [answer valueForKey:@"expireDate"];
+    NSMutableString *finalString = [NSMutableString string];
+    [finalString appendFormat:@"Your tariff plan is:%@. \n",roleName];
+    if (allowCountPerDay && [[allowCountPerDay class] isSubclassOfClass:[NSNumber class]]) [finalString appendFormat:@"Allowed %@ tests per day.\n",allowCountPerDay];
+    if (expireDate.length > 2) {
+        NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+        NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        [formatterDate setLocale:usLocale];
+        [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
+        if (!necessaryDate) {
+            [formatterDate setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+            necessaryDate = [formatterDate dateFromString:expireDate];
+        }
+        [formatterDate setDateFormat:@"yyyy-MM-dd"];
+        NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
+        [finalString appendFormat:@"Expire date is:%@. \n",finalDate];
+    }
+    self.planDescription.text = finalString;
+}
+
 -(void) showErrorMessage:(NSString *)message
 {
     NSLog(@"error:%@",message);
@@ -231,8 +229,8 @@
     [errorMessage insertSegmentWithTitle:message atIndex:0 animated:NO];
     errorMessage.hidden = NO;
     
-    [UIView animateWithDuration:2 
-                          delay:0 
+    [UIView animateWithDuration:2
+                          delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          errorMessage.alpha = 1;
@@ -432,11 +430,9 @@
     [[super.tabBarController.viewControllers objectAtIndex:1] tabBarItem].enabled = YES;
     [[super.tabBarController.viewControllers objectAtIndex:2] tabBarItem].enabled = YES;
     [[super.tabBarController.viewControllers objectAtIndex:3] tabBarItem].enabled = YES;
-
     [UIView beginAnimations:@"flipbutton" context:NULL];
     [UIView setAnimationDuration:0.4];
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:loginButton cache:YES];
-    
     if (delegate.isPad) {
         [loginButton setImage:[UIImage imageNamed:@"button_logout_upIPad.png"] forState:UIControlStateNormal];
         [loginButton setImage:[UIImage imageNamed:@"button_logout_downIPad.png"] forState:UIControlStateSelected];
@@ -444,7 +440,6 @@
         [loginButton setImage:[UIImage imageNamed:@"button_logout_upIPhone.png"] forState:UIControlStateNormal];
         [loginButton setImage:[UIImage imageNamed:@"button_logout_downIPhone.png"] forState:UIControlStateSelected];
     }
-    
     [UIView commitAnimations];
     loginActivity.alpha = 0.0;
     [loginActivity stopAnimating];
@@ -560,17 +555,16 @@
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     self.changePlanButton.hidden = NO;
                     self.paymentHistoryButton.hidden = NO;
-
                     self.planDescription.hidden = NO;
-                    
                     UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Registration completed.",@"")
                                                                     message:NSLocalizedString(@"Congratulations. Now you are registered and can make tests.",@"")
                                                                    delegate:nil
                                                           cancelButtonTitle:NSLocalizedString(@"Continue",@"")
                                                           otherButtonTitles:nil];
                     [error show];
+                    [self finalizeAllViewsForSuccessLogin];
+
                 });
-                [self finalizeAllViewsForSuccessLogin];
             }
             
         }
@@ -767,7 +761,7 @@
         AppDelegate *delegateMain = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:delegateMain.persistentStoreCoordinator withSender:self withMainMoc:delegateMain.managedObjectContext];
-//        clientController.sender = self;
+        clientController.sender = self;
         
         NSData *transactionReceiptData = transaction.transactionReceipt;
         NSString *transactionIdentifier = transaction.transactionIdentifier;
@@ -799,36 +793,16 @@
     
     SKPaymentTransaction *transaction = transactions.lastObject;
     if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
-        // add to balance 5$
         //NSLog(@"add to balance 5$");
-        
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-        
-        
-        //        ClientController *clientController = [[ClientController alloc] init];
-        //        clientController.sender = self;
-        //        NSData *transactionReceiptData = transaction.transactionReceipt;
-        //        NSString *transactionIdentifier = transaction.transactionIdentifier;
         if ([[RRVerificationController sharedInstance] verifyPurchase:transaction
                                                          withDelegate:self
                                                                 error:NULL] == FALSE) [self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
-        //        VerificationController *shared = [VerificationController sharedInstance];
-        //        if ([shared verifyPurchase:transaction])
-        //[clientController sendPaymentWithTransactionReceipt:transactionReceiptData andTransactionIdentifier:transactionIdentifier];
-        //        else {
-        //            [self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
-        //        }
-        
-        
     } else {
-        //SKPaymentTransactionStateFailed
         if (transaction.transactionState == SKPaymentTransactionStateFailed) {
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-            
-            //NSLog(@"payment error");
             [self showErrorMessage:NSLocalizedString(@"payment error",@"")];
         }
-        
     }
 }
 
@@ -862,7 +836,6 @@
             self.planDescription.hidden = YES;
             self.changePlanButton.hidden = YES;
             self.paymentHistoryButton.hidden = YES;
-
             [self showErrorMessage:status];
             [self finalizeAllViewsForUnSuccessLoginOrRegistration];
         });
@@ -989,6 +962,40 @@
 
         });
     }
+    
+    BOOL isPaymentCompleted = ([status rangeOfString:@"sendPaymentWithTransactionReceipt:"].location != NSNotFound);
+    if (isPaymentCompleted) {
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            NSArray *statusDelimeted = [status componentsSeparatedByString:@":"];
+            NSString *roleName = [statusDelimeted objectAtIndex:1];
+            NSString *allowCountPerDayString = [statusDelimeted objectAtIndex:2];
+            NSString *expireDate = [statusDelimeted objectAtIndex:3];
+            NSNumber *allowCountPerDay = nil;
+            if (allowCountPerDay && allowCountPerDayString.length > 0) {
+                NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                allowCountPerDay = [formatter numberFromString:allowCountPerDayString];
+            }
+            [self setTariffPlannDesctiprionForRoleName:roleName forAllowCountPerDay:allowCountPerDay forExpireDate:expireDate];
+            UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Payment completed.",@"")
+                                                            message:[NSString stringWithFormat:@"Dear customer.Your payment was received. Your tariff plan is:%@ and expired %@.",roleName,expireDate]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",@"")
+                                                  otherButtonTitles:nil];
+            [error show];
+            operation.alpha = 0.0;
+            operationProgress.alpha = 0.0;
+            [self showErrorMessage:@"Payment completed."];
+        });
+    }
+
+    BOOL isPaymentFailed = ([status rangeOfString:@"isPaymentFailed"].location != NSNotFound);
+    if (isPaymentFailed) {
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            operation.alpha = 0.0;
+            operationProgress.alpha = 0.0;
+            [self showErrorMessage:@"Payment failed."];
+        });
+    }
 
     
     if ([status isEqualToString:@"Login success"]) {
@@ -1020,8 +1027,6 @@
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             operation.alpha = 0.0;
             operationProgress.alpha = 0.0;
-
-            
             operationActivity.alpha = 0.0;
             [operationActivity stopAnimating];
         });
