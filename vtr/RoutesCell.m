@@ -33,15 +33,14 @@
 -(IBAction)test:(id)sender
 {
     if (delegate && [delegate respondsToSelector:@selector(destinationChooseForIndexPath:)]) {
-        NSLog(@">>>>>>>>> tests started");
+        //NSLog(@">>>>>>>>> tests started");
         if (delegate.tableView.isEditing) return;
         [delegate destinationChooseForIndexPath:self.indexPath];
         activity.alpha = 1.0;
         [activity startAnimating];
         testButton.enabled = NO;
         [self.testButton setImage:[UIImage imageNamed:@"test-button-pressed.png"] forState:UIControlStateNormal];
-        NSLog(@">>>>>>>>> tests started2");
-
+        //NSLog(@">>>>>>>>> tests started2");
     }
 }
 

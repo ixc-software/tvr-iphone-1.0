@@ -167,77 +167,27 @@
 
 - (NSFetchedResultsController *)newFetchedResultsControllerWithSearch:(NSString *)searchString
 {
-    /*if ([searchString length] < 2 && fetchedResultsController != nil) {
-     NSLog(@"fetch controller return standart controller:%@",[NSDate date]);
-     
-     return self.fetchedResultsController;
-     }*/
-    //NSLog(@"fetch controller start:%@",[NSDate date]);
-    
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
-    //NSSortDescriptor *sortDescriptor2 = [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
-    
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
-    
     NSPredicate *filterPredicate = nil;
-    
-//    if (filterSegment.selectedSegmentIndex == 0) {
-//        filterPredicate = [NSPredicate predicateWithFormat:@"isRegistered == %@",[NSNumber numberWithBool:YES]];
-//    }
-    
-    /*
-     Set up the fetched results controller.
-     */
-    // Create the fetch request for the entity.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
-    // Edit the entity name as appropriate.
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"GrossBookRecord" inManagedObjectContext:delegate.managedObjectContext];
     [fetchRequest setEntity:entity];
-    
-//    NSMutableArray *predicateArray = [NSMutableArray array];
-    
-//    if(searchString.length) {
-//        
-//        NSPredicate *predicateFirstName = [NSPredicate predicateWithFormat:@"(firstName CONTAINS[cd] %@)",searchString];
-//        NSPredicate *predicateLastName = [NSPredicate predicateWithFormat:@"(lastName CONTAINS[cd] %@)",searchString];
-//        
-//        [predicateArray addObject:predicateFirstName];
-//        [predicateArray addObject:predicateLastName];
-//        
-//        if (filterPredicate) {
-//            filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:filterPredicate,[NSCompoundPredicate orPredicateWithSubpredicates:predicateArray], nil]];
-//            
-//        }
-//        
-//        filterPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray];
-//    }
-    
     if (filterPredicate) [fetchRequest setPredicate:filterPredicate];
-    
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
-    //[fetchRequest setFetchLimit:120];
-    
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
     NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                 managedObjectContext:delegate.managedObjectContext
                                                                                                   sectionNameKeyPath:nil
                                                                                                            cacheName:nil];
     aFetchedResultsController.delegate = nil;
-    
     NSError *error = nil;
     if (![aFetchedResultsController performFetch:&error])
     {
-        
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     return aFetchedResultsController;
 }    
 

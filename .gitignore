@@ -6,7 +6,7 @@ build/*
 # old skool
 .svn
 #
-tvr.xcodeproj/xcuserdata/*
+tvr.xcodeproj/xcuserdata/alex.xcuserdatad/xcschemes/*
 tvr.xcodeproj/project.xcworkspace/xcuserdata/*
 
 # osx noise

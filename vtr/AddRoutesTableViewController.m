@@ -192,55 +192,15 @@
     return [sectionInfo name];
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
     //NSLog(@"%@",sectionsTitles);
-    
     return [[sectionsTitles lastObject] valueForKey:@"letters"]; 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
     if ([title isEqualToString:UITableViewIndexSearch]) return 0;
-    
     NSPredicate *letterPredicate = [NSPredicate predicateWithFormat:@"letter == %@",title];
     NSArray *sectionTitlesFiltered = [sectionsTitles filteredArrayUsingPredicate:letterPredicate];
     if ([sectionTitlesFiltered count] == 0) NSLog(@"COUNTRIES LIST: >>>> warning, for title %@ index not found",title);
@@ -255,15 +215,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     addRoutes.enabled = YES;
-
     AddRoutesCell *selectedCell = (AddRoutesCell *)[self.tableView cellForRowAtIndexPath:indexPath];
     CountrySpecificCodeList *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-
     if (selectedCell.accessoryType == UITableViewCellAccessoryNone) {
         selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
         [selectedObjectsIDs addObject:object.objectID.copy];
-    }
-    else {
+    } else {
         selectedCell.accessoryType = UITableViewCellAccessoryNone;
         [selectedObjectsIDs removeObject:object.objectID];
     }
@@ -272,89 +229,52 @@
 
 #pragma mark Delegate methods of NSFetchedResultsController
 
-
 - (NSFetchedResultsController *)newFetchedResultsControllerWithSearch:(NSString *)searchString
 {
-    /*if ([searchString length] < 2 && fetchedResultsController != nil) {
-     NSLog(@"fetch controller return standart controller:%@",[NSDate date]);
-     
-     return self.fetchedResultsController;
-     }*/
     //NSLog(@"fetch controller start:%@",[NSDate date]);
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"country" ascending:YES];
-    NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
-    
+    NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];    
     NSPredicate *filterPredicate = nil;
-    
-    /*
-     Set up the fetched results controller.
-     */
-    // Create the fetch request for the entity.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    
-    // Edit the entity name as appropriate.
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"CountrySpecificCodeList" inManagedObjectContext:delegate.managedObjectContext];
     [fetchRequest setEntity:entity];
-    
     NSMutableArray *predicateArray = [NSMutableArray array];
-    
     if(searchString.length) {
-        
         NormalizedCountryTransformer *transformerCountry = [[NormalizedCountryTransformer alloc] init];
         NSPredicate *predicateCountryUnModified = [NSPredicate predicateWithFormat:@"(country CONTAINS[cd] %@)",searchString];
         NSPredicate *predicateCountry = [transformerCountry reverseTransformedValue:predicateCountryUnModified];
-        
         NormalizedSpecificTransformer *transformerSpecific = [[NormalizedSpecificTransformer alloc] init];
         NSPredicate *predicateSpecificUnModified = [NSPredicate predicateWithFormat:@"(specific CONTAINS[cd] %@)",searchString];
         NSPredicate *predicateSpecific = [transformerSpecific reverseTransformedValue:predicateSpecificUnModified];
-        
         NormalizedCodesTransformer *transformerCodes = [[NormalizedCodesTransformer alloc] init];
         NSPredicate *predicateCodesUnModified = [NSPredicate predicateWithFormat:@"(codes CONTAINS[cd] %@)",searchString];
         NSPredicate *predicateCodes = [transformerCodes reverseTransformedValue:predicateCodesUnModified];
-        
         [predicateArray addObject:predicateCountry];
         [predicateArray addObject:predicateSpecific];
         [predicateArray addObject:predicateCodes];
-        
-        
         if(filterPredicate)
         {
             filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:filterPredicate, [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray], nil]];
-        }
-        else
+        } else
         {
             filterPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray];
         }
     }
-    
     [fetchRequest setPredicate:filterPredicate];
-    
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
-    //[fetchRequest setFetchLimit:120];
-    
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest 
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                 managedObjectContext:delegate.managedObjectContext 
                                                                                                   sectionNameKeyPath:@"country" 
                                                                                                            cacheName:nil];
     aFetchedResultsController.delegate = self;
-    
-    
-    
     NSError *error = nil;
     if (![aFetchedResultsController performFetch:&error]) 
     {
-        
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     return aFetchedResultsController;
 }    
 
@@ -363,10 +283,8 @@
 {
     //NSLog(@"fetchedResultsController");
     NSString *currentSearchString = self.bar.text;
-    
     if (!currentSearchString) currentSearchString = @"";
-    
-    if (fetchedResultsController != nil && [currentSearchString isEqualToString:self.previousSearchString]) 
+    if (fetchedResultsController != nil && [currentSearchString isEqualToString:self.previousSearchString])
     {
         return fetchedResultsController;
     }
@@ -458,51 +376,28 @@
 #pragma mark - own actions
 
 - (IBAction)addRoutesStart:(id)sender {
-    
-
     self.routesTableViewController.outpeerIDForTest = outPeerID;
-    
     NSArray *selectedObjesID = self.selectedObjectsIDs;
-    
     if (selectedObjesID) self.routesTableViewController.destinationsForTest = selectedObjesID.copy;
-
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
     delegate.countrySpecificIDsForTest = self.selectedObjectsIDs.copy;
-    
     NSString *storyBoardName = nil;
-    //NSString *addRoutesTableViewControllerName = nil;
-    
-    if ([delegate isPad]) {
-        storyBoardName = @"MainStoryboard_iPad";
-        //addRoutesTableViewControllerName = @"MainStoryboard_iPad";
-        
-    }
-    else {
-        storyBoardName = @"MainStoryboard_iPhone";
-    }
+    if ([delegate isPad]) storyBoardName = @"MainStoryboard_iPad";
+    else storyBoardName = @"MainStoryboard_iPhone";
     NumbersForTestEditorMain *viewController = [[UIStoryboard storyboardWithName:storyBoardName bundle:NULL] instantiateViewControllerWithIdentifier:@"NumbersForTestEditorMain"];
     viewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-    NSLog(@"addRoutesStart2:self.outPeerID:%@",self.outPeerID);
-
+    //NSLog(@"addRoutesStart2:self.outPeerID:%@",self.outPeerID);
     NumbersForTestEditorTableViewController *numbers = viewController.numbersForTestEditorTableViewController;
-    
     delegate.outPeerID = self.outPeerID.copy;
     numbers.addRoutesTableViewController = self;
-    NSLog(@"addRoutesStart2:delegate.outPeerID:%@",delegate.outPeerID);
-
+    //NSLog(@"addRoutesStart2:delegate.outPeerID:%@",delegate.outPeerID);
     [self presentModalViewController:viewController animated:YES];
-
-//    [self.routesTableViewController testStartForDestinations:selectedObjectsIDs forOutPeerID:self.outPeerID];
-    //[self dismissModalViewControllerAnimated:YES];
-    
 }
 - (IBAction)cancelAdding:(id)sender {
     self.routesTableViewController.destinationsForTest = nil;
     self.routesTableViewController.outpeerIDForTest = nil;
     [self.routesTableViewController.testedDestinationsID removeAllObjects];
     [self dismissModalViewControllerAnimated:YES];
-
 }
 
 #pragma mark - UISearchBarDelegate

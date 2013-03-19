@@ -460,23 +460,18 @@ static unsigned char base64EncodeLookup[65] =
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         NSFetchedResultsController *fetchController = [self fetchedResultsController];
         OutPeer *peer = [fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1]];
-        NSLog(@"DELETE Outpeer:%@",peer.outpeerName);
+        //NSLog(@"DELETE Outpeer:%@",peer.outpeerName);
         NSString *outPeerExternalID = peer.outpeerID.copy;
-        
         [delegate.managedObjectContext deleteObject:peer];
         [delegate saveContext];
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-            
             ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
             [clientController removeOutPeerWithID:outPeerExternalID];
         });
-        
     }   
     if (editingStyle == UITableViewCellEditingStyleInsert) {
         [activity startAnimating];
@@ -484,34 +479,20 @@ static unsigned char base64EncodeLookup[65] =
         [firstCell.nameEdited resignFirstResponder];
         [firstCell.ipsEdited resignFirstResponder];
         [firstCell.prefixEdited resignFirstResponder];
-
-        
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
-
-
         CompanyStuff *updated = (CompanyStuff *)[delegate.managedObjectContext objectWithID:[clientController authorization].objectID];
-        
         NSSet *carriers = updated.carrier;
-        
         __block UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Please choose carrier" delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Cancel" otherButtonTitles:nil];
         [carriers enumerateObjectsUsingBlock:^(Carrier *carrier, BOOL *stop) {
             [sheet addButtonWithTitle:carrier.name];
         }];
-
-        
         sheet.tag = 1;
-        
         sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
-        
         AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
         if ([delegate isPad]) {
             [sheet showFromRect:self.navigationController.navigationBar.frame inView:self.view animated:YES];
-        } else [sheet showFromToolbar:self.navigationController.toolbar];//showFromRect:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width) inView:self.view animated:YES];
-
-        
-        
-    }   
+        } else [sheet showFromToolbar:self.navigationController.toolbar];
+    }
 }
 
 
@@ -524,37 +505,8 @@ static unsigned char base64EncodeLookup[65] =
     
 }
 
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    if (tableView.isEditing)  return nil;
-//
-//    OutPeer *managedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-//    if (managedObject.destinationsListWeBuyTesting.count > 0) return indexPath;
-//    else return nil;
-//}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-//    RoutesCell *selectedCell = (RoutesCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-//    DestinationsListWeBuy *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-//    
-//    if (selectedCell.accessoryType == UITableViewCellAccessoryNone) {
-//        selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
-//        [selectedObjectsIDs addObject:object.objectID];
-//    }
-//    else {
-//        selectedCell.accessoryType = UITableViewCellAccessoryNone;
-//        [selectedObjectsIDs removeObject:object.objectID];
-//    }
-//    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self destinationChooseForIndexPath:indexPath];
 }
 
@@ -571,45 +523,17 @@ static unsigned char base64EncodeLookup[65] =
 
 - (NSFetchedResultsController *)newFetchedResultsControllerWithSearch:(NSString *)searchString
 {
-    /*if ([searchString length] < 2 && fetchedResultsController != nil) {
-     NSLog(@"fetch controller return standart controller:%@",[NSDate date]);
-     
-     return self.fetchedResultsController;
-     }*/
-    //NSLog(@"fetch controller start:%@",[NSDate date]);
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"carrier.name" ascending:YES];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
-    
     NSPredicate *filterPredicate = nil;
-    
-    /*
-     Set up the fetched results controller.
-     */
-    // Create the fetch request for the entity.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    
-    // Edit the entity name as appropriate.
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"OutPeer" inManagedObjectContext:delegate.managedObjectContext];
     [fetchRequest setEntity:entity];
-    
     NSMutableArray *predicateArray = [NSMutableArray array];
-    
     if(searchString.length) {
-        
         NSPredicate *predicateName = [NSPredicate predicateWithFormat:@"(outpeerName CONTAINS[cd] %@)",searchString];
         [predicateArray addObject:predicateName];
-  
-        
-//        if(filterPredicate)
-//        {
-//            filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:filterPredicate, [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray], nil]];
-//        }
-//        else
-//        {
-//            filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicateArray];
-//        }
     }
     
     if (self.selectedCarrier) {
@@ -618,47 +542,28 @@ static unsigned char base64EncodeLookup[65] =
     }
     
     if (self.testedSelector.selectedSegmentIndex == 0) {
-//        NSPredicate *predicateName = [NSPredicate predicateWithFormat:@"(destinationsListWeBuyTesting.@count > 0)"];
-//        [predicateArray addObject:predicateName];
     } else {
         NSPredicate *predicateName = [NSPredicate predicateWithFormat:@"destinationsListWeBuyTesting.@count > 0"];
         [predicateArray addObject:predicateName];
-//        [fetchRequest setPredicate:nil];
-
-
     }
     //NSLog(@"FINAL PREDICATE:%@",predicateArray);
-
-    if (predicateArray.count > 0) { 
+    if (predicateArray.count > 0) {
         filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicateArray];
         [fetchRequest setPredicate:filterPredicate];
     }
-    
-    
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
-    //[fetchRequest setFetchLimit:120];
-    
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest 
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                 managedObjectContext:delegate.managedObjectContext 
                                                                                                   sectionNameKeyPath:@"carrier.name" 
                                                                                                            cacheName:nil];
     aFetchedResultsController.delegate = self;
-    
-    
-    
     NSError *error = nil;
     if (![aFetchedResultsController performFetch:&error]) 
     {
-        
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     return aFetchedResultsController;
 }    
 
@@ -667,10 +572,8 @@ static unsigned char base64EncodeLookup[65] =
 {
     //NSLog(@"fetchedResultsController");
     NSString *currentSearchString = self.searchBar.text;
-    
     if (!currentSearchString) currentSearchString = @"";
-    
-    if (fetchedResultsController != nil && [currentSearchString isEqualToString:self.previousSearchString]) 
+    if (fetchedResultsController != nil && [currentSearchString isEqualToString:self.previousSearchString])
     {
         return fetchedResultsController;
     }
@@ -711,57 +614,41 @@ static unsigned char base64EncodeLookup[65] =
 {
     
     UITableView *tableView = self.tableView;
-    
     switch(type)
     {
-            
         case NSFetchedResultsChangeInsert:
-            NSLog(@"ROUTES: NSFetchedResultsChangeInsert");
-
+            //NSLog(@"ROUTES: NSFetchedResultsChangeInsert");
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForInsert = [NSIndexPath indexPathForRow:newIndexPath.row inSection:newIndexPath.section + 1];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForInsert] withRowAnimation:UITableViewRowAnimationFade];
             } else[tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
-            
         case NSFetchedResultsChangeDelete:
-            NSLog(@"ROUTES: NSFetchedResultsChangeDelete");
-
+            //NSLog(@"ROUTES: NSFetchedResultsChangeDelete");
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForDelete = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section + 1];
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
             } else [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            
             break;
-            
         case NSFetchedResultsChangeUpdate:
-            NSLog(@"ROUTES: NSFetchedResultsChangeUpdate");
-
+            //NSLog(@"ROUTES: NSFetchedResultsChangeUpdate");
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForUpdate = [NSIndexPath indexPathForRow:indexPath.row  inSection:indexPath.section];
                 [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForUpdate] withRowAnimation:UITableViewRowAnimationFade];
             } else [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
             //[self configureCell:[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
             break;
-            
         case NSFetchedResultsChangeMove:
         {
-            NSLog(@"ROUTES: NSFetchedResultsChangeMove");
-
+            //NSLog(@"ROUTES: NSFetchedResultsChangeMove");
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForDelete = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section + 1];
                 NSIndexPath *newIndexPathForInsert = [NSIndexPath indexPathForRow:newIndexPath.row inSection:newIndexPath.section + 1];
-                
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForInsert] withRowAnimation:UITableViewRowAnimationFade];
-                
-                
             } else {
-                
-                
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-                
             }
             break;
         }
@@ -779,10 +666,8 @@ static unsigned char base64EncodeLookup[65] =
     if ([searchText isEqualToString:@""]) { 
         [self performSelector:@selector(hideKeyboardWithSearchBar:) withObject:searchBarReceived afterDelay:0];
     }
-    
     [self.tableView reloadData];
     //NSLog(@"textDidChange predicate stop");
-    
 }
 #pragma mark -
 #pragma mark UISearchDisplayController Delegate Methods
@@ -809,98 +694,64 @@ static unsigned char base64EncodeLookup[65] =
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSLog(@"prepare");
-//    DestinationsListWeBuy *selectedDestination = [self.fetchedResultsController objectAtIndexPath:[self.tableView indexPathForSelectedRow]];
-//    TestingResultsTableViewController *destination = [segue destinationViewController];
-//    destination.destination = selectedDestination;
-
+//    NSLog(@"prepare");
     OutPeer *selectedOutPeer = [self.fetchedResultsController objectAtIndexPath:[self.tableView indexPathForSelectedRow]];
     TestingResultsTableViewController *destination = [segue destinationViewController];
     destination.outPeer = selectedOutPeer;
-
 }
 
 -(void)testStartForDestinations:(NSArray *)destinations forOutPeerID:(NSManagedObjectID *)outpeerID;
 {
-    NSLog(@"TEST STARTED FOR destinations:%@",destinations);
+    //NSLog(@"TEST STARTED FOR destinations:%@",destinations);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-        
         AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-        
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
         if (delegate.deviceToken) {
             NSString *deviceToken64 = [self encodeTobase64InputData:delegate.deviceToken];
             clientController.deviceToken64 = deviceToken64;
         }
         clientController.sender = self;
-        //[clientController startTestingForOutPeerID:outpeerID  forDestinations:destinations forNumbers:numbers];
         numbers = nil;
     });
-    
-
 }
 
 
 -(void)destinationChooseForIndexPath:(NSIndexPath *)indexPath;
 {
     if (self.tableView.isEditing) return;
-    
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
     NSString *storyBoardName = nil;
-    //NSString *addRoutesTableViewControllerName = nil;
-
-    if ([delegate isPad]) {
-        storyBoardName = @"MainStoryboard_iPad";
-        //addRoutesTableViewControllerName = @"MainStoryboard_iPad";
-        
-    }
-    else {
-        storyBoardName = @"MainStoryboard_iPhone";
-    }
+    if ([delegate isPad]) storyBoardName = @"MainStoryboard_iPad";
+    else  storyBoardName = @"MainStoryboard_iPhone";
     AddRoutesTableViewControllerMain *viewController = [[UIStoryboard storyboardWithName:storyBoardName bundle:NULL] instantiateViewControllerWithIdentifier:@"AddRoutesTableViewControllerMain"];
     viewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
     OutPeer *outPeerToTest = [self.fetchedResultsController objectAtIndexPath:indexPath];
     AddRoutesTableViewController *finalController = viewController.viewControllers.lastObject; 
     finalController.outPeerID = outPeerToTest.objectID;
     finalController.routesTableViewController = self;
-
-    
     [self presentModalViewController:viewController animated:YES];
-    
     NSDictionary *row = [NSDictionary dictionaryWithObjectsAndKeys:outPeerToTest.objectID,@"objectID",indexPath,@"indexPath", nil];
     [self.testedDestinationsID addObject:row];
-
 }
 
 - (IBAction)testSelected:(id)sender {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-        
         AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-        
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
         if (delegate.deviceToken) {
             NSString *deviceToken64 = [self encodeTobase64InputData:delegate.deviceToken];
             clientController.deviceToken64 = deviceToken64;
         }
         [selectedObjectsIDs enumerateObjectsUsingBlock:^(NSManagedObjectID *selected, NSUInteger idx, BOOL *stop) {
-            //NSManagedObject *selectedObj = [delegate.managedObjectContext objectWithID:selected];
-            
-            //[clientController startTestingForDestinationsWeBuyID:selected forNumbers:nil];
-            
         }];
         dispatch_async(dispatch_get_main_queue(), ^(void) { 
             testButton.enabled = YES;
-            
         });
     });
 }
 - (IBAction)testedNotTestedSelection:(id)sender {
-//    NSString *previous = self.previousSearchString;
-//    self.previousSearchString = nil;
     fetchedResultsController = nil;
     fetchedResultsController = [self fetchedResultsController];
-//    self.previousSearchString.string = previous;
     [self.tableView reloadData];
 }
 
@@ -909,57 +760,40 @@ static unsigned char base64EncodeLookup[65] =
 {
     if (buttonIndex == 0 || buttonIndex == -1) {
         //cancel
-        
     } else {
         NSInteger number = actionSheet.numberOfButtons;
-        
         if (number > buttonIndex) {
             AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            
             //NSLog(@"actionSheet: %u number:%u not found:%u",buttonIndex,number,NSNotFound);
-            
             NSString *carrierName = [actionSheet buttonTitleAtIndex:buttonIndex];
-            
             NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
             NSEntityDescription *entity = [NSEntityDescription entityForName:@"Carrier" inManagedObjectContext:delegate.managedObjectContext];
             [fetchRequest setEntity:entity];
-            
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", carrierName];
             [fetchRequest setPredicate:predicate];
-            
             NSError *error = nil;
             NSArray *fetchedObjects = [delegate.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-            
             Carrier *findedCarrer = fetchedObjects.lastObject;
             NSString *prefix = firstCell.prefixEdited.text;
-            
-            
             NSString *name = firstCell.nameEdited.text;
             NSString *ips = firstCell.ipsEdited.text;
-            
             firstCell.nameEdited.text = @"";
             firstCell.ipsEdited.text = @"";
             firstCell.prefixEdited.text = @"";
-            
-
-            OutPeer *peer = (OutPeer *)[NSEntityDescription 
+            OutPeer *peer = (OutPeer *)[NSEntityDescription
                                         insertNewObjectForEntityForName:@"OutPeer" 
                                         inManagedObjectContext:delegate.managedObjectContext];
-            
-            peer.outpeerName = name;            
+            peer.outpeerName = name;
             peer.outpeerTag = name;            
             peer.outpeerPrefix = prefix;
             peer.ips = ips;
-
             peer.carrier = findedCarrer;
-            
             [delegate saveContext];
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
                 ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
                 [clientController addOutPeerWithID:peer.objectID];
             });
         }
-        
     }
 }
 - (IBAction)startEditing:(id)sender {
@@ -967,21 +801,15 @@ static unsigned char base64EncodeLookup[65] =
         dispatch_async(dispatch_get_main_queue(), ^(void) { 
             NSIndexPath *index = [NSIndexPath indexPathForRow:0 inSection:0];
             startEditingButton.title = @"Edit";
-
             [self.tableView beginUpdates];
-
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:index] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView setEditing:NO animated:YES];
             [self.tableView endUpdates];
         });
-        
-        
     } else {
-        //            NSInteger count = [[[self fetchedResultsController] fetchedObjects] count];
         dispatch_async(dispatch_get_main_queue(), ^(void) { 
             startEditingButton.title = @"Save";
-
             NSIndexPath *index = [NSIndexPath indexPathForRow:0 inSection:0];
             [self.tableView beginUpdates];
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
@@ -990,8 +818,6 @@ static unsigned char base64EncodeLookup[65] =
             [self.tableView endUpdates];
             [self.searchBar resignFirstResponder];
         });
-        
-        //            NSInteger count = [[[self fetchedResultsController] fetchedObjects] count];
     }
 }
 
@@ -1000,14 +826,10 @@ static unsigned char base64EncodeLookup[65] =
 
 -(void)updateUIWithData:(NSArray *)data;
 {
-    
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
     //sleep(5);
-    NSLog(@"ROUTES: data:%@",data);
+    //NSLog(@"ROUTES: data:%@",data);
     NSString *status = [data objectAtIndex:0];
-    //NSNumber *progress = [data objectAtIndex:1];
-    //NSNumber *isItLatestMessage = [data objectAtIndex:2];
     NSManagedObjectID *objectID = nil;
     NSNumber *isError = [data objectAtIndex:3];
     if ([isError boolValue]) {             
@@ -1017,65 +839,15 @@ static unsigned char base64EncodeLookup[65] =
             if (objectID) {
                 NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
                 NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
-
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     [self.tableView beginUpdates];
-
                     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
                     [self.testedDestinationsID filterUsingPredicate:predicate];
-                    NSLog(@"testedDestinationsID object removed");
-                    
+                    //NSLog(@"testedDestinationsID object removed");
                     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                     [self.tableView endUpdates];
-                    /*
-                    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                    
-                    NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
-                    NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
-                    
-                    if (indexPath) {
-                        if (![NSThread isMainThread]) {
-                            //[self performSelectorOnMainThread:@selector(release) withObject:nil waitUntilDone:NO];
-                            NSLog(@"NOT MAIN THREAD");
-                        } 
-                        
-                        [self.tableView beginUpdates];
-                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
-                        [self.testedDestinationsID filterUsingPredicate:predicate];
-                        
-                        //[self.testedDestinationsID removeObject:filteredTestedDestinationsID.lastObject];
-                        NSLog(@">>>>>>>>>>> testedDestinationsID object removed:%@",testedDestinationsID);
-                        
-                        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                        [self.tableView endUpdates];
-                        
-                        UIStoryboard *mainStoryboard = nil;
-                        
-                        if (delegate.isPad) {
-                            
-                            mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad"
-                                                                       bundle: nil];
-                        } else {
-                            mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone"
-                                                                       bundle: nil];
-                            
-                        }
-                        NSArray *errorComponent = [status componentsSeparatedByString:@":"];
-                        NSString *country = [errorComponent objectAtIndex:2];
-                        
-                        AddNumbersViewController *addNumbers = [mainStoryboard instantiateViewControllerWithIdentifier:@"AddNumbersViewController"];
-                        addNumbers.countryName = country;
-                        addNumbers.selectedIndexPath = indexPath;
-                        addNumbers.routesTableViewController = self;
-                        addNumbers.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-                        [self presentModalViewController:addNumbers animated:YES];
-                        
-                        
-                    }*/
                 });
-                
-            } else NSLog(@"=============> no objectID found");
-            
+            } //else NSLog(@"=============> no objectID found");
         }
         return;
     }
@@ -1083,46 +855,33 @@ static unsigned char base64EncodeLookup[65] =
     if (isStatusStartTesting) {
         if ([data count] > 4) objectID = [data objectAtIndex:4];
         if (objectID) {
-            
             NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
             NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
             if (indexPath) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                        
                         [self.tableView beginUpdates];
-                        
                         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                         [self.tableView endUpdates];
-                        
-                    
                 });
-                
             }
         }
     }
-
-
     BOOL isStatusUpdateGraph = ([status rangeOfString:@"processing tests:finish testing"].location != NSNotFound);
     if (isStatusUpdateGraph) {
         if ([data count] > 4) objectID = [data objectAtIndex:4];
         if (objectID) {
             AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
             NSManagedObject *finalObject = [delegate.managedObjectContext objectWithID:objectID];
             NSIndexPath *indexPath = [self.fetchedResultsController indexPathForObject:finalObject];
             if (indexPath) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                        
-                        [self.tableView beginUpdates];
+                    [self.tableView beginUpdates];
                     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"indexPath != %@",indexPath];
                     [self.testedDestinationsID filterUsingPredicate:predicate];
-                        NSLog(@"testedDestinationsID object removed from finish");
-                        
-                        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                        [self.tableView endUpdates];
-                    
+                    //NSLog(@"testedDestinationsID object removed from finish");
+                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.tableView endUpdates];
                 });
-
             }
         }
     }

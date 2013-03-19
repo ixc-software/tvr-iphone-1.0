@@ -318,8 +318,12 @@ static BOOL checkReceiptSecurity(NSString *purchase_info_string, NSString *signa
         }
 #endif
     } else {
-        // Pre iOS 6 
+        // Pre iOS 6
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         NSString *localIdentifier           = [UIDevice currentDevice].uniqueIdentifier;
+#pragma clang diagnostic pop
+
         NSString *purchaseInfoUniqueId      = [purchaseInfoFromTransaction objectForKey:@"unique-identifier"];
 		
         

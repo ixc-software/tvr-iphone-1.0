@@ -121,7 +121,6 @@
 		FA49EA2A15512FA500CE6A8A /* webcob.p12 in Resources */ = {isa = PBXBuildFile; fileRef = FA49EA2915512FA500CE6A8A /* webcob.p12 */; };
 		FA49EA2C1551321100CE6A8A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA49EA2B1551321100CE6A8A /* Security.framework */; };
 		FA4E8A2A161053BC00F10340 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA4E8A29161053BC00F10340 /* Default-568h@2x.png */; };
-		FA61F6CE15F672CE00FFD6B5 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = FA61F6CD15F672CE00FFD6B5 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FA94B301154AB97100F2B3F8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA94B300154AB97100F2B3F8 /* QuartzCore.framework */; };
 		FAA2A99715445D58003C0822 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA2A99615445D58003C0822 /* UIKit.framework */; };
 		FAA2A99915445D58003C0822 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA2A99815445D58003C0822 /* Foundation.framework */; };
@@ -988,7 +987,6 @@
 				FA441BC815A1B47300E7C571 /* Carrier.m in Sources */,
 				FA441BE015A1EFFC00E7C571 /* AddRoutesTableViewControllerMain.m in Sources */,
 				FA441BE815A4B49000E7C571 /* OutPeer.m in Sources */,
-				FA61F6CE15F672CE00FFD6B5 /* JSONKit.m in Sources */,
 				FAEFACB215F8B12700AF0C5C /* NumbersForTestEditorMain.m in Sources */,
 				FAEFACB615F8B1B600AF0C5C /* NumbersForTestEditorTableViewController.m in Sources */,
 				FAEFACC015F8B2DE00AF0C5C /* DCRoundSwitch.m in Sources */,
@@ -1100,15 +1098,15 @@
 		FAA2A9BF15445D59003C0822 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C0351B4F-C00B-4387-8C5D-30DF8A7065B6";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C0351B4F-C00B-4387-8C5D-30DF8A7065B6";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1116,15 +1114,15 @@
 		FAA2A9C015445D59003C0822 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Oleksii Vynogradov (4Q42MB7BMA)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "vtr/tvr-Prefix.pch";
 				INFOPLIST_FILE = "vtr/tvr-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C0351B4F-C00B-4387-8C5D-30DF8A7065B6";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C0351B4F-C00B-4387-8C5D-30DF8A7065B6";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

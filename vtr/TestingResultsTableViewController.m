@@ -79,7 +79,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     NSInteger count = [[[self fetchedResultsController] sections] count];
-    NSLog(@"Number of sections:%@",[NSNumber numberWithUnsignedInteger:count]);
+    //NSLog(@"Number of sections:%@",[NSNumber numberWithUnsignedInteger:count]);
     return count;
 }
 
@@ -96,30 +96,22 @@
     DestinationsListWeBuyResults *result = object.lastObject;
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH':'mm"];
-    
-	// create the parent view that will hold header Label
 	UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(40.0, 0.0, 200.0, 44.0)];
 	UIImageView *background = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"form_header_44-3.png"]];
     [customView addSubview:background];
-    
-	// create the button object
 	UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
 	headerLabel.backgroundColor = [UIColor clearColor];
 	headerLabel.opaque = NO;
     [headerLabel setAlpha:0.5];
-    
 	headerLabel.textColor = [UIColor blackColor];
 	headerLabel.highlightedTextColor = [UIColor blackColor];
 	headerLabel.font = [UIFont boldSystemFontOfSize:20];
 	headerLabel.frame = CGRectMake(10.0, 0.0, 300.0, 44.0);
     headerLabel.textAlignment = UITextAlignmentCenter;
-    
 	headerLabel.text = [NSString stringWithFormat:@"Date:%@",[dateFormatter stringFromDate:result.destinationsListWeBuyTesting.date]];
     headerLabel.shadowOffset = CGSizeMake(1, 1);
     headerLabel.shadowColor = [UIColor whiteColor];
-    
 	[customView addSubview:headerLabel];
-    
 	return customView;
 }
 
@@ -133,85 +125,44 @@
 {
     cell.bk.layer.cornerRadius = 7;
     cell.bk.layer.borderWidth = 2;
-    
     cell.bk.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    
     NSFetchedResultsController *fetchController = [self fetchedResultsController];
     DestinationsListWeBuyResults *result = [fetchController objectAtIndexPath:indexPath];
-    
     cell.number.text = [NSString stringWithFormat:@"To: +%@",result.numberB];
     cell.numberA.text = [NSString stringWithFormat:@"From +%@",result.numberA];
-    
     NSDate *timeInvite = result.timeInvite;
     NSDate *timeOk = result.timeOk;
     NSDate *timeRinging = result.timeRinging;
     NSDate *timeRelease = result.timeRelease;
-    
     NSTimeInterval inviteToRingingInterval = [timeRinging timeIntervalSinceDate:timeInvite];
     [cell.pddTime removeAllSegments];
     [cell.pddTime insertSegmentWithTitle:[NSString stringWithFormat:@"%@ sec",[NSNumber numberWithInt:inviteToRingingInterval]] atIndex:0 animated:NO];
-    
     NSTimeInterval inviteOkInterval = [timeOk timeIntervalSinceDate:timeInvite];
-    
     [cell.responseTime removeAllSegments];
     [cell.responseTime insertSegmentWithTitle:[NSString stringWithFormat:@"%@ sec",[NSNumber numberWithInt:inviteOkInterval]] atIndex:0 animated:NO];
-    
-    
     NSTimeInterval okReleaseInterval = [timeRelease timeIntervalSinceDate:timeOk];
     [cell.callTime removeAllSegments];
     [cell.callTime insertSegmentWithTitle:[NSString stringWithFormat:@"%@ sec",[NSNumber numberWithInt:okReleaseInterval]] atIndex:0 animated:NO];
-    
     NSString *protocol = result.destinationsListWeBuyTesting.protocol;
-    
     if (protocol) cell.protocolLabel.text = protocol;
     else cell.protocolLabel.text = @"";
-    
     cell.outPeerLabel.text = result.destinationsListWeBuyTesting.outPeer.outpeerName;
     cell.carrierLabel.text = result.destinationsListWeBuyTesting.outPeer.carrier.name;
-    
-//    if (okReleaseInterval > 0) {
-//        
-//        if (result.isFAS.boolValue) {
-//            //cell.number.textColor = [UIColor redColor];
-//            cell.fasReason.hidden = NO;
-//            cell.fasReason.text = result.fasReason;
-////            [cell.markFasButton setImage:[UIImage imageNamed:@"unmarkAsFas.png"] forState:UIControlStateNormal];
-////            [cell.markFasButton addTarget:cell action:@selector(unmarkAsFas:) forControlEvents:UIControlEventTouchUpInside];
-//            
-//        } else {
-//            //cell.number.textColor = [UIColor greenColor];
-//            cell.fasReason.hidden = YES;
-////            cell.isFas = NO;
-////            [cell.markFasButton setImage:[UIImage imageNamed:@"markAsFas.png"] forState:UIControlStateNormal];
-////            [cell.markFasButton addTarget:cell action:@selector(markAsFas:) forControlEvents:UIControlEventTouchUpInside];
-//        }
-//    }  else {
-//        cell.fasReason.hidden = YES;
-////        cell.markFasButton.hidden = YES;
-////        cell.playButton.hidden = YES;
-//    }
-    
     cell.playButton.enabled = NO;
     cell.playButton.hidden = YES;
-
     if (result.ringMP3 && result.ringMP3.length > 0) {
         cell.playButton.enabled = YES;
         cell.playButton.hidden = NO;
-
         [cell.playButton addTarget:cell action:@selector(playRing:) forControlEvents:UIControlEventTouchUpInside];
     }
-    
     if (result.callMP3 && result.callMP3.length > 0) {
         if (cell.isPlayingCall) [cell.playButton setImage:[UIImage imageNamed:@"btn_pause.png"] forState:UIControlStateNormal]; 
         else [cell.playButton setImage:[UIImage imageNamed:@"btn_play.png"] forState:UIControlStateNormal];
         [cell.playButton setNeedsDisplay];
-        
         cell.playButton.enabled = YES;
         cell.playButton.hidden = NO;
-
         [cell.playButton addTarget:cell action:@selector(playCall:) forControlEvents:UIControlEventTouchUpInside];
     }
-    
     /*@dynamic numberB;
      @dynamic inputPackets;
      @dynamic outputPackets;
@@ -228,8 +179,6 @@
      @dynamic log;
      @dynamic fasReason;
      */
-    
-    
 }
 
 
@@ -306,12 +255,12 @@
 #pragma mark - action methods
 - (IBAction)playRingForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"playRingForIndexPath:%@",indexPath);
+    //NSLog(@"playRingForIndexPath:%@",indexPath);
 }
 
 - (IBAction)stopPlayRingForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"stopPlayRingForIndexPath:%@",indexPath);
+    //NSLog(@"stopPlayRingForIndexPath:%@",indexPath);
 }
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error
 {
@@ -325,7 +274,7 @@
 
 - (IBAction)playCallForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"playCallForIndexPath:%@",indexPath);
+    //NSLog(@"playCallForIndexPath:%@",indexPath);
     DestinationsListWeBuyResults *selectedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
     NSData *callMP3 = selectedObject.callMP3;
     NSError *error = nil;
@@ -345,19 +294,17 @@
 }
 - (IBAction)stopPlayCallForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"stopPlayCallForIndexPath:%@",indexPath);
+    //NSLog(@"stopPlayCallForIndexPath:%@",indexPath);
     if (player) [player stop];
 }
 
 - (IBAction)unmarkAsFasForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"unmarkAsFasForIndexPath:%@",indexPath);
-    
+    //NSLog(@"unmarkAsFasForIndexPath:%@",indexPath);
 }
 - (IBAction)markAsFasForIndexPath:(NSIndexPath *)indexPath;
 {
-    NSLog(@"markAsFasForIndexPath:%@",indexPath);
-    
+    //NSLog(@"markAsFasForIndexPath:%@",indexPath);
 }
 
 - (IBAction)selecDateStart:(id)sender {
@@ -371,29 +318,19 @@
 - (NSFetchedResultsController *)newFetchedResultsControllerWithSearch:(NSString *)searchString
 {
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"destinationsListWeBuyTesting.date" ascending:NO];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
-    
-    
     NSPredicate *filterPredicate = nil;
     NSMutableArray *predicateArray = [NSMutableArray array];
-
     if (self.outPeer) {
-        
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(destinationsListWeBuyTesting.outPeer == %@)",self.outPeer];
         [predicateArray addObject:predicate];
     }
-
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-
-    
     if (self.selectDate.selectedSegmentIndex == 0) {
         // latest
         [fetchRequest setFetchLimit:5];
-        
     }
-    
     if (self.selectDate.selectedSegmentIndex == 1) {
         // todays
         NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -406,54 +343,30 @@
         NSDate *endDate = [calendar dateByAddingComponents:components toDate:startDate options:0];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"((modificationDate > %@) AND (modificationDate <= %@))",startDate,endDate];
         [predicateArray addObject:predicate];
-        
     }
-
     //NSLog(@"FINAL PREDICATE:%@",predicateArray);
-    
     if (predicateArray.count > 0) { 
         filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicateArray];
         [fetchRequest setPredicate:filterPredicate];
     }
-
-    
-    // Edit the entity name as appropriate.
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"DestinationsListWeBuyResults" inManagedObjectContext:delegate.managedObjectContext];
     [fetchRequest setEntity:entity];
-    
     [fetchRequest setPredicate:filterPredicate];
-    
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
-    
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest 
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                 managedObjectContext:delegate.managedObjectContext 
                                                                                                   sectionNameKeyPath:@"destinationsListWeBuyTesting.objectID" 
                                                                                                            cacheName:nil];
     aFetchedResultsController.delegate = self;
-    
-    
     NSError *error = nil;
     if (![aFetchedResultsController performFetch:&error]) 
     {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-         */
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     return aFetchedResultsController;
 }    
-
-
 
 - (NSFetchedResultsController *)fetchedResultsController 
 {
@@ -492,24 +405,18 @@
       newIndexPath:(NSIndexPath *)newIndexPath
 {
     UITableView *tableView = self.tableView;
-    
     switch(type)
     {
-            
         case NSFetchedResultsChangeInsert:
             [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
-            
         case NSFetchedResultsChangeDelete:
             [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            
             break;
-            
         case NSFetchedResultsChangeUpdate:
             [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
             //[self configureCell:[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
             break;
-            
         case NSFetchedResultsChangeMove:
         {
             [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];

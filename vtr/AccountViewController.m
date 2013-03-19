@@ -99,23 +99,24 @@
                 NSNumber *allowCountPerDay = [answer valueForKey:@"allowCountPerDay"];
                 NSString *expireDate = [answer valueForKey:@"expireDate"];
                 [self setTariffPlannDesctiprionForRoleName:roleName forAllowCountPerDay:allowCountPerDay forExpireDate:expireDate];
-//                NSMutableString *finalString = [NSMutableString string];
-//                [finalString appendFormat:@"Your tariff plan is:%@. \n",roleName];
-//                if ([[allowCountPerDay class] isSubclassOfClass:[NSNumber class]]) [finalString appendFormat:@"Allowed %@ tests per day.\n",allowCountPerDay];
-//                if (expireDate.length > 2) {
-//                    NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
-//                    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-//                    [formatterDate setLocale:usLocale];
-//                    [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-//                    NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
-//                    [formatterDate setDateFormat:@"yyyy-MM-dd"];
-//                    NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
-//                    [finalString appendFormat:@"Expire date is:%@. \n",finalDate];
-//                }
-//                self.planDescription.text = finalString;
                 self.changePlanButton.hidden = NO;
                 self.paymentHistoryButton.hidden = NO;
                 self.planDescription.hidden = NO;
+
+                //                NSMutableString *finalString = [NSMutableString string];
+                //                [finalString appendFormat:@"Your tariff plan is:%@. \n",roleName];
+                //                if ([[allowCountPerDay class] isSubclassOfClass:[NSNumber class]]) [finalString appendFormat:@"Allowed %@ tests per day.\n",allowCountPerDay];
+                //                if (expireDate.length > 2) {
+                //                    NSDateFormatter *formatterDate = [[NSDateFormatter alloc] init];
+                //                    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+                //                    [formatterDate setLocale:usLocale];
+                //                    [formatterDate setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                //                    NSDate *necessaryDate = [formatterDate dateFromString:expireDate];
+                //                    [formatterDate setDateFormat:@"yyyy-MM-dd"];
+                //                    NSString *finalDate = [formatterDate stringFromDate:necessaryDate];
+                //                    [finalString appendFormat:@"Expire date is:%@. \n",finalDate];
+                //                }
+                //                self.planDescription.text = finalString;
 
             });
             [clientController getCarriersList];
@@ -223,18 +224,15 @@
 
 -(void) showErrorMessage:(NSString *)message
 {
-    NSLog(@"error:%@",message);
-    
+    //NSLog(@"error:%@",message);
     [errorMessage removeAllSegments];
     [errorMessage insertSegmentWithTitle:message atIndex:0 animated:NO];
     errorMessage.hidden = NO;
-    
     [UIView animateWithDuration:2
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          errorMessage.alpha = 1;
-                         
                      }
                      completion:^(BOOL finished){
                          [UIView animateWithDuration:2 
@@ -300,95 +298,31 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (actionSheet.tag == 0) {
-        if (buttonIndex == 0) {
-            [login setEnabled:YES forSegmentAtIndex:0];
-            [registration setEnabled:YES forSegmentAtIndex:0];
-            loginActivity.hidden = YES;
-            [loginActivity stopAnimating];
-            
-        }
-        if (buttonIndex == 1) {
-            // user like to join to company
-            isJoinStarted = YES;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-                AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
-                CompanyStuff *admin = [clientController authorization];
-                NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-                NSEntityDescription *entity = [NSEntityDescription entityForName:@"CurrentCompany" inManagedObjectContext:clientController.moc];
-                [fetchRequest setEntity:entity];
-                NSError *error = nil;
-                NSArray *fetchedObjects = [clientController.moc executeFetchRequest:fetchRequest error:&error];
-                //            if ([fetchedObjects count] > 1) {
-                //NSLog(@"UIActionSheet starterd");
-                
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(name == %@) AND (companyAdminGUID != %@)",companyNameLabel.text,admin.GUID];
-                NSArray *filtered = [fetchedObjects filteredArrayUsingPredicate:predicate];
-                CurrentCompany *companyForJoin = [filtered lastObject];
-                if (companyForJoin && [filtered count] == 1) {
-                    admin.currentCompany = companyForJoin;
-                    [clientController finalSave:clientController.moc];
-                    [clientController putObjectWithTimeoutWithIDs:[NSArray arrayWithObject:admin.objectID] mustBeApproved:YES];
-                } else [self showErrorMessage:@"company for join don't finded"];
-                
-            });
-            
-            
-        }
-        if (buttonIndex == 2) {
-            // user don't like to join to company, create company with same name
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-                AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
-                CompanyStuff *admin = [clientController authorization];
-                [clientController putObjectWithTimeoutWithIDs:[NSArray arrayWithObject:[admin.currentCompany objectID]] mustBeApproved:NO];
-                [clientController putObjectWithTimeoutWithIDs:[NSArray arrayWithObject:[admin objectID]] mustBeApproved:NO];
-                
-            });
-            
-        }
-    } else {
-        if (actionSheet.tag == 1) {
-            
-            if (buttonIndex == 0 || buttonIndex == -1) {
-                //cancel
-                
-            } else {
-                if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Advanced"]) {
-                    // here is advanced plan
-                    self.operationForBuy = @"Advanced";
-
-
-                    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                    if (delegate.productAdvanced) {
-                        SKPayment *payment = [SKPayment paymentWithProduct:delegate.productAdvanced];
-                        [[SKPaymentQueue defaultQueue] addPayment:payment];
-                    } else {
-                        [self showErrorMessage:NSLocalizedString(@"no products to sale.",@"")];
-                        
-                    }
-                    
+    if (actionSheet.tag == 1) {
+        if (buttonIndex == 0 || buttonIndex == -1) {
+            //cancel
+        } else {
+            if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Advanced"]) {
+                self.operationForBuy = @"Advanced";
+                AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                if (delegate.productAdvanced) {
+                    SKPayment *payment = [SKPayment paymentWithProduct:delegate.productAdvanced];
+                    [[SKPaymentQueue defaultQueue] addPayment:payment];
+                } else {
+                    [self showErrorMessage:NSLocalizedString(@"no products to sale.",@"")];
                 }
-                if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Advanced plus Fax"]) {
-                    // here is advanced plan
-                    self.operationForBuy = @"AdvancedPlusFax";
-
-                    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                    if (delegate.productAdvancedPlusFax) {
-                        SKPayment *payment = [SKPayment paymentWithProduct:delegate.productAdvancedPlusFax];
-                        [[SKPaymentQueue defaultQueue] addPayment:payment];
-                    } else {
-                        [self showErrorMessage:NSLocalizedString(@"no products to sale.",@"")];
-                        
-                    }
-                    
+            }
+            if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Advanced plus Fax"]) {
+                self.operationForBuy = @"AdvancedPlusFax";
+                AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                if (delegate.productAdvancedPlusFax) {
+                    SKPayment *payment = [SKPayment paymentWithProduct:delegate.productAdvancedPlusFax];
+                    [[SKPaymentQueue defaultQueue] addPayment:payment];
+                } else {
+                    [self showErrorMessage:NSLocalizedString(@"no products to sale.",@"")];
                 }
-                
             }
         }
-        
     }
 }
 
@@ -505,41 +439,39 @@
     }
     loginButton.enabled = NO;
     loginActivity.alpha = 1.0;
-
     [loginActivity startAnimating];
     [emailLabel resignFirstResponder];
     [passwordLabel resignFirstResponder];
     [companyNameLabel resignFirstResponder];
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-        
         ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
         CompanyStuff *admin = [clientController authorization];
-        
         //NSLog(@"ADMIN email:%@",admin.email);
         if (isLogin) {
             admin.email = emailLabel.text;
             admin.email = emailLabel.text;
             admin.password = passwordLabel.text;
             if (!companyName.text) admin.currentCompany.name = @"first company";
-            
             [clientController finalSave:clientController.moc];
             //NSLog(@"ADMIN email:%@",admin.email);
-
             NSDictionary *answer = [clientController isCurrentUserAuthorized];
-
             if (answer) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    [self finalizeAllViewsForSuccessLogin];
-                    NSLog(@"2 email:%@ isCompanyAdmin:%@ answer->%@",admin.email,admin.isCompanyAdmin,answer);
+                    NSString *roleName = [answer valueForKey:@"roleName"];
+                    NSNumber *allowCountPerDay = [answer valueForKey:@"allowCountPerDay"];
+                    NSString *expireDate = [answer valueForKey:@"expireDate"];
+                    [self setTariffPlannDesctiprionForRoleName:roleName forAllowCountPerDay:allowCountPerDay forExpireDate:expireDate];
+                    self.changePlanButton.hidden = NO;
+                    self.paymentHistoryButton.hidden = NO;
+                    self.planDescription.hidden = NO;
 
+                    [self finalizeAllViewsForSuccessLogin];
+                    //NSLog(@"2 email:%@ isCompanyAdmin:%@ answer->%@",admin.email,admin.isCompanyAdmin,answer);
                 });
                 admin.userID = [[answer valueForKey:@"userID"] stringValue];
                 [clientController finalSave:clientController.moc];
-
                 [clientController getCarriersList];
                 [clientController getPaymentsList];
-
             } else {
                 //[self showErrorMessage:@"not authorized"];
             }
@@ -549,7 +481,6 @@
             admin.email = emailLabel.text;
             admin.password = passwordLabel.text;
             if (!companyName.text) admin.currentCompany.name = @"first company";
-            
             [clientController finalSave:clientController.moc];
             if ([clientController createOnServerNewUserAndCompany]) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -563,23 +494,14 @@
                                                           otherButtonTitles:nil];
                     [error show];
                     [self finalizeAllViewsForSuccessLogin];
-
                 });
             }
-            
         }
         loginButton.enabled = YES;
         loginActivity.alpha = 0.0;
         [loginActivity stopAnimating];
-
-        //        [login setEnabled:YES forSegmentAtIndex:0];
-        //        [registration setEnabled:YES forSegmentAtIndex:0];
-        
-        
     });
-    
 }
-
 
 - (IBAction)login:(id)sender {
     if ([self checkIfEmailAndPasswordFilledForLogin:YES]) {
@@ -587,10 +509,8 @@
         [emailLabel resignFirstResponder];
         [passwordLabel resignFirstResponder];
         [companyNameLabel resignFirstResponder];
-        
         [self finalizeRegisterIssuesForLogin:YES];
     }
-    
 }
 
 - (IBAction)registration:(id)sender {
@@ -599,10 +519,8 @@
         [emailLabel resignFirstResponder];
         [passwordLabel resignFirstResponder];
         [companyNameLabel resignFirstResponder];
-        
         [self finalizeRegisterIssuesForLogin:NO];
     }
-    
 }
 
 - (IBAction)logout:(id)sender {
@@ -610,27 +528,19 @@
     ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
     CompanyStuff *admin = [clientController authorization];
     CompanyStuff *adminMain = (CompanyStuff *)[delegate.managedObjectContext objectWithID:admin.objectID];
-    
     adminMain.isCompanyAdmin = [NSNumber numberWithBool:NO];
     NSError *error = nil;
-    
     [delegate.managedObjectContext save:&error];
     if (error) NSLog(@"error:%@",[error localizedDescription]);
     emailLabel.userInteractionEnabled = YES;
     emailLabel.borderStyle = UITextBorderStyleRoundedRect;
     passwordLabel.userInteractionEnabled = YES;
     passwordLabel.borderStyle = UITextBorderStyleRoundedRect;
-    
     companyNameLabel.userInteractionEnabled = YES;
     companyNameLabel.borderStyle = UITextBorderStyleRoundedRect;
-//    [login removeAllSegments];
-//    [login insertSegmentWithTitle:@"Login" atIndex:0 animated:NO];
-//    [login addTarget:self action:@selector(login:) forControlEvents:UIControlEventValueChanged];
-    //loginButton.titleLabel.text = @"Login";
     [UIView beginAnimations:@"flipbutton" context:NULL];
     [UIView setAnimationDuration:0.4];
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:loginButton cache:YES];
-    
     if (delegate.isPad) {
         [loginButton setImage:[UIImage imageNamed:@"button_login_upIPad.png"] forState:UIControlStateNormal];
         [loginButton setImage:[UIImage imageNamed:@"button_login_downIPad.png"] forState:UIControlStateSelected];
@@ -638,29 +548,19 @@
         [loginButton setImage:[UIImage imageNamed:@"button_login_upIPhone.png"] forState:UIControlStateNormal];
         [loginButton setImage:[UIImage imageNamed:@"button_login_downIPhone.png"] forState:UIControlStateSelected];
     }
-
-//    [loginButton setImage:[UIImage imageNamed:@"login-button-md.png"] forState:UIControlStateNormal];
-//    
     [UIView commitAnimations];
-
     [loginButton removeTarget:self action:@selector(logout:) forControlEvents:UIControlEventTouchUpInside];
     [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
     loginOrRegisterButton.hidden = NO;
-     
-    CompanyStuff *adminMainNew = (CompanyStuff *)[delegate.managedObjectContext objectWithID:admin.objectID];
-    NSLog(@"email:%@ isCompanyAdmin:%@",adminMainNew.email,adminMainNew.isCompanyAdmin);
-
+    //CompanyStuff *adminMainNew = (CompanyStuff *)[delegate.managedObjectContext objectWithID:admin.objectID];
+    //NSLog(@"email:%@ isCompanyAdmin:%@",adminMainNew.email,adminMainNew.isCompanyAdmin);
 }
 
 - (IBAction)changeLoginOrRegister:(id)sender {
     if ([sender selectedSegmentIndex] == 0) {
-        //login
         [loginButton removeTarget:self action:@selector(registration:) forControlEvents:UIControlEventTouchUpInside];
         [loginButton addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
-        
-        
         AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
         if (delegate.isPad) {
             [loginButton setImage:[UIImage imageNamed:@"button_login_upIPad.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_login_downIPad.png"] forState:UIControlStateSelected];
@@ -669,73 +569,28 @@
             [loginButton setImage:[UIImage imageNamed:@"button_login_upIPhone.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_login_downIPhone.png"] forState:UIControlStateSelected];
             loginActivity.frame = CGRectMake(117, 208, loginActivity.frame.size.width, loginActivity.frame.size.height);
-
         }
-
-//        [UIView animateWithDuration:1 
-//                              delay:0 
-//                            options:UIViewAnimationOptionBeginFromCurrentState
-//                         animations:^{
-//                             
-//                             self.loginButton.frame = CGRectMake(115, 200, loginButton.frame.size.width, loginButton.frame.size.height);
-//                             self.loginActivity.frame = CGRectMake(126, 203, loginActivity.frame.size.width, loginActivity.frame.size.height);
-//                             self.companyName.alpha = 0.0;
-//
-//                         } completion:nil];
-        
-        
     } else {
-        //register
         [loginButton removeTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchUpInside];
         [loginButton addTarget:self action:@selector(registration:) forControlEvents:UIControlEventTouchUpInside];
-
         AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
         if (delegate.isPad) {
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPad.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPad.png"] forState:UIControlStateSelected];
             loginActivity.frame = CGRectMake(276, 437, loginActivity.frame.size.width, loginActivity.frame.size.height);
-
         } else {
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_upIPhone.png"] forState:UIControlStateNormal];
             [loginButton setImage:[UIImage imageNamed:@"button_registerStart_downIPhone.png"] forState:UIControlStateSelected];
             loginActivity.frame = CGRectMake(114, 208, loginActivity.frame.size.width, loginActivity.frame.size.height);
-
         }
-
-//        [UIView animateWithDuration:1 
-//                              delay:0 
-//                            options:UIViewAnimationOptionBeginFromCurrentState
-//                         animations:^{
-//                             
-//                             self.loginButton.frame = CGRectMake(194, 200, loginButton.frame.size.width, loginButton.frame.size.height);
-//                             self.loginActivity.frame = CGRectMake(203, 203, loginActivity.frame.size.width, loginActivity.frame.size.height);
-//                             self.companyName.alpha = 1.0;
-//
-//                         } completion:nil];
-        
     }
-    NSLog(@"changeLoginOrRegister");
-
+    //NSLog(@"changeLoginOrRegister");
 }
 
 - (IBAction)finishEditing:(id)sender {
-    NSLog(@"finishEditing");
-
+    //NSLog(@"finishEditing");
     [sender resignFirstResponder];
 }
-
-//- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-//{
-//    //NSLog(@"actionSheet");
-//    if (actionSheet.tag == 1) {
-//        // call history && address book;
-//        if (buttonIndex == 0 || buttonIndex == -1) {
-//            //cancel
-//            
-//        } else {
-//        }
-//    }
-//}
 
 - (IBAction)changePlan:(id)sender {
     self.operationForBuy = nil;
@@ -771,8 +626,7 @@
                                          forDeviceTokenData:delegateMain.deviceToken
                                                forOperation:self.operationForBuy];
         
-    }
-	else [self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
+    } else [self showErrorMessage:NSLocalizedString(@"we are supporting a good citizens only.",@"")];
 }
 
 - (void)verificationControllerDidFailToVerifyPurchase:(SKPaymentTransaction *)transaction error:(NSError *)error
@@ -793,7 +647,6 @@
     
     SKPaymentTransaction *transaction = transactions.lastObject;
     if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
-        //NSLog(@"add to balance 5$");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         if ([[RRVerificationController sharedInstance] verifyPurchase:transaction
                                                          withDelegate:self
@@ -810,8 +663,7 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField;             // may be called if forced even if shouldEndEditing returns NO (e.g. view removed from window) or endEditing:YES called
 {
     [textField resignFirstResponder];
-    NSLog(@"textFieldDidEndEditing");
-
+    //NSLog(@"textFieldDidEndEditing");
 }
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -839,32 +691,7 @@
             [self showErrorMessage:status];
             [self finalizeAllViewsForUnSuccessLoginOrRegistration];
         });
-        //return;
     }
-//    BOOL isAuthPassed = ([status rangeOfString:@"auth passed"].location != NSNotFound);
-//    if (isAuthPassed) {
-//        AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-//        ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator] withSender:self withMainMoc:delegate.managedObjectContext];
-//        CompanyStuff *admin = [clientController authorization];
-//
-//        admin.isCompanyAdmin = [NSNumber numberWithBool:YES];
-//        [clientController finalSave:clientController.moc];
-//
-//        dispatch_async(dispatch_get_main_queue(), ^(void) {
-//            emailLabel.userInteractionEnabled = NO;
-//            emailLabel.borderStyle = UITextBorderStyleNone;
-//            passwordLabel.userInteractionEnabled = NO;
-//            passwordLabel.borderStyle = UITextBorderStyleNone;
-//            
-//            companyNameLabel.userInteractionEnabled = NO;
-//            companyNameLabel.borderStyle = UITextBorderStyleNone;
-//            [login removeAllSegments];
-//            [login insertSegmentWithTitle:@"Logout" atIndex:0 animated:NO];
-//            [login addTarget:self action:@selector(logout:) forControlEvents:UIControlEventValueChanged];
-//
-//        });
-//    }
-
     
     BOOL isStatusUpdateGraph = ([status rangeOfString:@"progress for update graph:"].location != NSNotFound);
     if (isStatusUpdateGraph) {

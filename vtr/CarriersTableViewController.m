@@ -163,19 +163,15 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
-    
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
     id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
     NSUInteger numberOfObjects = [sectionInfo numberOfObjects];
     if (tableView.isEditing) numberOfObjects = numberOfObjects + 1;
-    NSLog(@"numberOfRowsInSection:1 is:%i",numberOfObjects);
-    
+    //NSLog(@"numberOfRowsInSection:1 is:%i",numberOfObjects);
     return numberOfObjects;
 }
 
@@ -194,53 +190,40 @@
         cell.responsibleFirstAndLastName.hidden = YES;
         cell.destinations.hidden = YES;
         cell.responsibleLabel.hidden = YES;
-        
         cell.nameEdited.hidden = NO;
         cell.ipsEdited.hidden = NO;
         cell.prefixEdited.hidden = NO;
-        
-        
         //NSLog(@"display cell at index:%@ with carrier:NULL",indexPath);
         
     } else {
         cell.name.hidden = NO;
         cell.responsibleFirstAndLastName.hidden = NO;
         cell.destinations.hidden = NO;
-        
         cell.nameEdited.hidden = YES;
         cell.ipsEdited.hidden = YES;
         cell.prefixEdited.hidden = YES;
-
         Carrier *carrier = nil;
         if (tableView.isEditing) carrier = [[self fetchedResultsController] objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:0]];
         else carrier = [[self fetchedResultsController] objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
         //cell.responsibleLabel.text = [NSString stringWithFormat:@"CarrierID:%@",carrier.externalID];
-        
         //Carrier *managedObject = [[self fetchedResultsController] objectAtIndexPath:indexPath];
         cell.name.text = carrier.name;
         CompanyStuff *stuff = carrier.companyStuff;
         cell.responsibleFirstAndLastName.text = [NSString stringWithFormat:@"%@ %@",stuff.firstName,stuff.lastName];
-        
         if (tableView.isEditing && indexPath.row == 0) {
             // do nothing for first row in editing mode
             cell.destinations.hidden = YES;
-            
         } else {
             cell.destinations.text = [NSString stringWithFormat:@"OutPeers:%@",[NSNumber numberWithUnsignedInteger:carrier.outPeer.count]];
-            
         }
-        
     }
-    // Configure the cell...
-    
     return cell;
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
     //NSLog(@"%@",sectionsTitles);
-    
-    return [[sectionsTitles lastObject] valueForKey:@"letters"]; 
+    return [[sectionsTitles lastObject] valueForKey:@"letters"];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
@@ -367,94 +350,19 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
         NSFetchedResultsController *fetchController = [self fetchedResultsController];
         Carrier *carrier = [fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:0]];
-        NSLog(@"DELETE carrier:%@ with ID:%@",carrier.name,carrier.externalID);
+        //NSLog(@"DELETE carrier:%@ with ID:%@",carrier.name,carrier.externalID);
         NSString *carrierExternalID = carrier.externalID.copy;
-        
         [delegate.managedObjectContext deleteObject:carrier];
         [delegate saveContext];
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-            
             ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
             [clientController removeCarrierWithID:carrierExternalID];
         });
-        
     }   
-    if (editingStyle == UITableViewCellEditingStyleInsert) {
-        [self startInsertForIndexPath:indexPath];
-        
-//        [activity startAnimating];
-//        activity.hidden = NO; 
-//        //[tableView beginUpdates];
-//        //isCarriersEditing = NO;
-//        
-//        CarrierCell *cell = (CarrierCell *)[tableView cellForRowAtIndexPath:indexPath];
-//        NSString *name = cell.nameEdited.text.copy;
-//        NSString *ips = cell.ipsEdited.text.copy;
-//        NSString *prefix = cell.prefixEdited.text.copy;
-//        
-//        cell.nameEdited.text = @"";
-//        cell.ipsEdited.text = @"";
-//        cell.prefixEdited.text = @"";
-//        
-//        [cell.nameEdited resignFirstResponder];
-//        [cell.ipsEdited resignFirstResponder];
-//        [cell.prefixEdited resignFirstResponder];
-//        
-//        //[tableView endUpdates];
-//        
-//        
-//        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-//        //            dispatch_async(dispatch_get_main_queue(), ^(void) {
-//        //                sleep(1);
-//        //
-//        //                [tableView setEditing:NO animated:YES];
-//        //                //[tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-//        //            });
-//        //            sleep(4);
-//        
-//        
-//        Carrier *carrier = (Carrier *)[NSEntityDescription 
-//                                       insertNewObjectForEntityForName:@"Carrier" 
-//                                       inManagedObjectContext:delegate.managedObjectContext];
-//        
-//        carrier.name = name;
-//        
-//        OutPeer *outPeer = (OutPeer *)[NSEntityDescription 
-//                                       insertNewObjectForEntityForName:@"OutPeer" 
-//                                       inManagedObjectContext:delegate.managedObjectContext];
-//        
-//        outPeer.outpeerName = [NSString stringWithFormat:@"%@_out",name];
-//        outPeer.outpeerTag = name;            
-//        
-//        outPeer.outpeerPrefix = prefix;
-//        outPeer.ips = ips;
-//        outPeer.carrier = carrier;
-//        
-//        ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
-//        
-//        CompanyStuff *updated = (CompanyStuff *)[delegate.managedObjectContext objectWithID:[clientController authorization].objectID];
-//        
-//        carrier.companyStuff = updated;
-//        [delegate saveContext];
-//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
-//            ClientController *clientController = [[ClientController alloc] initWithPersistentStoreCoordinator:[delegate.managedObjectContext persistentStoreCoordinator]withSender:self withMainMoc:delegate.managedObjectContext];
-//
-//            [clientController addCarrierWithID:carrier.objectID];
-//        });
-        
-//        [self.tableView setEditing:NO animated:YES];
-
-        
-        //[tableView isEditing
-        
-    }
-    //[tableView setEditing:NO animated:YES];
+    if (editingStyle == UITableViewCellEditingStyleInsert) [self startInsertForIndexPath:indexPath];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -464,13 +372,11 @@
         return UITableViewCellEditingStyleInsert;
     } 
     return UITableViewCellEditingStyleDelete;
-    
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //NSLog(@"for indexPath:%@ isCarrierEditing:%@",indexPath,[NSNumber numberWithBool:isCarriersEditing]);
-    
     if (tableView.isEditing)  return nil;
     else {
         return indexPath;
@@ -478,16 +384,6 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-//    self.tabBarController.selectedIndex = 2;
-//    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-//delegate.routesViewController.
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -497,89 +393,41 @@
 - (NSFetchedResultsController *)fetchedResultsControllerWithSearchString:(NSString *)searchString;
 {
     AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-
     NSString *currentSearchString = searchString;
-    
     if (!currentSearchString) currentSearchString = @"";
-    
-//    if (fetchedResultsController != nil && [currentSearchString isEqualToString:self.previousSearchString]) 
-//    {
-//        //NSLog(@"FETCH is same");
-//        
-//        return fetchedResultsController;
-//    }
-    
     //NSLog(@"FETCH is updated");
-    
     [self.previousSearchString setString:currentSearchString];
-    
-    //isEdited = NO;
     NSMutableArray *predicateArray = [NSMutableArray array];
-    
-    
-//    NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"(companyStuff.currentCompany.GUID == %@)",admin.currentCompany.GUID];;
     NSPredicate *filterPredicate = nil;
-    
     if(currentSearchString.length) {
         NSPredicate *predicateName = [NSPredicate predicateWithFormat:@"(name CONTAINS[cd] %@)",currentSearchString];
         [predicateArray addObject:predicateName];
-        
         if(filterPredicate)
         {
             filterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:filterPredicate, [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray], nil]];
-        }
-        else
-        {
-            filterPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray];
-        }
-        
+        } else  filterPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicateArray];
     }
-    
-    
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
-    
-    // Create the fetch request for the entity.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    
-    // Edit the entity name as appropriate.
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Carrier" inManagedObjectContext:delegate.managedObjectContext];
     [fetchRequest setEntity:entity];
-    
     [fetchRequest setPredicate:filterPredicate];
-    
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    
-    //}
-    
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest 
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                 managedObjectContext:delegate.managedObjectContext 
                                                                                                   sectionNameKeyPath:nil 
                                                                                                            cacheName:nil];
     aFetchedResultsController.delegate = self;
-    
-    
     NSError *error = nil;
     if (![aFetchedResultsController performFetch:&error]) 
     {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-         */
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     fetchedResultsController =  aFetchedResultsController;
     return fetchedResultsController;
-    
 }
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
@@ -612,54 +460,38 @@
     //NSLog(@"tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
     switch(type)
     {
-            
         case NSFetchedResultsChangeInsert:
-            NSLog(@"NSFetchedResultsChangeInsert tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
-
+            //NSLog(@"NSFetchedResultsChangeInsert tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForInsert = [NSIndexPath indexPathForRow:newIndexPath.row + 1 inSection:newIndexPath.section];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForInsert] withRowAnimation:UITableViewRowAnimationFade];
             } else [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
-            
         case NSFetchedResultsChangeDelete:
-            NSLog(@"NSFetchedResultsChangeDelete tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
-
+            //NSLog(@"NSFetchedResultsChangeDelete tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForDelete = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
             } else [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            
             break;
-            
         case NSFetchedResultsChangeUpdate:
-            NSLog(@"NSFetchedResultsChangeUpdate tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
-
+            //NSLog(@"NSFetchedResultsChangeUpdate tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForUpdate = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
                 [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForUpdate] withRowAnimation:UITableViewRowAnimationFade];
             } else [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            //[self configureCell:[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
             break;
-            
         case NSFetchedResultsChangeMove:
         {
-            NSLog(@"NSFetchedResultsChangeMove tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
-
+            //NSLog(@"NSFetchedResultsChangeMove tableView isEditing:%@",[NSNumber numberWithBool:tableView.isEditing]);
             if (tableView.isEditing) {
                 NSIndexPath *newIndexPathForDelete = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
                 NSIndexPath *newIndexPathForInsert = [NSIndexPath indexPathForRow:newIndexPath.row + 1 inSection:newIndexPath.section];
-                
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPathForInsert] withRowAnimation:UITableViewRowAnimationFade];
-                
-                
             } else {
-                
-                
                 [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-                
             }
             break;
         }
@@ -678,47 +510,21 @@
     if ([searchText isEqualToString:@""]) { 
         [self performSelector:@selector(hideKeyboardWithSearchBar:) withObject:searchBarr afterDelay:0];
         
-    } else {
-        
-        if (![searchText isEqualToString:previousSearchString]) {
-            NSFetchedResultsController *fetchController = [self fetchedResultsController];
-            NSArray *allObjects = [fetchController fetchedObjects];
-            if ([allObjects count] > 0) {
-//                NSManagedObject *firstObject = [allObjects objectAtIndex:0];
-                //NSLog(@"scroll to company:%@",[firstObject valueForKey:@"name"]);
-//                [updatedCarriersIDs removeAllObjects];
-//                [updatedCarriersIDs addObject:firstObject.objectID];
-            }
-            
-        }
     }
     fetchedResultsController = [self fetchedResultsControllerWithSearchString:searchText];
-    
     [self.tableView reloadData];
 }
 - (void)hideKeyboardWithSearchBar:(UISearchBar *)searchBar
 {   
-    
-//    NSFetchedResultsController *fetchController = [self fetchedResultsController];
-//    NSManagedObjectID *lastSelectedIDs = [updatedCarriersIDs lastObject];
-//    if (lastSelectedIDs) {
-//        NSManagedObject *obj = [fetchController.managedObjectContext objectWithID:lastSelectedIDs];
-//        NSIndexPath *pathToScroll = [fetchController indexPathForObject:obj];
-//        //NSLog(@"path to scroll:%@",pathToScroll);
-//        [self.tableView scrollToRowAtIndexPath:pathToScroll atScrollPosition:UITableViewScrollPositionNone animated:YES];
-//    }
-    
-    [self.searchBar resignFirstResponder];   
+    [self.searchBar resignFirstResponder];
 }
-
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSLog(@"prepare");
+    //NSLog(@"prepare");
     Carrier *selectedCarrier = [self.fetchedResultsController objectAtIndexPath:[self.tableView indexPathForSelectedRow]];
     OutPeersTableViewController *destination = [segue destinationViewController];
     destination.selectedCarrier = selectedCarrier;
-    
 }
 #pragma mark - UITextField delegate
 
@@ -733,51 +539,35 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0 || buttonIndex == -1) {
-        //cancel
-        
     } else {
         if (buttonIndex == 1) {
             // insert
-            NSLog(@"1");
+            //NSLog(@"1");
             [self startInsertForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
             editButton.title = @"Edit";
-            
             NSIndexPath *index = [NSIndexPath indexPathForRow:0 inSection:0];
-            
             [self.tableView beginUpdates];
-            //isCarriersEditing = NO;
-            
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:index] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView setEditing:NO animated:YES];
             [self.tableView endUpdates];
-
         }
         if (buttonIndex == 2) {
             // save and not insert
-            NSLog(@"2");
+            //NSLog(@"2");
             CarrierCell *cell = (CarrierCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-            
             cell.nameEdited.text = @"";
             cell.ipsEdited.text = @"";
             cell.prefixEdited.text = @"";
-            
             [cell.nameEdited resignFirstResponder];
             [cell.ipsEdited resignFirstResponder];
             [cell.prefixEdited resignFirstResponder];
-
             editButton.title = @"Edit";
-            
             NSIndexPath *index = [NSIndexPath indexPathForRow:0 inSection:0];
-            
             [self.tableView beginUpdates];
-            //isCarriersEditing = NO;
-            
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:index] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView setEditing:NO animated:YES];
             [self.tableView endUpdates];
-
         }
-
     }
 }
 #pragma mark - actions
